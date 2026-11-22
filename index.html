@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lern-Apps</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --text: #1d2330;
+    --muted: #6b7280;
+    --line: #e3e6eb;
+    --accent: #2f6fdf;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171c;
+      --card: #1d2128;
+      --text: #e8eaee;
+      --muted: #9aa1ad;
+      --line: #2c313a;
+      --accent: #6ea0ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 24px 16px;
+  }
+  h1 { margin: 0 0 6px; font-size: 2rem; letter-spacing: -0.02em; }
+  header p { margin: 0; color: var(--muted); }
+  .controls {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  input[type="search"] {
+    flex: 1 1 240px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--text);
+    font-size: 1rem;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 7px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .chip[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 8px 24px 64px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: inherit;
+    transition: transform .15s, box-shadow .15s, border-color .15s;
+  }
+  .card:hover, .card:focus-visible {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    outline: none;
+  }
+  .card h2 { margin: 0; font-size: 1.1rem; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.93rem; flex: 1; }
+  .meta { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: 0.75rem;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--muted);
+  }
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--muted);
+    padding: 48px 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Lern-Apps</h1>
+  <p>Alle Apps laufen direkt im Browser. Einfach anklicken und loslegen.</p>
+</header>
+
+<div class="controls">
+  <input type="search" id="q" placeholder="App suchen …" aria-label="App suchen">
+  <div class="chips" id="chips"></div>
+</div>
+
+<main id="list"></main>
+
+<script>
+/* ============================================================
+   Neue App eintragen: einfach ein Objekt in diese Liste setzen.
+   datei  = Pfad zur HTML-Datei im Repo (z. B. "apps/epochen-detektiv.html")
+   fach   = Fach (daraus entstehen die Filter-Buttons automatisch)
+   stufe  = Jahrgangsstufe (optional)
+   ============================================================ */
+const APPS = [
+  // { titel: "Epochen-Detektiv", beschreibung: "Lyrik den Literaturepochen zuordnen.", fach: "Deutsch", stufe: "13", datei: "apps/epochen-detektiv.html" },
+];
+
+const list = document.getElementById('list');
+const q = document.getElementById('q');
+const chipsEl = document.getElementById('chips');
+let fach = 'Alle';
+
+const faecher = ['Alle', ...[...new Set(APPS.map(a => a.fach).filter(Boolean))].sort()];
+faecher.forEach(f => {
+  const b = document.createElement('button');
+  b.className = 'chip';
+  b.textContent = f;
+  b.setAttribute('aria-pressed', f === fach);
+  b.onclick = () => {
+    fach = f;
+    chipsEl.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c.textContent === fach));
+    render();
+  };
+  chipsEl.appendChild(b);
+});
+if (faecher.length < 3) chipsEl.style.display = 'none';
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function render() {
+  const term = q.value.trim().toLowerCase();
+  const items = APPS.filter(a =>
+    (fach === 'Alle' || a.fach === fach) &&
+    (!term || [a.titel, a.beschreibung, a.fach].join(' ').toLowerCase().includes(term))
+  );
+  if (!items.length) {
+    list.innerHTML = `<div class="empty">${APPS.length ? 'Keine passende App gefunden.' : 'Hier erscheinen bald die ersten Apps.'}</div>`;
+    return;
+  }
+  list.innerHTML = items.map(a => `
+    <a class="card" href="${esc(a.datei)}">
+      <h2>${esc(a.titel)}</h2>
+      <p>${esc(a.beschreibung)}</p>
+      <div class="meta">
+        ${a.fach ? `<span class="tag">${esc(a.fach)}</span>` : ''}
+        ${a.stufe ? `<span class="tag">Jgst. ${esc(a.stufe)}</span>` : ''}
+      </div>
+    </a>`).join('');
+}
+
+q.addEventListener('input', render);
+render();
+</script>
+</body>
+</html>
