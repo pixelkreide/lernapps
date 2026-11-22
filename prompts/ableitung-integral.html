@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Ableitung und Integral mit JSXGraph · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Ableitung und Integral mit JSXGraph</h1>
+  <p class="lead">Eine Mathe-App vom Grenzwert zum Hauptsatz: Sekante zur Tangente, Riemann-Summen und Integralfunktion, alles verschiebbar und mit eigener Funktion.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/ableitung-integral.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Baue eine Lern-App „Ableitung und Integral: vom Grenzwert zum Hauptsatz“ für den Mathematikunterricht.
+
+TECHNIK
+Eine einzige HTML-Datei, die offline läuft. Nutze JSXGraph und bette die Bibliothek direkt in die Datei ein. Lade nichts aus dem Internet nach.
+
+AUFBAU
+Links zwei Graphen übereinander, rechts die Steuerung. Lege drei Modi an: Ableitung, Riemann und Hauptsatz. Biete Funktionen wie ⅓x³ − x, sin x, x² und eˣ/4 zur Auswahl sowie ein Feld für eine eigene Funktion. Alle Punkte lassen sich verschieben.
+
+MODUS ABLEITUNG
+Oben der Graph von f mit Sekante durch P und Q, Regler für den Abstand h und die Stelle x. Ein Knopf lässt h gegen 0 laufen, die Tangente lässt sich einblenden. Unten entsteht f′ Punkt für Punkt. Erst überlegen, dann f′ zeichnen lassen oder die Lösung einblenden.
+
+MODUS RIEMANN
+Rechtecke zwischen a und b, die man auf der x-Achse verschiebt. Regler für die Anzahl n, dazu links, rechts, Mitte, Untersumme und Obersumme. Ein Knopf lässt n wachsen. Unten läuft die Summe gegen das Integral, mit Anzeige der Abweichung. Flächen unter der Achse zählen negativ.
+
+MODUS HAUPTSATZ
+Oben färbt sich die Fläche von a bis x, grün für positiv und rot für negativ. Unten entsteht die Integralfunktion F. Ein Knopf lässt x durchlaufen. Zeige f(x), F(x) und die Steigung von F, damit man sieht: Die Steigung von F ist die Höhe von f.
+
+ERKLÄRUNG
+Lege drei Bereiche an: Steuern, Erklären und Aufträge. Erkläre jede Idee einfach und nenne häufige Irrtümer, zum Beispiel: F fällt nicht, weil f klein ist, sondern nur dort, wo f negativ ist. Unter Aufträge stehen Prognosen, ein Musterbeispiel, ein Lückenbeispiel und eine Fehlersuche.
+
+Teste am Ende alles, prüfe die Rechnungen und nenne mir die Grenzen der App.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

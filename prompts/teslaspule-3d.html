@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Singende Teslaspule in 3D · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Singende Teslaspule in 3D</h1>
+  <p class="lead">Eine Teslaspule im Browser mit Blitzen, Resonanzkurve und Leuchtstoffröhre ohne Kabel. Auf Knopfdruck spielen die Funken Musik.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/teslaspule-3d.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Baue eine singende Teslaspule als beeindruckende 3D-Simulation für den Physikunterricht.
+
+TECHNIK
+Eine einzige HTML-Datei, die offline läuft. Nutze three.js und bette es direkt in die Datei ein. Lade nichts aus dem Internet nach. Der Ton entsteht mit der Web Audio API und startet erst nach einem Klick.
+
+SZENE
+Ein Labor mit einem detaillierten Modell: Primärspule aus Kupferrohr, Kondensatoren, Sekundärspule, Toroid, Metallkugel, Leuchtstoffröhre ohne Kabel und eine Digitalanzeige der Frequenz. Blitze verzweigen sich zufällig, leuchten stark und schlagen in die Kugel ein. Kameraansichten: Gesamtblick, Blitze und Technik. Raumlicht lässt sich ein- und ausschalten.
+
+VORFÜHRUNG
+Ein Knopf startet alles automatisch mit kurzen Einblendungen: Licht aus, die Spule ist verstimmt, beide Frequenzen nähern sich an, Resonanz, die Röhre leuchtet ohne Kabel, danach singt die Luft.
+
+ABSTIMMEN
+Regler für den Abgriff am Primärkreis, die Leistung und den Abstand der Metallkugel, dazu ein kleiner und ein großer Toroid. Zeige die Resonanzkurve live mit Punkt für die aktuelle Einstellung. Rechne mit f = 1 / (2π · √(L · C)) und zeige beide Frequenzen, die Spannung am Toroid und die Funkenlänge. Berücksichtige, dass die Funken den Sekundärkreis verstimmen.
+
+MUSIK
+Zwei Stücke zur Auswahl: Bachs Toccata in d-Moll und Beethovens Ode an die Freude. Die Funken leuchten im Takt der Töne. Der Klang ist ein rauer, knisternder Ton wie bei einer echten singenden Teslaspule.
+
+ERKLÄRUNG
+Lege drei Bereiche an: Abstimmen, Verstehen und Aufträge. Erkläre einfach die zwei Schwingkreise, Resonanz wie bei einer Schaukel, die hohe Spannung, die Funken, die Musik und die leuchtende Röhre. Unter Aufträge stehen Prognosen, die man erst vermutet und dann prüft. Weise darauf hin: Das ist eine Simulation, eine echte Teslaspule ist lebensgefährlich.
+
+Teste am Ende alles, prüfe die Rechnungen und nenne mir die Grenzen der App.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

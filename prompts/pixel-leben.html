@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Pixel-Art-Lernspiel „Pixel-Leben“ · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Pixel-Art-Lernspiel „Pixel-Leben“</h1>
+  <p class="lead">Ein cineastisches Pixel-Art-Spiel für Pädagogik/Psychologie: Die Lernenden beobachten die Fremde Situation, treffen Entscheidungen für eine jugendliche Figur und bestimmen ihren Identitätsstatus, stärken ihre Selbstwirksamkeit vor einer Präsentation und begleiten zum Schluss ein ganzes Leben im Zeitraffer.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/pixel-leben.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Erstelle ein Lernspiel im Pixel-Art-Stil als eine einzige HTML-Datei, die offline läuft. Zeichne alle Grafiken im Code (Canvas), ohne externe Bilder oder Schriften.
+Zielgruppe: [Jahrgangsstufe und Schulart], Fach Pädagogik/Psychologie
+Grundlage: Schau dir den Lehrplan für [Bundesland, Schulart, Fach] an und wähle Lernbereiche, die sich als Abschnitte eines Lebens erzählen lassen.
+
+LOOK UND ATMOSPHÄRE
+- Atmosphärisch und cineastisch: Filmbalken oben und unten, Titelkarte pro Kapitel, Lichtkegel, Regen, Staub, Filmkorn, weiche Überblendungen.
+- Niedrige Auflösung (etwa 320 × 180 Pixel), scharf hochskaliert. Figuren mit Zuständen wie gehen, sitzen, weinen, Arme hoch, erstarren.
+- Kamerafahrten: Totale zum Einstieg, langsamer Zoom auf die Schlüsselmomente, damit man Gesten auch am Beamer erkennt.
+- Stimmungsmusik und Geräusche mit der Web Audio API, Ton abschaltbar.
+- Neutrales Design ohne Schulnamen und Logos.
+
+KAPITEL 1: BINDUNG (FREMDE SITUATION)
+Ein Kleinkind durchläuft verkürzte Episoden nach Ainsworth. Hinter jedem Durchgang steckt zufällig einer der vier Bindungstypen. Die Lernenden ordnen zu und begründen ihre Wahl. Erster Durchgang mit Untertiteln, danach ohne. Fehlerfalle: Wer nur auf das Weinen bei der Trennung achtet, liegt oft falsch.
+
+KAPITEL 2: IDENTITÄT (MARCIA)
+Die Lernenden treffen vier Entscheidungen für eine 16-jährige Figur. Die Werte für Exploration und Verpflichtung bleiben verborgen. Am Ende schätzen sie den Identitätsstatus und sehen die Auflösung im Diagramm, mit Rückblick auf jede Entscheidung.
+
+KAPITEL 3: SELBSTWIRKSAMKEIT (BANDURA)
+Vor einer Präsentation wählen die Lernenden an vier Abenden je eine Aktivität und bestimmen, welche Quelle der Selbstwirksamkeit sie anspricht. Ein Balken zeigt die Wirkung, und davon hängt der Ausgang der Präsentation ab. Baue Fallen ein, zum Beispiel ein Vorbild, das der Figur zu unähnlich ist.
+
+EPILOG: LEBENSSPANNE (BALTES)
+Eine Figur läuft durchs Bild und wird dabei vom Kind zum alten Menschen. Danach eine Wissenskarte und eine Abschlussfrage zu Entwicklungsaufgaben.
+
+DIDAKTIK
+Nach jeder Aufgabe Feedback mit Begründung, dazu Wissenskarten, Denkfragen zum Aufklappen und ein Notizbuch, das Fachbegriffe sammelt. Kapitel einzeln anwählbar, Steuerung per Klick, Leertaste und Zifferntasten.
+
+QUALITÄT
+Prüfe alle Fachinhalte und Theorienamen. Teste jedes Kapitel einmal komplett durch. Baue alles vollständig, ohne Platzhalter.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

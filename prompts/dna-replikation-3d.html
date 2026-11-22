@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: DNA-Replikation in 3D · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>DNA-Replikation in 3D</h1>
+  <p class="lead">Eine interaktive 3D-Simulation: Man erkundet die Replikationsgabel, baut selbst Fehler ein und vergleicht, was mit und ohne Korrekturlesen passiert.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/dna-replikation-3d.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Erstelle eine eindrucksvolle 3D-Lern-App „DNA-Replikation“ für den Biologieunterricht der Oberstufe als eine einzige HTML-Datei.
+
+ZIEL
+Die Lernenden sehen die Kopiermaschine der Zelle in Aktion, können selbst Fehler einbauen und erklären danach, warum Korrekturlesen wichtig ist und warum ein Strang in Stücken entsteht.
+
+TECHNIK
+- Verwende three.js 0.160.0. Alles steht in einer Datei: HTML, CSS und JavaScript.
+- Wenn du Code ausführen kannst: Bündle three.js und OrbitControls mit esbuild in die Datei ein, damit sie offline läuft.
+- Wenn nicht: Binde https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js ein, nutze die globale Variable THREE, keine ES-Module, und programmiere die Kamerasteuerung selbst (Ziehen dreht, Mausrad zoomt).
+- Lade keine Bilder, Schriften oder Daten nach. Benutze Systemschriften.
+- Zeichne alle Atome mit einer einzigen Instanzierung als Kugeln im Fragment-Shader (Billboard mit Ray-Sphere-Schnitt und korrekter Tiefe), damit zehntausende Atome flüssig laufen. Pixelverhältnis höchstens 1,5.
+- Licht im Shader: weiches Hauptlicht, Randlicht, dunklere Fugen zwischen den Atomen, damit Oberflächen plastisch wirken.
+- Tiefenschärfe: Teilchen weit weg von der Kamerafokusebene wirken weich und unscharf.
+- Atome hinter der Kamera dürfen nichts stören.
+- Wenn WebGL fehlt, zeige einen verständlichen Hinweis.
+
+SZENE
+- Dunkelblauer Hintergrund mit Verlauf, dazwischen schwebende, unscharfe Nukleotide.
+- DNA-Doppelhelix im atomnahen Kugelmodell: 0,34 nm je Basenpaar, gut 10 Basenpaare je Windung, Rückgrat aus Kugeln, Basen in vier Farben (A orange, T grün, C blau, G violett).
+- Replikationsgabel, die sich kontinuierlich durch die DNA bewegt. Vor der Gabel bleibt die Doppelhelix geschlossen, hinter ihr laufen zwei Tochterstränge weg.
+- Alter Strang hellblau, neuer Strang gelb, RNA-Primer rot.
+- Enzyme als große Formen aus tausenden Atomkugeln: Helikase (Türkis), Primase (Grün), Polymerase am Leitstrang (Violett), Polymerase am Folgestrang (Magenta), Klammerring (Gelb), Ligase.
+- Der Leitstrang wächst fortlaufend. Der Folgestrang entsteht in Okazaki-Fragmenten: Die Polymerase arbeitet von der Gabel weg, setzt immer neu an, und die Ligase schließt die Lücken.
+- Alle Syntheserichtungen sind 5&#x27;→3&#x27;. Das Bild darf dem nie widersprechen.
+- Namensschilder als HTML-Elemente, die den Enzymen folgen und nicht aus dem Bild ragen.
+
+LAYOUT
+Links die 3D-Szene (etwa zwei Drittel), rechts eine helle Seitenleiste. Oben über der Szene die Knöpfe „Reise starten“, „Enzyme zeigen“, „Namen“, „Pause“ und „Vollbild“. Auf dem Handy steht die Seitenleiste unter der Szene.
+
+REISE STARTEN
+Eine geführte Kamerafahrt zu Helikase, Primase, Polymerasen, Folgestrang und Ligase. Zu jeder Station erscheint unten im Bild ein Untertitel aus ein bis zwei kurzen Sätzen.
+
+REITER „BEOBACHTEN“
+- Tempo: Langsam, Mittel, Mensch: 50 pro s, Bakterium: 1000 pro s.
+- Zähler: Bereits kopiert, Okazaki-Fragmente, Eingebaute Fehler, Korrigierte Fehler.
+- Basenanzeige: zwei exakt untereinanderstehende Zeilen mit alter Vorlage und neuem Strang direkt an der Polymerase. Es passen immer A zu T und G zu C.
+- Knopf „Falsche Base einbauen“ und Schalter „Korrekturlesen“.
+- Farblegende.
+
+DAS FEHLER-EXPERIMENT (der Höhepunkt)
+- Die falsche Base leuchtet pink, ist größer, ragt aus dem Strang, und ein pinker Ring mit Schild markiert sie, zum Beispiel „Fehler: G gegenüber T“. Ring und Schild folgen beim Drehen und Zoomen.
+- Mit Korrekturlesen: Die Polymerase hält an, wird kurz ausgeblendet, damit man hineinsieht, das Schild zeigt „Wird herausgeschnitten“, die Kamera fährt heran. Nach etwa 2,5 Sekunden ist die Base ersetzt, und der Untertitel lautet: „Die richtige Base ist eingebaut. Der Fehler ist weg.“
+- Ohne Korrekturlesen: Der Fehler verlässt die Polymerase, die Simulation hält an, die Kamera fährt zur Fehlpaarung. Der Untertitel sagt, dass sie bei der nächsten Teilung zur Mutation wird. Mit „Pause“ läuft es weiter.
+- Jeder bleibende Fehler erscheint als Knopf, zum Beispiel „Vorlage T: G statt A“. Ein Klick führt die Kamera zur Stelle. Mehrere Fehler sind möglich.
+
+REITER „VERSTEHEN“
+Kurze Texte zu Helikase (trennt die Stränge und löst Wasserstoffbrücken, schneidet aber nicht), Primase, Polymerase, Leit- und Folgestrang und Ligase. Dazu die Zahlen: Beim Menschen etwa 50 Nukleotide pro Sekunde je Gabel, bei E. coli etwa 500 bis 1000. Nach Korrekturlesen und Reparatur bleibt etwa ein Fehler je Milliarde Basen. Weise offen auf Vereinfachungen hin: verkürzte Okazaki-Fragmente, schematische Enzyme.
+
+REITER „AUFTRÄGE“
+Mit Operatoren und je einem Antwortfeld und einer aufklappbaren Musterantwort:
+1. Vorhersage: Was passiert ohne Korrekturlesen? Erst antworten, dann im Modell testen.
+2. Beschreibe die Aufgabe der Helikase.
+3. Musterbeispiel: Warum entstehen am Folgestrang Fragmente?
+4. Lückenbeispiel zur Ligase mit Satzanfängen.
+5. Fehler finden: „Die Helikase zerschneidet die DNA.“
+6. Transfer: Was passiert, wenn die Ligase ausfällt?
+
+SPRACHE UND QUALITÄT
+Deutsch, kurze Sätze, klare Aufgabenstellungen. Plane zuerst kurz die Architektur und baue dann alles vollständig. Keine Platzhalter, kein gekürzter Code. Prüfe vor der Ausgabe: Stimmen Basenpaarung und 5&#x27;→3&#x27;-Richtung, läuft das Experiment in beiden Fällen, und funktioniert jeder Knopf?
+Gib am Ende die fertige Datei aus und nenne in drei Sätzen, was ich testen soll.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

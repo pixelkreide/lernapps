@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Skinner-Box als Lernlabor · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Skinner-Box als Lernlabor</h1>
+  <p class="lead">Ein Lernlabor zur operanten Konditionierung: Die Lernenden bringen einer virtuellen Ratte selbst das Hebeldrücken bei, vergleichen Verstärkerpläne im Experiment und übertragen alles auf den Alltag.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/skinner-box.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Erstelle ein interaktives Lernlabor zur operanten Konditionierung („Skinner-Box“) als eine einzige HTML-Datei, die offline läuft.
+Zielgruppe: [Jahrgangsstufe und Schulart], Fach Pädagogik/Psychologie
+Lernziel: Shaping und Verstärkerpläne selbst erleben, erklären und auf den Alltag übertragen.
+
+STATION 1: SHAPING (KERN DER APP)
+- Eine Ratte bewegt sich in einer Skinner-Box mit Hebel, Futterschale und Lampe (Canvas-Animation).
+- Die Lernenden geben per Knopf oder Leertaste Futter. Ziel: Die Ratte drückt den Hebel selbstständig.
+- Verhaltensmodell: Verstärktes Verhalten wird wahrscheinlicher, nicht verstärktes verblasst langsam. Zeige das live als Verhaltensprofil mit Balken.
+- Sofortiges Feedback: falsche Zone belohnt, Timing-Fehler (Futter beim Weglaufen), Futter während des Fressens.
+- Drei gestaffelte Hilfen nur auf Nachfrage.
+- Erfolgskriterium: 10 eigene Hebeldrücke. Danach Fachbegriff Shaping, Erklärung mit Satzstartern, Musterlösung, Fragen zum sekundären Verstärker (Klickgeräusch) und zum Timing.
+
+STATION 2: VERSTÄRKERPLÄNE
+Erst eine Vorhersage, dann das Experiment: fünf Pläne (KV, FQ, VQ, FI, VI) im Zeitraffer mit kumulativem Schreiber, anschließend Löschung. Auswertung und Vergleich mit der Vorhersage.
+
+STATION 3: VIER KONSEQUENZEN
+Vier-Felder-Matrix (positive/negative Verstärkung, Bestrafung Typ I/II) mit Beispielen aus Box und Alltag, Musterbeispiel, Lückenbeispiel und Fehlerfalle.
+
+STATION 4 UND 5: TRANSFER UND ABSCHLUSS
+Alltagsfälle mit Wortbank, Abrufrunde, Quiz und Beurteilung der Grenzen der Theorie.
+
+QUALITÄT
+Prüfe alle Fachbegriffe und Beispiele fachlich. Die Simulation ist ein vereinfachtes Lernmodell, kennzeichne das in der App. Baue alles vollständig, ohne Platzhalter.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

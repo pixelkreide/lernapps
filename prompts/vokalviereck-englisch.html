@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Vokalviereck als Aussprache-Trainer · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Vokalviereck als Aussprache-Trainer</h1>
+  <p class="lead">Eine App für den Browser, die über das Mikrofon zeigt, wo die eigenen Vokale im Vokalviereck landen. Sie läuft offline und wertet die Stimme nur im Browser aus.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/vokalviereck-englisch.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Baue ein Vokalviereck für englische Vokale als Aussprache-Trainer.
+
+TECHNIK
+Eine einzige HTML-Datei, die offline läuft. Nutze die Bibliothek Tone.js und bette sie direkt in die Datei ein. Lade nichts aus dem Internet nach. Starte den Ton erst nach einem Klick.
+
+MESSUNG
+Das Mikrofon wertet meine Stimme live aus. Miss die ersten beiden Formanten F1 und F2 und zeige meinen Vokal als leuchtenden Punkt mit kurzer Spur im Vokalviereck. Zeige darunter ein Spektrum mit F1 und F2. Recherchiere belegte Zielwerte für die Vokale und nenne die Quelle in der App.
+
+DATENSCHUTZ
+Werte die Stimme nur im Browser aus. Nimm nichts auf und sende nichts. Weise in der App darauf hin.
+
+ÜBEN
+Biete Minimalpaare an: ship und sheep, bed und bad, cut und cat, cut und cart, full und fool, caught und cot. Markiere den Zielvokal im Viereck. Gib nach jedem Versuch eine Rückmeldung: entweder „Getroffen“ oder „Noch nicht“ mit einem konkreten Tipp zu Mund und Zunge. Zeige die letzten Versuche als Reihe von Haken und Kreuzen.
+
+HÖREN
+Ton gibt es nur auf Klick: Ein Knopf spielt den Zielvokal, ein zweiter spricht das Wort vor. Wenn ich über das Viereck ziehe, formt die Position den Vokal und der Klang folgt.
+
+ANPASSUNG
+Biete tiefe und hohe Stimme an sowie ein Einmessen mit „see“ und „father“, das die Ziele an meine Stimme anpasst.
+
+ERKLÄRUNG
+Lege drei Bereiche an: Üben, Erklären und Aufträge. Erkläre einfach, was Formanten sind, nenne typische Stolpersteine für Deutschsprachige und die Grenzen der Messung: Das Bild zeigt eine Richtung und ist keine Note. Unter Aufträge stehen Prognosen, die man erst vermutet und dann mit der eigenen Stimme prüft.
+
+Teste am Ende alles und nenne mir die Grenzen der App.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

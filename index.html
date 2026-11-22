@@ -4,211 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pixelkreide · Lern-Apps</title>
+<meta name="description" content="Interaktive Lern-Apps, mit KI gebaut. Direkt im Browser ausprobieren, inklusive Prompt zum Nachbauen.">
 <link rel="icon" href="assets/favicon.png">
-<style>
-  @font-face { font-family: "Space Grotesk"; font-weight: 500; src: url(assets/fonts/space-grotesk-500.woff2) format("woff2"); font-display: swap; }
-  @font-face { font-family: "Space Grotesk"; font-weight: 700; src: url(assets/fonts/space-grotesk-700.woff2) format("woff2"); font-display: swap; }
-  @font-face { font-family: "Silkscreen"; font-weight: 400; src: url(assets/fonts/silkscreen-400.woff2) format("woff2"); font-display: swap; }
-  @font-face { font-family: "Caveat"; font-weight: 700; src: url(assets/fonts/caveat-700.woff2) format("woff2"); font-display: swap; }
-
-  :root {
-    --navy: #070b1f;
-    --navy2: #0d1433;
-    --cyan: #16d9e8;
-    --violet: #b07bff;
-    --yellow: #f6d66b;
-    --pink: #ff6fae;
-    --green: #5ef0a0;
-    --text: #eef2ff;
-    --muted: #a3acd1;
-    --glass: rgba(18, 26, 64, .55);
-    --line: rgba(255, 255, 255, .10);
-  }
-  * { box-sizing: border-box; }
-  html { background: var(--navy); }
-  body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: "Space Grotesk", system-ui, sans-serif;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1.5;
-    background:
-      linear-gradient(180deg, var(--navy) 0%, var(--navy) 40%, rgba(7,11,31,.35) 80%, rgba(7,11,31,.6) 100%) fixed,
-      url(assets/footer.jpg) center bottom / cover no-repeat fixed,
-      var(--navy);
-  }
-
-  /* ---------- Hero ---------- */
-  .hero {
-    position: relative;
-    min-height: 380px;
-    display: flex;
-    align-items: center;
-    background: url(assets/hero.jpg) center / cover no-repeat;
-    overflow: hidden;
-  }
-  .hero::after {
-    content: "";
-    position: absolute; inset: 0;
-    background: linear-gradient(90deg, rgba(7,11,31,.85) 0%, rgba(7,11,31,.35) 55%, rgba(7,11,31,.15) 100%),
-                linear-gradient(180deg, rgba(7,11,31,0) 60%, var(--navy) 100%);
-  }
-  .hero-inner {
-    position: relative; z-index: 1;
-    width: 100%; max-width: 1140px;
-    margin: 0 auto;
-    padding: 48px 24px;
-    display: flex; align-items: center; gap: 32px;
-  }
-  .hero img.logo {
-    width: 150px; height: 150px; flex: none;
-    filter: drop-shadow(0 0 28px rgba(22,217,232,.45));
-  }
-  .chip {
-    display: inline-block;
-    font-family: "Silkscreen", monospace;
-    font-size: .8rem;
-    letter-spacing: .06em;
-    padding: 4px 10px;
-    border: 1px solid var(--cyan);
-    color: var(--cyan);
-    border-radius: 6px;
-    background: rgba(22,217,232,.08);
-  }
-  .hero h1 {
-    margin: 12px 0 4px;
-    font-size: clamp(2.2rem, 5vw, 3.6rem);
-    font-weight: 700;
-    line-height: 1.05;
-    letter-spacing: -.02em;
-  }
-  .hero h1 span {
-    background: linear-gradient(90deg, var(--cyan), var(--violet));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .hero .hand {
-    font-family: "Caveat", cursive;
-    font-size: 1.7rem;
-    color: var(--yellow);
-    margin: 0;
-  }
-
-  /* ---------- Steuerung ---------- */
-  .controls {
-    max-width: 1140px;
-    margin: -28px auto 0;
-    padding: 0 24px 20px;
-    position: relative; z-index: 2;
-    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
-  }
-  input[type="search"] {
-    flex: 1 1 260px;
-    padding: 13px 18px;
-    font: inherit;
-    color: var(--text);
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-  }
-  input[type="search"]::placeholder { color: var(--muted); }
-  input[type="search"]:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,217,232,.2); }
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; }
-  .filter {
-    font-family: "Silkscreen", monospace;
-    font-size: .8rem;
-    padding: 9px 14px;
-    color: var(--text);
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all .2s;
-  }
-  .filter:hover { border-color: var(--violet); }
-  .filter[aria-pressed="true"] {
-    border-color: var(--cyan);
-    color: var(--navy);
-    background: var(--cyan);
-    box-shadow: 0 0 16px rgba(22,217,232,.5);
-  }
-
-  /* ---------- Karten ---------- */
-  main {
-    max-width: 1140px;
-    margin: 0 auto;
-    padding: 8px 24px 80px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 18px;
-  }
-  .card {
-    position: relative;
-    display: flex; flex-direction: column; gap: 10px;
-    padding: 22px;
-    color: inherit; text-decoration: none;
-    background: var(--glass);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    transition: transform .2s, border-color .2s, box-shadow .2s;
-  }
-  .card::before {
-    content: "";
-    position: absolute; left: 22px; right: 22px; top: 0; height: 2px;
-    background: linear-gradient(90deg, var(--cyan), var(--violet));
-    border-radius: 2px;
-    opacity: .7;
-  }
-  .card:hover, .card:focus-visible {
-    transform: translateY(-4px);
-    border-color: rgba(22,217,232,.6);
-    box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 24px rgba(176,123,255,.25);
-    outline: none;
-  }
-  .card h2 { margin: 0; font-size: 1.2rem; font-weight: 700; }
-  .card p { margin: 0; color: var(--muted); font-size: .95rem; flex: 1; }
-  .meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .tag {
-    font-family: "Silkscreen", monospace;
-    font-size: .7rem;
-    padding: 3px 8px;
-    border-radius: 6px;
-    border: 1px solid currentColor;
-  }
-  .go {
-    margin-left: auto;
-    font-family: "Silkscreen", monospace;
-    font-size: .75rem;
-    color: var(--cyan);
-  }
-  .empty {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 56px 0;
-  }
-  .empty .hand { font-family: "Caveat", cursive; font-size: 2rem; color: var(--yellow); }
-
-  footer {
-    text-align: center;
-    padding: 24px;
-    font-family: "Silkscreen", monospace;
-    font-size: .75rem;
-    color: var(--text);
-    text-shadow: 0 1px 6px rgba(0,0,0,.9);
-  }
-
-  @media (max-width: 640px) {
-    .hero-inner { flex-direction: column; text-align: center; gap: 16px; }
-    .hero img.logo { width: 110px; height: 110px; }
-    .hero::after { background: linear-gradient(180deg, rgba(7,11,31,.55) 0%, var(--navy) 100%); }
-  }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-</style>
+<link rel="stylesheet" href="assets/pixelkreide.css">
 </head>
 <body>
 
@@ -217,8 +15,8 @@
     <img class="logo" src="assets/logo.png" alt="Pixelkreide">
     <div>
       <span class="chip">LERN-APPS</span>
-      <h1>Lernen mit <span>Pixelkreide</span></h1>
-      <p class="hand">Anklicken, ausprobieren, loslegen.</p>
+      <h1>Lernen mit <span class="grad">Pixelkreide</span></h1>
+      <p class="hand">Anklicken, ausprobieren, nachbauen.</p>
     </div>
   </div>
 </header>
@@ -228,43 +26,44 @@
   <div class="filters" id="filters"></div>
 </div>
 
-<main id="list"></main>
+<main class="grid" id="list"></main>
 
-<footer>Alle Apps laufen direkt im Browser · Keine Anmeldung nötig</footer>
+<footer>Alle Apps laufen direkt im Browser · Keine Anmeldung nötig · <a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
 
 <script>
 /* ============================================================
    Neue App eintragen: ein Objekt in diese Liste setzen.
-   datei  = Pfad zur HTML-Datei im Repo (z. B. "apps/epochen-detektiv.html")
+   datei  = Pfad zur HTML-Datei (z. B. "apps/epochen-detektiv.html")
+   prompt = optional: Seite mit dem Prompt (z. B. "prompts/epochen-detektiv.html")
    fach   = Fach (daraus entstehen die Filter-Buttons automatisch)
    stufe  = Jahrgangsstufe (optional)
    ============================================================ */
 const APPS = [
-  { titel: "Chemielabor 3D", beschreibung: "Ein unbekanntes Salz mit eigenen Versuchen bestimmen: Brenner, Reagenzgläser, Nachweise.", fach: "Chemie", datei: "apps/chemielabor-3d.html" },
+  { titel: "Chemielabor 3D", beschreibung: "Ein unbekanntes Salz mit eigenen Versuchen bestimmen: Brenner, Reagenzgläser, Nachweise.", fach: "Chemie", datei: "apps/chemielabor-3d.html", prompt: "prompts/chemielabor-3d.html" },
   { titel: "Chemische Uhr 3D", beschreibung: "Eine oszillierende Reaktion in 3D auslösen und beobachten.", fach: "Chemie", datei: "apps/chemische-uhr-3d.html" },
-  { titel: "Handlabor Moleküle", beschreibung: "Moleküle mit bloßen Händen vor der Kamera drehen und erkunden.", fach: "Chemie", datei: "apps/handlabor-molekuele.html" },
-  { titel: "DNA-Replikation 3D", beschreibung: "Die Kopiermaschine des Lebens, Atom für Atom, mit allen Enzymen.", fach: "Biologie", datei: "apps/dna-replikation-3d.html" },
-  { titel: "Ribosom 3D", beschreibung: "Wie aus einer Gensequenz Hämoglobin wird: Translation zum Mitverfolgen.", fach: "Biologie", datei: "apps/ribosom-3d.html" },
+  { titel: "Handlabor Moleküle", beschreibung: "Moleküle mit bloßen Händen vor der Kamera drehen und erkunden.", fach: "Chemie", datei: "apps/handlabor-molekuele.html", prompt: "prompts/handlabor-molekuele.html" },
+  { titel: "DNA-Replikation 3D", beschreibung: "Die Kopiermaschine des Lebens, Atom für Atom, mit allen Enzymen.", fach: "Biologie", datei: "apps/dna-replikation-3d.html", prompt: "prompts/dna-replikation-3d.html" },
+  { titel: "Ribosom 3D", beschreibung: "Wie aus einer Gensequenz Hämoglobin wird: Translation zum Mitverfolgen.", fach: "Biologie", datei: "apps/ribosom-3d.html", prompt: "prompts/ribosom-3d.html" },
   { titel: "Synapse 3D", beschreibung: "Wie ein Nerv den Muskel erreicht, Molekül für Molekül.", fach: "Biologie", datei: "apps/synapse-3d.html" },
   { titel: "Photosynthese-Labor", beschreibung: "Vom Licht zum Zucker: Versuche verändern, Wirkung beobachten, ins Blatt schauen.", fach: "Biologie", datei: "apps/photosynthese-labor.html" },
-  { titel: "Fadenstrahlrohr 3D", beschreibung: "Elektronen im Magnetfeld sichtbar machen und die spezifische Ladung bestimmen.", fach: "Physik", datei: "apps/fadenstrahlrohr-3d.html" },
-  { titel: "Federpendel 3D", beschreibung: "Gewicht auslenken, Kräfte einblenden, Schwingung in Zeitlupe analysieren.", fach: "Physik", datei: "apps/federpendel-3d.html" },
-  { titel: "Stoßlabor 3D", beschreibung: "Impuls und Energie mit echter Physik-Engine untersuchen.", fach: "Physik", datei: "apps/stosslabor-3d.html" },
-  { titel: "Teslaspule 3D", beschreibung: "Zwei Schwingkreise, ein Takt, hunderttausend Volt: die singende Teslaspule.", fach: "Physik", datei: "apps/teslaspule-3d.html" },
+  { titel: "Fadenstrahlrohr 3D", beschreibung: "Elektronen im Magnetfeld sichtbar machen und die spezifische Ladung bestimmen.", fach: "Physik", datei: "apps/fadenstrahlrohr-3d.html", prompt: "prompts/fadenstrahlrohr-3d.html" },
+  { titel: "Federpendel 3D", beschreibung: "Gewicht auslenken, Kräfte einblenden, Schwingung in Zeitlupe analysieren.", fach: "Physik", datei: "apps/federpendel-3d.html", prompt: "prompts/federpendel-3d.html" },
+  { titel: "Stoßlabor 3D", beschreibung: "Impuls und Energie mit echter Physik-Engine untersuchen.", fach: "Physik", datei: "apps/stosslabor-3d.html", prompt: "prompts/stosslabor-3d.html" },
+  { titel: "Teslaspule 3D", beschreibung: "Zwei Schwingkreise, ein Takt, hunderttausend Volt: die singende Teslaspule.", fach: "Physik", datei: "apps/teslaspule-3d.html", prompt: "prompts/teslaspule-3d.html" },
   { titel: "Schwarzes Loch 3D", beschreibung: "Anflug auf ein Schwarzes Loch mit Lichtablenkung und Doppler-Effekt.", fach: "Physik", datei: "apps/schwarzes-loch-3d.html" },
-  { titel: "Zugversuch", beschreibung: "Spannungs-Dehnungs-Diagramm live: Probe ziehen, Bereiche und Kennwerte bestimmen.", fach: "Technik", datei: "apps/zugversuch.html" },
-  { titel: "Ableitung und Integral", beschreibung: "Vom Grenzwert zum Hauptsatz, interaktiv erklärt.", fach: "Mathematik", datei: "apps/ableitung-integral.html" },
+  { titel: "Zugversuch", beschreibung: "Spannungs-Dehnungs-Diagramm live: Probe ziehen, Bereiche und Kennwerte bestimmen.", fach: "Technik", datei: "apps/zugversuch.html", prompt: "prompts/zugversuch.html" },
+  { titel: "Ableitung und Integral", beschreibung: "Vom Grenzwert zum Hauptsatz, interaktiv erklärt.", fach: "Mathematik", datei: "apps/ableitung-integral.html", prompt: "prompts/ableitung-integral.html" },
   { titel: "Warum ist die Ableitung von x² gleich 2x?", beschreibung: "Erklärvideo, das dreimal anhält und dir eine Frage stellt.", fach: "Mathematik", datei: "apps/ableitung-x2-video.html" },
   { titel: "Die Mitternachtsformel", beschreibung: "Quadratische Gleichungen Schritt für Schritt lösen.", fach: "Mathematik", datei: "apps/mitternachtsformel.html" },
   { titel: "Neuronales Netz", beschreibung: "Ein Netz trainieren, Muster trennen und eigene Ziffern erkennen lassen.", fach: "Informatik", datei: "apps/neuronales-netz.html" },
   { titel: "Marktsimulation", beschreibung: "Käufer und Verkäufer in echtem Python, direkt im Browser.", fach: "Wirtschaft", datei: "apps/marktsimulation-python.html" },
   { titel: "Europas Grenzen", beschreibung: "Von den Imperien bis nach dem Kalten Krieg: Karten lesen und vergleichen.", fach: "Geschichte", datei: "apps/europas-grenzen.html" },
   { titel: "Museum der Perspektive", beschreibung: "Durch ein 3D-Museum gehen und erleben, wie Maler den Raum erfanden.", fach: "Kunst", datei: "apps/museum-perspektive.html" },
-  { titel: "Pixel-Leben", beschreibung: "Ein Pixel-Art-Spiel über Bindung, Identität und Selbstwirksamkeit.", fach: "Pädagogik/Psychologie", datei: "apps/pixel-leben.html" },
-  { titel: "Skinner-Box", beschreibung: "Eine virtuelle Ratte trainieren und Verstärkerpläne vergleichen.", fach: "Pädagogik/Psychologie", datei: "apps/skinner-box.html" },
+  { titel: "Pixel-Leben", beschreibung: "Ein Pixel-Art-Spiel über Bindung, Identität und Selbstwirksamkeit.", fach: "Pädagogik/Psychologie", datei: "apps/pixel-leben.html", prompt: "prompts/pixel-leben.html" },
+  { titel: "Skinner-Box", beschreibung: "Eine virtuelle Ratte trainieren und Verstärkerpläne vergleichen.", fach: "Pädagogik/Psychologie", datei: "apps/skinner-box.html", prompt: "prompts/skinner-box.html" },
   { titel: "Mondnacht", beschreibung: "Eine Reise in die Romantik: auf der Suche nach der blauen Blume.", fach: "Deutsch", datei: "apps/mondnacht-nebelwald.html" },
-  { titel: "Die graue Stadt (AR)", beschreibung: "AR-Arbeitsblatt zu Theodor Storms „Die Stadt“, mit Cardboard-Brillenmodus.", fach: "Deutsch", datei: "apps/die-graue-stadt-ar.html" },
-  { titel: "Vokalviereck Englisch", beschreibung: "Ins Mikrofon sprechen und sehen, wo deine englischen Vokale landen.", fach: "Englisch", datei: "apps/vokalviereck-englisch.html" },
+  { titel: "Die graue Stadt (AR)", beschreibung: "AR-Arbeitsblatt zu Theodor Storms „Die Stadt“, mit Cardboard-Brillenmodus.", fach: "Deutsch", datei: "apps/die-graue-stadt-ar.html", prompt: "prompts/die-graue-stadt-ar.html" },
+  { titel: "Vokalviereck Englisch", beschreibung: "Ins Mikrofon sprechen und sehen, wo deine englischen Vokale landen.", fach: "Englisch", datei: "apps/vokalviereck-englisch.html", prompt: "prompts/vokalviereck-englisch.html" },
   { titel: "Vokalviereck Französisch", beschreibung: "Ins Mikrofon sprechen und sehen, wo deine französischen Vokale landen.", fach: "Französisch", datei: "apps/vokalviereck-franzoesisch.html" },
 ];
 
@@ -304,15 +103,18 @@ function render() {
     return;
   }
   list.innerHTML = items.map(a => `
-    <a class="card" href="${esc(a.datei)}">
-      <h2>${esc(a.titel)}</h2>
+    <article class="card">
+      <h2><a href="${esc(a.datei)}">${esc(a.titel)}</a></h2>
       <p>${esc(a.beschreibung)}</p>
       <div class="meta">
         ${a.fach ? `<span class="tag" style="color:${farbe(a.fach)}">${esc(a.fach)}</span>` : ''}
         ${a.stufe ? `<span class="tag" style="color:var(--muted)">Jgst. ${esc(a.stufe)}</span>` : ''}
-        <span class="go">Starten ▸</span>
+        <span class="links">
+          ${a.prompt ? `<a class="p" href="${esc(a.prompt)}">Prompt</a>` : ''}
+          <a href="${esc(a.datei)}">Starten ▸</a>
+        </span>
       </div>
-    </a>`).join('');
+    </article>`).join('');
 }
 
 q.addEventListener('input', render);

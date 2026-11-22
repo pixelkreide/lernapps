@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Stoßlabor mit echter Physik · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Stoßlabor mit echter Physik</h1>
+  <p class="lead">Ein Physik-Labor im Browser mit Luftkissenbahn, Billard und Abrissbirne. Eine Physik-Engine berechnet jeden Stoß, die Formeln laufen zum Vergleich mit.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/stosslabor-3d.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Baue ein Stoßlabor zu Impuls und Energie für den Physikunterricht.
+
+TECHNIK
+Eine einzige HTML-Datei, die offline läuft. Nutze three.js für die 3D-Welt und die Physik-Engine Rapier (Paket rapier3d-compat) für die Bewegung. Bette beides direkt in die Datei ein und lade nichts aus dem Internet nach. Die Engine berechnet jeden Körper einzeln, die Formeln dienen nur dem Vergleich.
+
+LUFTKISSENBAHN
+Zwei Gleiter auf einer reibungsfreien Bahn. Regler für beide Massen, beide Geschwindigkeiten und die Stoßzahl e von 0 bis 1. Zeige ein v-t-Diagramm mit Schwerpunktgeschwindigkeit. Stelle nach dem Stoß Theorie und Engine in einer Tabelle gegenüber.
+
+BILLARD
+Erstens zwei Kugeln: Regler für Versatz, Tempo, Massen und Stoßzahl. Zeige Impulspfeile, die sich zum Dreieck schließen, den Winkel zwischen den Bahnen und eine Tabelle mit Werten vorher und nachher. Zweitens der Anstoß mit 15 Kugeln: Ein Balken zeigt, wie die Bewegungsenergie abnimmt.
+
+ABRISSBIRNE
+Eine Birne an einem Gerüst trifft eine Mauer aus 288 losen Steinen ohne Mörtel. Regler für Masse und Auslenkung. Balken zeigen die Energie der Birne: Lage, Bewegung, abgegeben. Vergleiche v = √(2·g·h) mit dem Tempo der Engine beim Aufprall und zähle die bewegten Steine.
+
+BEDIENUNG
+Start, Anhalten, Zurücksetzen, Vollbild. Die Kamera lässt sich frei drehen und zoomen.
+
+ERKLÄRUNG
+Lege drei Bereiche an: Versuch, Erklären und Aufträge. Erkläre einfach Impuls, Impulserhaltung, Bewegungsenergie, die Stoßzahl und den geraden Stoß mit Formeln. Greife den häufigen Irrtum auf, beim unelastischen Stoß gehe Impuls verloren. Unter Aufträge stehen Prognosen, die man erst vermutet und dann im Versuch prüft.
+
+Teste am Ende alles, vergleiche Engine und Formeln und nenne mir die Abweichungen.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

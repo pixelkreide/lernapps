@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: AR-Arbeitsblatt zur Gedichtanalyse · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>AR-Arbeitsblatt zur Gedichtanalyse</h1>
+  <p class="lead">Ein gedrucktes Arbeitsblatt, auf dem das Handy Reim, Metrum und Aufbau direkt auf die Verse legt. Mit 3D-Diorama, Lernpfad, Gesten, Sprache und Brillenmodus.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/die-graue-stadt-ar.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Erstelle ein AR-Arbeitsblatt zur Gedichtanalyse als eine einzige HTML-Datei.
+Gedicht: [Titel, Autor, Jahr und vollständiger Text]
+Klasse: [Jahrgangsstufe und Schulart]
+Lernziel: [z. B. Form und Inhalt eines Gedichts verbinden]
+
+IDEE
+Die Lernenden bearbeiten ein gedrucktes Arbeitsblatt. Halten sie das Smartphone darüber, erscheinen Analyse-Ebenen direkt auf den Versen. Alles läuft im Browser, ohne Installation. Prinzip: erst auf Papier selbst analysieren, dann mit der App prüfen.
+
+TECHNIK
+- Eine einzige HTML-Datei für den Smartphone-Browser, Rückkamera über getUserMedia.
+- Die App erzeugt das Arbeitsblatt selbst als Druckseite (A4, Originalgröße 100 %) mit eindeutigen quadratischen Markern am linken und rechten Rand.
+- Die App erkennt die Marker und legt die Einblendungen perspektivisch passend auf die Verse. Es genügt, eine Strophe mit den Markern daneben im Bild zu haben.
+- Zusätzlich: Start ohne Kamera (Blatt am Bildschirm) und Foto des Blatts laden.
+- Verständliche Hinweise, wenn die Kamera fehlt oder die Seite nicht über https läuft.
+
+EBENEN (einzeln zuschaltbar)
+- Reim: Reimschema mit Bögen zwischen den Reimwörtern.
+- Metrum: Hebungen und Senkungen, Kadenzen.
+- Aufbau: Strophen, Sinnabschnitte, Wendepunkt.
+- Sprachliche Mittel mit ihrer Funktion.
+- Epoche: Merkmale mit Textbeleg.
+- Verse: Zu jedem Vers eine Karte mit Leitfrage, Tipp und Deutungsansatz.
+
+LERNPFAD
+1. Einstieg: ein 3D-Diorama zum Gedicht (three.js), erste Wirkung notieren.
+2. Strophe 1: Musterbeispiel, alles erklärt.
+3. Strophe 2: Lückenbeispiel.
+4. Strophe 3: freie Aufgabe. Die App bleibt dunkel, bis die Lernenden ihre Selbstkontrolle freischalten.
+5. Fehlerfalle: zwei Analysen, gelungen oder misslungen?
+6. Transfer und Abrufrunde.
+Hilfen gibt es nur auf Nachfrage und gestuft. Fachbegriffe werden erklärt.
+
+BEDIENUNG
+Antippen, Zeigefinger auf einen Vers (Handerkennung, z. B. MediaPipe Hand Landmarker) und Sprachbefehle wie „Metrum ein“ oder „Vers sieben“ (Web Speech API).
+
+BRILLENMODUS
+Das Smartphone steckt quer in einer Cardboard-Halterung. Das Kamerabild erscheint für beide Augen, die Ebenen bleiben auf dem Blatt. Bedienung per Blick (Fadenkreuz, kurz still halten), Zeigefinger oder Sprache. Ein Sicherheitshinweis: nur im Sitzen verwenden.
+
+QUALITÄT
+Prüfe die Analyse fachlich: Reimschema, Metrum, Kadenzen und sprachliche Mittel müssen stimmen. Baue alles vollständig, ohne Platzhalter.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

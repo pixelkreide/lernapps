@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Zugversuch zum Anfassen · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Zugversuch zum Anfassen</h1>
+  <p class="lead">Eine 3D-Prüfmaschine, in der die Lernenden fünf Werkstoffe selbst bis zum Bruch ziehen. Das Spannungs-Dehnungs-Diagramm entsteht live, dazu Forschungsaufträge mit Messprüfung und ein Wissensspeicher.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/zugversuch.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Erstelle eine interaktive Lern-App zum Zugversuch und zum Spannungs-Dehnungs-Diagramm als eine einzige HTML-Datei.
+Klasse: [Jahrgangsstufe und Schulart, z. B. 11. Klasse FOS Technik]
+Lehrplanbezug: [z. B. Werkstoffkunde: Zugversuch, Kennwerte von Werkstoffen]
+Material: [falls vorhanden: Arbeitsblatt, Formelsammlung oder Aufgaben anhängen]
+
+IDEE
+Die Lernenden ziehen eine Probe in einer 3D-Prüfmaschine selbst auseinander und sehen dabei live, wie das Spannungs-Dehnungs-Diagramm entsteht. Prinzip: erst handeln und messen, dann erklären.
+
+TECHNIK
+- Eine einzige HTML-Datei, die offline im Browser läuft. 3D-Szene mit three.js.
+- Funktioniert am PC und auf dem Smartphone.
+
+3D-PRÜFMASCHINE
+- Die Probe wird mit der Maus oder dem Finger nach oben gezogen. Beim Loslassen wird sie entlastet.
+- Die Probe färbt sich je nach Spannung (Farbskala von niedrig bis hoch). Die Einschnürung ist sichtbar, bis die Probe bricht.
+- Anzeige von Kraft F, Spannung σ und Dehnung ε.
+
+WERKSTOFFE
+Baustahl, Aluminium, Glas, Gummi und Kunststoff PE, jeweils mit typischem Kurvenverlauf: Stahl mit ausgeprägter Streckgrenze, Aluminium mit fließendem Übergang (R p0,2), Glas spröde, Gummi gummielastisch, PE mit Kaltverstrecken.
+
+DIAGRAMM
+- Die Kurve entsteht live beim Ziehen.
+- Ansichten: gesamt, nur elastischer Bereich, alle Kurven im Vergleich.
+- Der aktuelle Bereich wird benannt (elastisch, Streckgrenze, Verfestigung, Einschnürung, Bruch).
+- Kennwerte R e, R m und A per Knopfdruck im Diagramm markieren.
+- Entlasten: Die Linie läuft parallel zur Hookeschen Geraden zurück, die bleibende Dehnung wird angezeigt.
+
+FORSCHUNGSAUFTRÄGE
+Sechs Aufträge, z. B. Federt zurück, Bleibt gedehnt, E-Modul bestimmen, Bis zum Bruch, Spröde gegen zäh, Werkstoff-Detektiv (Kurven ohne Achsenwerte zuordnen).
+- Die App prüft die Messung. Erst wenn sie stimmt, öffnet sich die Frage dazu.
+- Multiple-Choice-Fragen mit Erklärung, auch bei falschen Antworten.
+- Hilfen nur auf Nachfrage und gestuft.
+- Fortschrittsanzeige.
+
+WISSENSSPEICHER
+Alle Fachbegriffe mit Formeln zum Nachschlagen: σ, ε, Hookesches Gesetz, E-Modul, R e, R m, Einschnürung, Bruchdehnung A und die Werkstofftypen im Überblick.
+
+QUALITÄT
+Prüfe die Inhalte fachlich: Formeln, Einheiten und typische Kennwerte müssen stimmen. Baue alles vollständig, ohne Platzhalter.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

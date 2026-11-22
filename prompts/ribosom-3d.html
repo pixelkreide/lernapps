@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Ribosom in 3D · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Ribosom in 3D</h1>
+  <p class="lead">Ein 3D-Modell, das zeigt, wie das Ribosom aus der echten Gensequenz β-Globin baut. Dazu gibt es eine Kamerareise, Mutationen zum Ausprobieren und Aufträge.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/ribosom-3d.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Baue ein beeindruckendes 3D-Modell eines Ribosoms, das zeigt, wie aus einer Gensequenz Hämoglobin entsteht. Für Biologie in der Oberstufe.
+
+TECHNIK
+Eine einzige HTML-Datei, die offline läuft. Nutze three.js und bette es direkt in die Datei ein. Lade nichts aus dem Internet nach.
+
+DATEN
+Nutze die echte codierende Sequenz des β-Globins und den echten genetischen Code. Die App übersetzt die mRNA selbst Codon für Codon und gibt das Ergebnis nicht einfach vor.
+
+SZENE
+Ein Ribosom aus vielen kleinen Kugeln mit großer und kleiner Untereinheit, das sich aufschneiden lässt. Die mRNA läuft hindurch. tRNAs bringen Aminosäuren, das Anticodon paart sich mit dem Codon, und A-, P- und E-Stelle sind beschriftet. Die Kette wächst durch den Austrittstunnel nach außen und faltet sich. Im Hintergrund arbeiten weitere Ribosomen.
+
+REISE
+Ein Knopf startet eine Kamerareise ins Innere, kurze Einblendungen erklären jeden Schritt.
+
+BEOBACHTEN
+Zeige die mRNA im Ribosom, Codon und Anticodon, die aktuelle Aminosäure, die Kettenlänge und das entstehende Protein. Tempo: langsam, mittel und Echtzeit.
+
+EXPERIMENT
+Mutationen per Klick: die Punktmutation der Sichelzellanämie (GAG wird GUG), eine Nonsense-Mutation (ein Stoppcodon entsteht) und eine fehlende Base (Leserasterverschiebung). Danach wird neu übersetzt, Änderungen sind rot markiert.
+
+ERKLÄRUNG
+Lege drei Bereiche an: Beobachten, Verstehen und Aufträge. Erkläre einfach den genetischen Code und die Schritte der Translation. Nenne offen, was am Modell vereinfacht ist. Unter Aufträge stehen Prognosen mit Musterantwort.
+
+Teste am Ende alles, prüfe Sequenz und Mutationen und nenne mir die Grenzen der App.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

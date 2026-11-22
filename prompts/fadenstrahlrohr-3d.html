@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Fadenstrahlrohr in 3D · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Fadenstrahlrohr in 3D</h1>
+  <p class="lead">Ein klassischer Physik-Versuch als 3D-App: Geführte Erklärung, eigene Messreihe und Aufträge mit Prognose. Gebaut mit Claude und der Bibliothek three.js.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/fadenstrahlrohr-3d.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Baue eine beeindruckende 3D-Simulation des Fadenstrahlrohrs für den Physikunterricht der Oberstufe als eine einzige HTML-Datei. Erkläre den Versuch so, dass ihn auch jemand versteht, der ihn noch nie gesehen hat. Grafisch soll alles sehr hochwertig und detailliert sein.
+
+VORBEREITUNG
+Wenn du recherchieren kannst: Prüfe zuerst die Daten eines echten Geräts, zum Beispiel Windungszahl, Spulenradius, Messmarken und typische Spannungen.
+
+TECHNIK
+- Nutze three.js. Bette es in die Datei ein, wenn du Code ausführen kannst, damit sie offline läuft.
+- Wenn nicht: Binde https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js ein und nutze die globale Variable THREE, keine ES-Module.
+- Lade keine Bilder, Schriften oder Daten nach.
+
+SZENE
+Ein Labortisch mit Helmholtz-Spulen, Glaskugel, Elektronenkanone, Netzgeräten und Kabeln. Links die 3D-Szene, rechts eine Seitenleiste mit den Reitern Erklärung, Messen und Aufträge.
+
+ERKLÄRUNG
+Neun Kapitel mit Kameraflug, Beschriftungen und Pfeilen: Fragestellung, Aufbau, Glühkathode, Beschleunigung, warum man den Strahl sieht, Magnetfeld mit Feldlinien, Lorentzkraft, Herleitung von e/m und Schraubenbahn. Dazu ein Knopf „Vorführung starten“ für einen Durchlauf von etwa 30 Sekunden.
+
+MESSEN
+Regler für Spannung, Spulenstrom und Drehung der Röhre. Die Bahn reagiert sofort. Eine Messreihe berechnet e/m aus U, I und dem Radius an den Marken.
+
+AUFTRÄGE
+Drei Aufträge mit Prognose: erst vermuten, dann am Modell prüfen.
+
+QUALITÄT
+Deutsch, kurze Sätze. Plane zuerst kurz, dann baue alles vollständig, ohne Platzhalter und ohne gekürzten Code. Rechne jede Zahl im Erklärtext nach und prüfe, dass Text und Simulation dieselben Werte zeigen. Gib am Ende die fertige Datei aus und nenne in drei Sätzen, was ich testen soll.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

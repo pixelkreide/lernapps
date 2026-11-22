@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Federpendel am Labortisch in 3D · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Federpendel am Labortisch in 3D</h1>
+  <p class="lead">Ein 3D-Labortisch aus Schülersicht: Die Lernenden bauen das Federpendel um, lenken es aus und messen. Mit Prognose-Aufträgen und einer unbekannten Feder.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/federpendel-3d.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Erstelle ein eindrucksvolles 3D-Federpendel am Labortisch für den Physikunterricht der Oberstufe als eine einzige HTML-Datei.
+
+IDEE
+Die Lernenden stehen aus der Schülerperspektive vor einem Labortisch. Sie bauen das Federpendel selbst um, lenken es aus und messen wie im echten Versuch. Leitfrage: Was bestimmt die Schwingungsdauer?
+
+TECHNIK
+- Verwende three.js 0.160.0. Alles steht in einer Datei: HTML, CSS und JavaScript.
+- Wenn du Code ausführen kannst: Bündle three.js und OrbitControls mit esbuild in die Datei ein, damit sie offline läuft.
+- Wenn nicht: Binde https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js ein, nutze die globale Variable THREE, keine ES-Module, und programmiere die Kamerasteuerung selbst.
+- Lade keine Bilder, Schriften oder Daten nach. Texturen erzeugst du per Canvas.
+- Die Physik rechnet mit festem Zeitschritt und einem stabilen Verfahren (z. B. Velocity-Verlet), damit die Schwingung nicht von selbst wächst.
+- Bei niedriger Bildrate senkt die App automatisch die Auflösung. Wenn WebGL fehlt, zeige einen verständlichen Hinweis.
+
+SZENE
+- Fachraum mit Tafel („Harmonische Schwingung: Was bestimmt die Schwingungsdauer?“), Labortisch mit Stativ, Kraftmesser, Maßstab mit Skala, Stoppuhr und einem Laptop mit Live-Diagramm.
+- Auf dem Tisch liegen Federn und Massestücke, die man direkt anklicken kann, dazu eine Pappscheibe zum Dämpfen.
+- Oben Knöpfe: Zeitlupe, Pendel anhalten, Kraftpfeile, Ruhelage zeigen, Gesamtblick, Skala ablesen.
+- Unten eine Hinweisblase, die den nächsten Schritt nennt.
+
+BEDIENUNG
+Man zieht das Gewicht mit der Maus oder dem Finger nach unten und lässt es los. Daneben ein Seitenpanel mit drei Reitern:
+- Messen: Federn mit D = 10, 20 und 40 N/m sowie eine unbekannte Feder X (bei jedem Start anders), Masse in 50-g-Schritten, Pappscheibe an oder aus, Ort Erde oder Mond. Dazu Stoppuhr, Kraftbalken für Federkraft, Gewichtskraft und resultierende Kraft, Energieaufteilung und Live-Diagramme y(t), v(t), a(t).
+- Aufträge: siehe unten.
+- Messreihe: n Schwingungen stoppen, Werte übernehmen, T und T² berechnen lassen und T²(m) als Diagramm zeigen.
+
+PHYSIK, DIE STIMMEN MUSS
+- Federhärte heißt D, wie im bayerischen Material.
+- T = 2π · √(m/D). Die Schwingungsdauer hängt nicht von g ab: Auf dem Mond verschiebt sich nur die Ruhelage.
+- Die Kraftpfeile zeigen F_Feder, F_G und F_res maßstäblich. Im Umkehrpunkt ist F_res am größten, in der Ruhelage null.
+- Mit Pappscheibe wird die Schwingung gedämpft, die Energie geht in innere Energie über.
+
+AUFTRÄGE (immer Prognose, dann Messung, dann Selbsterklärung)
+1. Kräfte im Umkehrpunkt: Prognose zur resultierenden Kraft, dann mit Zeitlupe und Kraftpfeilen prüfen.
+2. Masse und Schwingungsdauer: Prognose, was bei vierfacher Masse mit T passiert. Messen, Verhältnis berechnen lassen, Rückmeldung zur Prognose, danach eine Warum-Frage mit Musterantwort.
+3. Die unbekannte Feder X: D auf zwei Wegen bestimmen (statisch über ΔF/Δs und dynamisch über T), mit zwei gestuften Hilfen und Prüfen-Knopf.
+4. Das Pendel auf dem Mond: Prognose zu T, dann messen.
+Falsche Prognosen werden nicht bestraft, sondern erklärt.
+
+DESIGN
+Heller, freundlicher Look, gut lesbar am Beamer und am Handy. Auf dem Handy steht die 3D-Szene oben und das Panel darunter.
+
+QUALITÄT
+Prüfe vor der Ausgabe, ob die gemessene Schwingungsdauer für mehrere Feder-Masse-Kombinationen mit T = 2π · √(m/D) übereinstimmt. Baue alles vollständig, ohne Platzhalter.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

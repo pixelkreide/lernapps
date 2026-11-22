@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Chemielabor „Stoff X“ · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Chemielabor „Stoff X“</h1>
+  <p class="lead">Ein 3D-Labor aus der Schülerperspektive: Die Lernenden bestimmen ein unbekanntes Salz mit Flammenprobe und Nachweisen. Typische Fehler sind eingebaut.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/chemielabor-3d.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Erstelle ein eindrucksvolles 3D-Chemielabor für den Unterricht als eine einzige HTML-Datei.
+
+IDEE
+Die Lernenden stehen aus der Schülerperspektive vor einem Labortisch mit allen Geräten. Sie bestimmen einen unbekannten Stoff, indem sie selbst experimentieren, manipulieren und ausprobieren.
+
+TECHNIK
+- Verwende three.js 0.160.0. Alles steht in einer Datei: HTML, CSS und JavaScript.
+- Wenn du Code ausführen kannst: Bündle three.js und OrbitControls mit esbuild in die Datei ein, damit sie offline läuft.
+- Wenn nicht: Binde https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js ein, nutze die globale Variable THREE, keine ES-Module, und programmiere die Kamerasteuerung selbst.
+- Lade keine Bilder, Schriften oder Daten nach. Texturen erzeugst du per Canvas.
+- Bei niedriger Bildrate senkt die App automatisch die Auflösung. Wenn WebGL fehlt, zeige einen verständlichen Hinweis.
+
+SZENE
+- Realistischer Fachraum: Wandfliesen, Laborzeile mit Schränken, Waschbecken, Periodensystem an der Wand, dunkle Tischplatte mit Glanz, weiche Schatten.
+- Auf dem Tisch: Bunsenbrenner mit Gashahn, Schlauch und Luftregler, Anzünder, dunkle Hintergrundtafel, Cobaltglas, Magnesiastäbchen im Becherglas, Reagenzglasgestell mit sechs nummerierten Gläsern, Spatel, Spritzflasche mit Wasser, Pipetten, Gasableitung mit Stopfen, Abfallbehälter für Schwermetalle, Schutzbrille.
+- Beschriftete Flaschen: Salzsäure, Salpetersäure, Silbernitrat, Bariumchlorid, Kalkwasser, Universalindikator.
+- Beschriftete Salzgläser mit den neun Salzen und ein Glas „Probe X“.
+- Glas wirkt durchscheinend, Flüssigkeiten zeigen Füllstand und Farbe.
+- Oben Knöpfe für die Ansichten: Gesamtblick, Brenner, Reagenzgläser, Salze und Lösungen. Die Kamera lässt sich frei drehen und zoomen.
+- Unten eine Hinweisblase, die immer den nächsten möglichen Schritt nennt, ohne die Lösung zu verraten.
+
+AUFGABE
+Stoff X ist zufällig eines von neun weißen Salzen: Natrium, Kalium oder Calcium kombiniert mit Chlorid, Sulfat oder Carbonat. Der Knopf „Neue Probe“ startet einen neuen Durchgang.
+
+BEDIENUNG
+Zuerst muss die Schutzbrille aufgesetzt werden. Danach nimmt man Geräte per Klick und wendet sie auf andere Gegenstände an: Salz mit dem Spatel ins Reagenzglas, Wasser zugeben, Tropfen mit der Pipette, Stäbchen eintauchen und in die Flamme halten. Beim Klick auf ein Reagenzglas sieht man, was damit möglich ist.
+
+CHEMIE, DIE STIMMEN MUSS
+- Flammenprobe in der blauen, entleuchteten Flamme: Natrium kräftig gelb, Calcium ziegelrot, Kalium violett. Durch das Cobaltglas wird das Natriumgelb ausgeblendet, Kalium bleibt sichtbar.
+- Ein ungereinigtes Stäbchen färbt gelb. Reinigung: in Salzsäure tauchen und ausglühen, bis die Flamme blau bleibt.
+- Carbonat: Mit Säure entsteht Gas. Über die Gasableitung trübt es Kalkwasser, das belegt CO₂.
+- Chlorid: Mit Silbernitrat in der mit Salpetersäure angesäuerten Lösung entsteht ein weißer Niederschlag.
+- Sulfat: Mit Bariumchlorid in der angesäuerten Lösung entsteht ein weißer Niederschlag.
+- Universalindikator zeigt den pH-Wert, Carbonatlösungen sind basisch.
+- Rechne vereinfacht in Portionen und benenne diese Vereinfachung offen.
+
+TYPISCHE FEHLER SIND EINGEBAUT
+Die App verbietet sie nicht, sondern lässt sie zu und wertet sie aus: Stäbchen nicht gereinigt, Blick in die leuchtende Flamme, Salzsäure oder Bariumchlorid vor dem Silbernitrat, nicht angesäuert, mehrere Proben in einem Glas, Silber- oder Bariumreste im Ausguss, Gas strömt ungenutzt aus.
+
+SEITENLEISTE MIT DREI REITERN
+- Auswertung: Ausschlussraster mit neun Salzen (erster Klick schließt aus, zweiter markiert die Lösung), Feld für eigene Beobachtungen, Knopf „Ergebnis abgeben“.
+- Protokoll: hält jeden Handgriff automatisch fest. Beobachtungen schreiben die Lernenden selbst.
+- Hilfe: gestufte Tipps zum Aufklappen, ein Musterablauf zur Flammenprobe, ein Lückenbeispiel zum Chloridnachweis und eine Nachweiskarte. Dazu die Warum-Frage: Warum ansäuern?
+
+ABGABE
+Bewertet wird nicht nur das richtige Salz, sondern auch der Nachweis. Die Rückmeldung nennt, welche Belege vorliegen und welche fehlen, und zählt die Fehler aus dem Versuch auf. Zum Schluss eine Transferfrage: Wie würdest du bei einem Gemisch aus zwei Salzen vorgehen?
+
+SPRACHE UND QUALITÄT
+Deutsch, kurze Sätze, klare Hinweise. Plane zuerst kurz die Architektur und baue dann alles vollständig. Keine Platzhalter, kein gekürzter Code. Prüfe vor der Ausgabe alle neun Salze durch die Nachweise und teste, ob jedes Gerät anklickbar ist.
+Gib am Ende die fertige Datei aus und nenne in drei Sätzen, was ich testen soll.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>

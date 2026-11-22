@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Handlabor mit Handsteuerung · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Handlabor mit Handsteuerung</h1>
+  <p class="lead">Moleküle per Hand drehen: Die Webcam erkennt die Hände, three.js zeichnet die 3D-Modelle, MediaPipe wertet die Gesten aus.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/handlabor-molekuele.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat mit Claude und füge den Prompt ein. Dein Ergebnis kann von der App hier abweichen.</p>
+  <pre id="prompt">Erstelle eine eindrucksvolle Lern-App „Handlabor“ für den Chemieunterricht als eine einzige HTML-Datei. Die Lernenden drehen und vergrößern 3D-Molekülmodelle mit bloßen Händen vor der Kamera.
+
+BIBLIOTHEKEN
+- Wenn du Code ausführen kannst: Bette three.js und MediaPipe Hands samt Modelldateien in die Datei ein, damit sie komplett offline läuft.
+- Wenn nicht, nutze genau diese Versionen per CDN und die globalen Objekte THREE und Hands, keine ES-Module:
+  https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js
+  https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js
+  Lade die Modelldateien mit: locateFile: f =&gt; `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`
+
+INHALT
+- Modelle: DNA-Doppelhelix, Fußball-Molekül C60, Kochsalz-Gitter und Diamant
+- Atome als Kugeln in den üblichen Elementfarben, Bindungen als Stäbe
+- Oben rechts Kacheln für die Modelle
+- Rechts eine helle Seitenleiste mit den Reitern Steuern, Modell und Aufträge
+- Vier Prognose-Aufträge: erst vermuten, dann am Modell prüfen, mit Rückmeldung
+
+HANDSTEUERUNG
+- Kamera erst nach Klick auf „Handsteuerung starten“ einschalten
+- Kleines gespiegeltes Kamerabild, leuchtendes Handskelett über dem Modell
+- Hands-Optionen: maxNumHands 2, modelComplexity 0
+- Daumen und Zeigefinger zusammen: greifen und drehen, das Modell dreht nach dem Loslassen sanft aus
+- Beide Hände greifen: auseinanderziehen vergrößert, kippen dreht zur Seite
+- Zeigefinger: auf ein Atom zeigen nennt seinen Namen, eine Sekunde auf einer Kachel wechselt das Modell
+- Offene Hand: bremst die Drehung
+- Griff im Verhältnis zur Handgröße messen, damit er auch mit Abstand zur Kamera funktioniert. Zum Lösen eine größere Schwelle verwenden als zum Greifen, damit nichts flackert. Handpositionen glätten.
+- Aktuelle Geste als Text anzeigen
+
+WEITERE ANFORDERUNGEN
+- Ohne Kamera vollständig mit Maus und Touch bedienbar
+- Verständliche Fehlermeldung, wenn die Kamera blockiert ist oder das Modell nicht lädt
+- Kurzer Hinweis: Das Kamerabild wird nur im Browser ausgewertet, nichts wird gespeichert oder gesendet
+- Oberfläche auf Deutsch, auch am Handy bedienbar
+
+Gib die komplette Datei ohne Auslassungen und ohne Platzhalter aus. Prüfe den Code vorher auf Fehler und nenne in drei Sätzen, was ich testen soll.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>
