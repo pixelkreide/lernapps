@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pixel-Leben – Ein Spiel über Bindung, Identität und Selbstwirksamkeit</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;color:#ece4d3;font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Liberation Mono","Courier New",monospace;overflow:hidden;-webkit-tap-highlight-color:transparent}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000}
+#stage{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);container-type:size;overflow:hidden;background:#000;cursor:pointer;user-select:none}
+#c{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+.ov{position:absolute;inset:0;pointer-events:none}
+#vig{background:radial-gradient(ellipse at center,rgba(0,0,0,0) 50%,rgba(0,0,0,.6) 100%);z-index:2}
+#grain{z-index:3;opacity:.09;mix-blend-mode:overlay;background-size:220px 220px;animation:grain .6s steps(5) infinite}
+@keyframes grain{0%{background-position:0 0}20%{background-position:-50px 30px}40%{background-position:40px -60px}60%{background-position:-25px 70px}80%{background-position:65px 10px}}
+.bar{position:absolute;left:0;right:0;height:0;background:#000;transition:height 1.4s cubic-bezier(.6,0,.2,1);z-index:6}
+.bar.top{top:0}.bar.bot{bottom:0}
+body.cine .bar{height:9cqh}
+#fade{background:#000;opacity:1;z-index:30;transition:opacity .9s ease}
+/* Dialog */
+#say{position:absolute;left:7cqw;right:7cqw;bottom:2.2cqh;z-index:12;display:none}
+#say .box{position:relative;background:rgba(7,8,14,.84);border:1px solid rgba(255,236,200,.16);box-shadow:0 0 0 1px #000,0 10px 30px rgba(0,0,0,.55);padding:1.8cqh 2.2cqw 2.2cqh;font-size:max(13px,2.15cqw);line-height:1.5;min-height:9cqh}
+#say.narr .box{background:transparent;border:none;box-shadow:none;text-align:center;font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:max(14px,2.4cqw);text-shadow:0 2px 6px #000,0 0 2px #000;color:#f3ead8;padding-bottom:1.2cqh}
+#who{font-size:.72em;letter-spacing:.22em;text-transform:uppercase;color:#f0c27b;margin-bottom:.35em}
+#hint{position:absolute;right:1.4cqw;bottom:.7cqh;font-size:.55em;opacity:.55;animation:blink 1.1s infinite;font-style:normal}
+@keyframes blink{50%{opacity:.1}}
+#choices{position:absolute;left:9cqw;right:9cqw;bottom:2.2cqh;z-index:13;display:none;flex-direction:column;gap:.9cqh}
+.cq{font-size:max(11px,1.6cqw);letter-spacing:.2em;text-transform:uppercase;color:#f0c27b;text-shadow:0 2px 4px #000;margin-bottom:.3cqh}
+.ch{background:rgba(7,8,14,.88);border:1px solid rgba(240,194,123,.3);color:#efe6d4;font:inherit;font-size:max(12px,1.85cqw);line-height:1.4;text-align:left;padding:1.1cqh 1.7cqw;cursor:pointer;transition:transform .15s,background .15s,border-color .15s}
+.ch:hover,.ch:focus-visible{background:rgba(240,194,123,.16);border-color:#f0c27b;outline:none;transform:translateX(5px)}
+.ch .k{color:#f0c27b;margin-right:.7em}
+/* HUD */
+#hud{position:absolute;left:0;right:0;top:0;height:9cqh;z-index:14;display:flex;align-items:center;justify-content:space-between;padding:0 2cqw;pointer-events:none;opacity:0;transition:opacity .8s}
+body.cine #hud{opacity:1}
+#chap{font-size:max(10px,1.45cqw);letter-spacing:.3em;text-transform:uppercase;color:#a9a191}
+#hud .hb{pointer-events:auto;background:none;border:1px solid rgba(255,255,255,.18);color:#cfc6b4;font:inherit;font-size:max(10px,1.3cqw);letter-spacing:.12em;padding:.6cqh 1.1cqw;margin-left:.8cqw;cursor:pointer}
+#hud .hb:hover{border-color:#f0c27b;color:#f0c27b}
+#epi{position:absolute;top:10.5cqh;left:50%;transform:translateX(-50%);z-index:12;font-size:max(10px,1.35cqw);letter-spacing:.22em;text-transform:uppercase;color:#f3ead8;background:rgba(0,0,0,.45);padding:.6cqh 1.4cqw;opacity:0;transition:opacity .6s;white-space:nowrap}
+#epi.show{opacity:1}
+#meter{position:absolute;top:10.5cqh;left:2cqw;z-index:12;display:none;font-size:max(10px,1.3cqw);letter-spacing:.15em;text-transform:uppercase;color:#cfe7ff;text-shadow:0 1px 3px #000}
+#meter .track{margin-top:.6cqh;width:22cqw;height:1.6cqh;min-height:8px;background:rgba(0,0,0,.55);border:1px solid rgba(180,220,255,.35);padding:2px}
+#meter .fill{height:100%;width:0;background:linear-gradient(90deg,#3f7fd1,#7fd3ff);box-shadow:0 0 8px #7fd3ff;transition:width 1.2s cubic-bezier(.3,1.4,.5,1)}
+#toast{position:absolute;right:2cqw;top:10.5cqh;z-index:15;background:rgba(10,12,20,.9);border:1px solid #f0c27b;color:#f3d9a8;font-size:max(11px,1.4cqw);padding:.8cqh 1.4cqw;opacity:0;transform:translateY(-8px);transition:.5s;pointer-events:none}
+#toast.show{opacity:1;transform:none}
+/* Title card */
+#tcard{position:absolute;inset:0;z-index:31;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;transition:opacity 1.1s;pointer-events:none}
+#tcard.show{opacity:1}
+#tcard .k{font-size:max(11px,1.6cqw);letter-spacing:.6em;text-transform:uppercase;color:#9b927f;margin-bottom:2cqh}
+#tcard .t{font-family:Georgia,"Times New Roman",serif;font-size:max(28px,6.4cqw);color:#f4e7cc;letter-spacing:.04em;text-shadow:0 0 30px rgba(240,194,123,.35)}
+#tcard .s{font-family:Georgia,serif;font-style:italic;font-size:max(14px,2.2cqw);color:#b8ae9a;margin-top:2cqh}
+#tcard .line{width:0;height:1px;background:linear-gradient(90deg,transparent,#f0c27b,transparent);margin:2.5cqh auto 0;transition:width 2s ease .3s}
+#tcard.show .line{width:30cqw}
+/* Menu */
+#menu{position:absolute;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+#menu .t{font-family:Georgia,serif;font-size:max(34px,8cqw);color:#f6ead0;letter-spacing:.06em;text-shadow:0 0 40px rgba(150,170,255,.45),0 4px 12px #000}
+#menu .s{font-family:Georgia,serif;font-style:italic;font-size:max(14px,2.2cqw);color:#cfc4ae;margin:1.2cqh 0 4cqh;text-shadow:0 2px 6px #000}
+#menu .m{display:flex;flex-direction:column;gap:1.1cqh;pointer-events:auto;min-width:34cqw}
+#menu button{background:rgba(6,7,16,.62);border:1px solid rgba(240,220,180,.25);color:#efe6d4;font:inherit;font-size:max(12px,1.75cqw);letter-spacing:.12em;padding:1.2cqh 2cqw;cursor:pointer;transition:.2s}
+#menu button:hover,#menu button:focus-visible{border-color:#f0c27b;color:#f0c27b;background:rgba(20,18,30,.85);outline:none;letter-spacing:.18em}
+#menu button.pri{border-color:#f0c27b;color:#f6d79f}
+#menu .foot{margin-top:4cqh;font-size:max(10px,1.2cqw);letter-spacing:.25em;color:#8d8676;text-transform:uppercase}
+#splash{position:absolute;inset:0;z-index:40;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer}
+#splash .t{font-family:Georgia,serif;font-size:max(30px,6cqw);color:#f2e6cc;letter-spacing:.08em}
+#splash .s{margin-top:3cqh;font-size:max(11px,1.5cqw);letter-spacing:.35em;text-transform:uppercase;color:#8f8878;animation:blink 1.6s infinite}
+#splash .h{margin-top:1.4cqh;font-size:max(10px,1.2cqw);color:#6c6658;letter-spacing:.15em}
+/* Panels */
+.modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:14px}
+.card{max-width:780px;width:100%;max-height:94vh;overflow:auto;background:linear-gradient(180deg,#15161f,#0c0d13);border:1px solid rgba(240,194,123,.28);padding:26px 30px 24px;box-shadow:0 24px 70px #000;font-size:16px;line-height:1.55;color:#e6ddcb;animation:pop .4s cubic-bezier(.2,1.3,.5,1)}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.98)}}
+.card h2{font-family:Georgia,"Times New Roman",serif;font-weight:normal;font-size:25px;color:#f3d9a8;margin-bottom:12px;line-height:1.25}
+.card h3{font-family:Georgia,serif;font-weight:normal;font-size:18px;color:#f3d9a8;margin:16px 0 6px}
+.kick{letter-spacing:.28em;text-transform:uppercase;font-size:11px;color:#8f97ab;margin-bottom:6px}
+.card p{margin:0 0 10px}
+.card ul{margin:4px 0 12px 20px}.card li{margin:3px 0}
+.card b{color:#f6e2bb}
+.dim{color:#9a927f;font-size:14px}
+.btns{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+.btn{background:rgba(255,255,255,.03);border:1px solid rgba(240,194,123,.3);color:#efe6d4;font:inherit;font-size:15px;text-align:left;padding:11px 15px;cursor:pointer;transition:.15s;line-height:1.4}
+.btn:hover,.btn:focus-visible{background:rgba(240,194,123,.14);border-color:#f0c27b;outline:none}
+.btn.pri{border-color:#f0c27b;color:#f6d79f;text-align:center}
+.btn .k{color:#f0c27b;margin-right:.6em}
+.verdict{font-family:Georgia,serif;font-size:20px;margin-bottom:8px}
+.good{color:#9be3a1}.bad{color:#ff9f8c}
+.tbl{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:14.5px}
+.tbl td,.tbl th{border-top:1px solid rgba(255,255,255,.08);padding:7px 8px;vertical-align:top;text-align:left}
+.tbl th{color:#f0c27b;font-weight:normal;letter-spacing:.06em;width:28%}
+.note{border-left:2px solid #f0c27b;background:rgba(240,194,123,.06);padding:9px 13px;margin:12px 0;font-size:15px}
+.warn{border-left-color:#ff9f8c;background:rgba(255,159,140,.07)}
+details{border:1px solid rgba(255,255,255,.12);padding:9px 13px;margin:10px 0;background:rgba(255,255,255,.02)}
+summary{cursor:pointer;color:#f0c27b}
+details[open] summary{margin-bottom:6px}
+.quad{position:relative;width:100%;max-width:420px;aspect-ratio:1.35;margin:10px auto 6px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;border-left:2px solid #8f97ab;border-bottom:2px solid #8f97ab}
+.quad div.q{display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:#a9a18f;border:1px dashed rgba(255,255,255,.08);padding:4px}
+.quad div.q.on{background:rgba(240,194,123,.13);color:#f6d79f}
+.quad .dot{position:absolute;width:14px;height:14px;background:#7fd3ff;box-shadow:0 0 12px #7fd3ff;transform:translate(-50%,50%);image-rendering:pixelated}
+.ax{font-size:12px;color:#8f97ab;text-align:center;letter-spacing:.1em}
+.axy{position:absolute;left:-26px;top:50%;transform:rotate(-90deg) translateX(50%);transform-origin:left top;font-size:12px;color:#8f97ab;letter-spacing:.1em;white-space:nowrap}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;margin:2px 4px 2px 0;border:1px solid rgba(255,255,255,.2);color:#cfc6b4}
+.tag.e{border-color:#7fd3ff;color:#9fdcff}.tag.c{border-color:#f0c27b;color:#f6d79f}.tag.n{opacity:.6}
+.log{font-size:14.5px}.log div{padding:7px 0;border-top:1px solid rgba(255,255,255,.07)}
+.nbitem{border-top:1px solid rgba(255,255,255,.08);padding:10px 0}
+.nbitem h3{margin-top:0}
+#rot{position:fixed;inset:0;z-index:80;background:#05060c;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;font-size:15px;line-height:1.6;color:#d8cfbd}
+#rot button{margin-top:18px;background:none;border:1px solid #f0c27b;color:#f0c27b;font:inherit;padding:10px 18px}
+@media (orientation:portrait) and (max-width:760px){#rot{display:flex}}
+#rot.dismissed{display:none!important}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <canvas id="c"></canvas>
+    <div id="vig" class="ov"></div>
+    <div id="grain" class="ov"></div>
+    <div class="bar top"></div><div class="bar bot"></div>
+    <div id="hud"><div id="chap"></div><div><button class="hb" id="bNb">Notizbuch</button><button class="hb" id="bSnd">Ton: an</button><button class="hb" id="bMenu">Menü</button></div></div>
+    <div id="epi"></div>
+    <div id="meter"><div>Selbstwirksamkeit</div><div class="track"><div class="fill"></div></div></div>
+    <div id="toast"></div>
+    <div id="say"><div class="box"><div id="who"></div><div id="txt"></div><div id="hint">▼</div></div></div>
+    <div id="choices"></div>
+    <div id="menu">
+      <div class="t">Pixel-Leben</div>
+      <div class="s">Ein Spiel über Bindung, Identität und Selbstwirksamkeit</div>
+      <div class="m">
+        <button class="pri" data-run="all">▶ Neues Spiel</button>
+        <button data-run="1">Kapitel I · Die Fremde Situation</button>
+        <button data-run="2">Kapitel II · Wer bin ich?</button>
+        <button data-run="3">Kapitel III · Ich schaffe das</button>
+        <button data-run="4">Epilog · Ein ganzes Leben</button>
+      </div>
+      <div class="foot">Pädagogik / Psychologie · Prototyp</div>
+    </div>
+    <div id="fade" class="ov"></div>
+    <div id="tcard"></div>
+    <div id="splash"><div class="t">Pixel-Leben</div><div class="s">Klicken, um zu beginnen</div><div class="h">Mit Ton · Kopfhörer empfohlen</div></div>
+  </div>
+</div>
+<div id="panel" class="modal"><div class="card" id="pcard"></div></div>
+<div id="nb" class="modal"><div class="card" id="nbcard"></div></div>
+<div id="rot"><div><b>Tipp:</b> Dreh dein Gerät ins Querformat –<br>das Spiel ist für Breitbild gemacht.</div><button onclick="document.getElementById('rot').classList.add('dismissed')">Trotzdem spielen</button></div>
+
+<script>
+"use strict";
+/* =========================================================
+   GRUNDLAGEN
+   ========================================================= */
+const W=320,H=180;
+const $=s=>document.querySelector(s);
+const cv=$('#c');cv.width=960;cv.height=540;
+const dctx=cv.getContext('2d');dctx.imageSmoothingEnabled=false;
+const off=document.createElement('canvas');off.width=W;off.height=H;
+const ctx=off.getContext('2d');ctx.imageSmoothingEnabled=false;
+/* Kamera: zoomt in die 320x180-Welt hinein */
+const cam={x:W/2,y:H/2,z:1,follow:null,fy:-10,gen:0};
+let T=0;
+const ABORT={abort:true};
+let runId=0;const aborters=new Set();
+function cancellable(fn){const id=runId;return new Promise((res,rej)=>{const off=()=>rej(ABORT);aborters.add(off);fn(v=>{aborters.delete(off);if(id!==runId)rej(ABORT);else res(v);});});}
+function abortAll(){runId++;const a=[...aborters];aborters.clear();a.forEach(f=>f());}
+const wait=ms=>cancellable(r=>setTimeout(r,ms));
+const bg=p=>{p.catch(()=>{});return p;};
+const par=(...ps)=>Promise.all(ps);
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.random()*a.length|0];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+function seeded(s){return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646;};}
+
+/* Filmkorn */
+(function(){const g=document.createElement('canvas');g.width=g.height=128;const gx=g.getContext('2d');const d=gx.createImageData(128,128);for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}gx.putImageData(d,0,0);$('#grain').style.backgroundImage=`url(${g.toDataURL()})`;})();
+
+/* Farben & Zeichnen */
+const HXC={};
+function hx(c){if(HXC[c])return HXC[c];const s=c.replace('#','');return HXC[c]=[parseInt(s.slice(0,2),16),parseInt(s.slice(2,4),16),parseInt(s.slice(4,6),16)];}
+function mix(a,b,t){const A=hx(a),B=hx(b);return'#'+[0,1,2].map(i=>Math.round(A[i]+(B[i]-A[i])*t).toString(16).padStart(2,'0')).join('');}
+function R(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
+function bands(y0,y1,stops,step=2){const n=stops.length-1;for(let y=y0;y<y1;y+=step){const t=(y-y0)/(y1-y0);const i=Math.min(n-1,Math.floor(t*n));const lt=Math.round((t*n-i)*5)/5;R(0,y,W,step,mix(stops[i],stops[i+1],lt));}}
+function glow(x,y,r,col,a){if(r<=0||a<=0)return;ctx.save();ctx.globalCompositeOperation='lighter';const g=ctx.createRadialGradient(x,y,0,x,y,r);const c=hx(col);g.addColorStop(0,`rgba(${c[0]},${c[1]},${c[2]},${a})`);g.addColorStop(1,`rgba(${c[0]},${c[1]},${c[2]},0)`);ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);ctx.restore();}
+function beam(pts,col){ctx.save();ctx.globalCompositeOperation='lighter';ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(pts[0],pts[1]);for(let i=2;i<pts.length;i+=2)ctx.lineTo(pts[i],pts[i+1]);ctx.closePath();ctx.fill();ctx.restore();}
+function hillY(base,f,amp,ph,x){return Math.round(base+Math.sin(x*f+ph)*amp+Math.sin(x*f*2.7+ph*3)*amp*.35);}
+function hill(base,col,f,amp,ph){ctx.fillStyle=col;for(let x=0;x<W;x++){const y=hillY(base,f,amp,ph,x);ctx.fillRect(x,y,1,H-y);}}
+function disc(cx,cy,r,col){ctx.fillStyle=col;for(let y=-r;y<=r;y++){const w=Math.round(Math.sqrt(r*r-y*y));ctx.fillRect(Math.round(cx-w),Math.round(cy+y),w*2,1);}}
+
+/* =========================================================
+   FIGUREN
+   ========================================================= */
+const KIND={adult:{bw:8,bh:10,hw:6,hh:6,lh:8,lw:3,aw:2},teen:{bw:7,bh:9,hw:6,hh:6,lh:8,lw:3,aw:2},tod:{bw:6,bh:5,hw:6,hh:5,lh:3,lw:2,aw:1},elder:{bw:8,bh:10,hw:6,hh:6,lh:7,lw:3,aw:2}};
+function mk(o){return Object.assign({x:0,y:150,kind:'adult',facing:1,state:'idle',visible:true,skin:'#e0b48c',hair:'#3b2416',top:'#7a4b8c',pants:'#2e3550',shoe:'#17161c',long:false,emote:null,tw:null,jit:0,cry:false,chair:false,attach:null,phone:false,cane:false},o);}
+const GLY={'!':['1','1','1','0','1'],'?':['111','001','010','000','010'],'…':['10101'],'♥':['01010','11111','11111','01110','00100'],'#':['101','010','101'],'~':['0110','1001','0000','0110','1001'],'♪':['0011','0101','0100','1100','1100']};
+const GLC={'!':'#ffd166','?':'#bde0fe','…':'#f3ead8','♥':'#ff6b8b','#':'#ff5d5d','~':'#a8e6cf','♪':'#ffe9a8'};
+function drawEmote(e,x,y){const g=GLY[e];if(!g)return;const w=g[0].length,h=g.length,bob=Math.round(Math.sin(T/260));const ox=x-Math.floor(w/2),oy=y-h+bob;for(let r=0;r<h;r++)for(let c=0;c<w;c++)if(g[r][c]==='1')R(ox+c+1,oy+r+1,1,1,'rgba(0,0,0,.7)');for(let r=0;r<h;r++)for(let c=0;c<w;c++)if(g[r][c]==='1')R(ox+c,oy+r,1,1,GLC[e]);}
+function drawPerson(a){
+  const k=KIND[a.kind];const f=a.facing;
+  const jx=a.jit?Math.round(Math.sin(T/45)*a.jit):0;
+  const x=Math.round(a.x)+jx,y=Math.round(a.y);
+  const walking=!!(a.tw&&a.tw.walk);const ph=walking?(Math.floor(T/150)%2):0;
+  const sit=a.state==='sit'||a.state==='slump';
+  const bl=x-Math.floor(k.bw/2);
+  let bodyTop;
+  if(!a.attach){ctx.fillStyle='rgba(0,0,0,.33)';ctx.fillRect(bl-1,y,k.bw+2,1);ctx.fillRect(bl,y+1,k.bw,1);}
+  if(sit&&a.chair){
+    const hip=y-7;bodyTop=hip-k.bh;
+    if(f>=0){R(bl+2,hip-2,k.bw+1,2,a.pants);R(bl+k.bw+1,hip-2,2,8,a.pants);R(bl+k.bw+1,y-1,3,1,a.shoe);}
+    else{R(bl-3,hip-2,k.bw+1,2,a.pants);R(bl-3,hip-2,2,8,a.pants);R(bl-4,y-1,3,1,a.shoe);}
+  }else if(sit){
+    bodyTop=y-k.bh-(a.kind==='tod'?1:2);const len=a.kind==='tod'?4:6;const sx=f>=0?bl+2:bl+k.bw-2-len;
+    R(sx,y-2,len,2,a.pants);R(f>=0?sx+len-1:sx,y-2,1,2,a.shoe);
+  }else{
+    const legTop=y-k.lh;bodyTop=legTop-k.bh;
+    const l1=k.lh-(walking&&ph===0?1:0),l2=k.lh-(walking&&ph===1?1:0);
+    R(bl,legTop,k.lw,l1-1,a.pants);R(bl,legTop+l1-1,k.lw,1,a.shoe);
+    R(bl+k.bw-k.lw,legTop,k.lw,l2-1,a.pants);R(bl+k.bw-k.lw,legTop+l2-1,k.lw,1,a.shoe);
+  }
+  if(a.kind==='elder')bodyTop+=1;
+  R(bl,bodyTop,k.bw,k.bh,a.top);
+  R(f>=0?bl:bl+k.bw-1,bodyTop+1,1,k.bh-1,'rgba(0,0,0,.3)');
+  R(bl,bodyTop,k.bw,1,'rgba(255,255,255,.08)');
+  const sw=walking?(ph?1:-1):0;
+  if(a.state==='armsUp'){
+    R(bl-k.aw,bodyTop-4,k.aw,5,a.top);R(bl-k.aw,bodyTop-5,k.aw,1,a.skin);R(bl+k.bw,bodyTop-4,k.aw,5,a.top);R(bl+k.bw,bodyTop-5,k.aw,1,a.skin);
+  }else{
+    const ah=k.bh-1;
+    R(bl-k.aw,bodyTop+1+sw,k.aw,ah-1,a.top);R(bl-k.aw,bodyTop+sw+ah,k.aw,1,a.skin);
+    R(bl+k.bw,bodyTop+1-sw,k.aw,ah-1,a.top);R(bl+k.bw,bodyTop-sw+ah,k.aw,1,a.skin);
+    R(f>=0?bl-k.aw:bl+k.bw,bodyTop+1,k.aw,ah,'rgba(0,0,0,.25)');
+  }
+  const slump=a.state==='slump';
+  const hl=x-Math.floor(k.hw/2)+(slump?f:0)+(a.kind==='elder'?f:0);
+  const ht=bodyTop-k.hh+(slump?2:0)+(a.kind==='elder'?1:0);
+  R(hl,ht,k.hw,k.hh,a.skin);
+  R(hl,ht-1,k.hw,2,a.hair);
+  if(f===0){R(hl,ht,1,a.long?k.hh+2:2,a.hair);R(hl+k.hw-1,ht,1,a.long?k.hh+2:2,a.hair);}
+  else{const back=f>0?hl:hl+k.hw-1;R(back,ht,1,a.long?k.hh+3:3,a.hair);if(a.long)R(f>0?hl+1:hl+k.hw-2,ht,1,k.hh-1,a.hair);R(f>0?hl+k.hw-2:hl,ht+1,2,1,a.hair);}
+  const ey=ht+(k.hh>=6?3:2);
+  const ex=f>0?[hl+3,hl+5]:f<0?[hl,hl+2]:[hl+1,hl+4];
+  if(!slump){ex.forEach(e=>R(e,ey,1,1,'#1a1414'));}
+  if(a.cry&&!slump){ex.forEach(e=>R(e,ey+1+(Math.floor(T/110)%3),1,1,'#86c8ff'));const mx=f>0?hl+3:f<0?hl+1:hl+2;R(mx,ht+k.hh-1,2,1,'#5a1e1e');}
+  if(scene&&scene.rim){ctx.fillStyle=scene.rim.col;const bs=scene.rim.dir>0?bl+k.bw-1:bl;ctx.fillRect(bs,bodyTop,1,k.bh);ctx.fillRect(scene.rim.dir>0?hl+k.hw-1:hl,ht,1,k.hh);}
+  if(a.phone){const px=f>=0?bl+k.bw:bl-2;R(px,bodyTop+3,2,3,'#9fe8ff');glow(px+1,bodyTop+4,12,'#6fd0ff',.35);}
+  if(a.cane){R(x+f*6,y-9,1,9,'#7a5634');R(x+f*5,y-9,2,1,'#7a5634');}
+  if(a.emote)drawEmote(a.emote,x,ht-3);
+}
+function updActor(a){
+  if(a.attach){a.x=a.attach.x+a.attach.facing*5;a.y=a.attach.y-10;}
+  if(!a.tw)return;const p=Math.min(1,(performance.now()-a.tw.t0)/a.tw.dur);
+  a.x=a.tw.x0+(a.tw.x1-a.tw.x0)*p;a.y=a.tw.y0+(a.tw.y1-a.tw.y0)*p;
+  if(p>=1){const r=a.tw.res;a.tw=null;r();}
+}
+function walkTo(a,x,y=a.y,speed=24,opt={}){return cancellable(res=>{const d=Math.hypot(x-a.x,y-a.y);if(d<.5){res();return;}if(opt.face!==false&&Math.abs(x-a.x)>.5)a.facing=x>a.x?1:-1;if(opt.face===false&&opt.facing!==undefined)a.facing=opt.facing;a.tw={x0:a.x,y0:a.y,x1:x,y1:y,t0:performance.now(),dur:d/speed*1000,res,walk:opt.walk!==false};});}
+function tweenProp(o,key,to,ms){return cancellable(res=>{const from=o[key]||0,t0=performance.now();(function st(){const p=Math.min(1,(performance.now()-t0)/ms);o[key]=from+(to-from)*(p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2);if(p<1)requestAnimationFrame(st);else res();})();});}
+
+function camTween(tg,ms){const g=++cam.gen;const f={x:cam.x,y:cam.y,z:cam.z},t0=performance.now();return cancellable(res=>{(function st(){if(cam.gen!==g){res();return;}const p=Math.min(1,(performance.now()-t0)/ms),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;for(const k in tg)cam[k]=f[k]+(tg[k]-f[k])*e;if(p<1)requestAnimationFrame(st);else res();})();});}
+function camTo(x,y,z,ms=1800){cam.follow=null;return camTween({x,y,z},ms);}
+function camFollow(a,z,ms=1800,fy=-10){cam.follow=a;cam.fy=fy;return camTween({z},ms);}
+function camReset(ms=1600){return camTo(W/2,H/2,1,ms);}
+function camDraw(){
+  if(cam.follow){cam.x+=(cam.follow.x-cam.x)*.05;cam.y+=(cam.follow.y+cam.fy-cam.y)*.05;}
+  const z=Math.max(1,cam.z),sw=W/z,sh=H/z,q=z*cv.width/W;
+  let sx=Math.max(0,Math.min(W-sw,cam.x-sw/2)),sy=Math.max(0,Math.min(H-sh,cam.y-sh/2));
+  sx=Math.round(sx*q)/q;sy=Math.round(sy*q)/q;
+  dctx.imageSmoothingEnabled=false;dctx.drawImage(off,sx,sy,sw,sh,0,0,cv.width,cv.height);
+}
+/* =========================================================
+   AUDIO (Web Audio, alles synthetisch)
+   ========================================================= */
+const AU={ac:null,on:true,master:null,fx:null,pad:[],rain:null,mood:null};
+function au(){if(AU.ac)return AU.ac;try{const ac=new(window.AudioContext||window.webkitAudioContext)();AU.ac=ac;AU.master=ac.createGain();AU.master.gain.value=AU.on?.55:0;const comp=ac.createDynamicsCompressor();AU.master.connect(comp);comp.connect(ac.destination);const d=ac.createDelay();d.delayTime.value=.38;const fb=ac.createGain();fb.gain.value=.42;const lp=ac.createBiquadFilter();lp.frequency.value=1600;d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(AU.master);AU.fx=ac.createGain();AU.fx.gain.value=.6;AU.fx.connect(d);}catch(e){}return AU.ac;}
+const MOODS={title:[110,164.8,220,261.6,329.6],warm:[87.3,174.6,220,261.6,329.6],dusk:[73.4,146.8,174.6,220,261.6],hope:[65.4,130.8,196,261.6,293.7],tense:[41.2,82.4,123.5,164.8,174.6],dawn:[98,196,246.9,293.7,370]};
+function mood(name){const ac=au();if(!ac||AU.mood===name)return;AU.mood=name;const now=ac.currentTime;
+  AU.pad.forEach(n=>{try{n.g.gain.cancelScheduledValues(now);n.g.gain.setValueAtTime(n.g.gain.value,now);n.g.gain.linearRampToValueAtTime(0,now+3);n.o.forEach(o=>o.stop(now+3.3));}catch(e){}});AU.pad=[];
+  const notes=MOODS[name];const filt=ac.createBiquadFilter();filt.type='lowpass';filt.frequency.value=650;filt.connect(AU.master);filt.connect(AU.fx);
+  const lfo=ac.createOscillator();lfo.frequency.value=.06;const lg=ac.createGain();lg.gain.value=280;lfo.connect(lg);lg.connect(filt.frequency);lfo.start();
+  notes.forEach((f,i)=>{const g=ac.createGain();g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(i===0?.08:.04,now+4);g.connect(filt);const os=[-7,7].map(dt=>{const o=ac.createOscillator();o.type=i===0?'sine':'triangle';o.frequency.value=f;o.detune.value=dt;o.connect(g);o.start();return o;});if(i===0)os.push(lfo);AU.pad.push({g,o:os});});
+}
+function tone(f,dur,type='sine',vol=.05,fx=false){const ac=AU.ac;if(!ac||!AU.on)return;const t=ac.currentTime;const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(AU.master);if(fx)g.connect(AU.fx);o.start(t);o.stop(t+dur+.05);}
+setInterval(()=>{if(!AU.ac||!AU.on||!AU.mood)return;if(Math.random()<.5){const n=MOODS[AU.mood];tone(pick(n.slice(2))*2,2.8,'sine',.03,true);}},2700);
+const blip=()=>tone(900+Math.random()*80,.035,'square',.006);
+const clickS=()=>tone(660,.08,'triangle',.03);
+const goodS=()=>{tone(523.3,.7,'sine',.06,true);setTimeout(()=>tone(784,1,'sine',.05,true),130);};
+const badS=()=>{tone(233,.5,'triangle',.05);setTimeout(()=>tone(220,.7,'triangle',.04),150);};
+function setRain(on){const ac=AU.ac;if(!ac)return;if(on&&!AU.rain){const len=ac.sampleRate*2,b=ac.createBuffer(1,len,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;const s=ac.createBufferSource();s.buffer=b;s.loop=true;const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=2200;f.Q.value=.5;const g=ac.createGain();g.gain.setValueAtTime(0,ac.currentTime);g.gain.linearRampToValueAtTime(.07,ac.currentTime+2);s.connect(f);f.connect(g);g.connect(AU.master);s.start();AU.rain={s,g};}else if(!on&&AU.rain){const{s,g}=AU.rain;const t=ac.currentTime;g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+1.5);s.stop(t+1.6);AU.rain=null;}}
+function applause(){if(!AU.ac||!AU.on)return;for(let i=0;i<60;i++)setTimeout(()=>tone(1200+Math.random()*1800,.03,'square',.012),i*45+Math.random()*60);}
+
+/* =========================================================
+   SZENEN
+   ========================================================= */
+let scene=null,actors=[];
+function setScene(s){scene=s;cam.gen++;cam.x=W/2;cam.y=H/2;cam.z=1;cam.follow=null;if(s.init)s.init();setRain(!!s.rain);}
+const SC={};
+
+SC.title={init(){const r=seeded(7);this.stars=Array.from({length:110},()=>({x:r()*W,y:r()*120,p:r()*6,b:r()}));this.ff=Array.from({length:16},()=>({x:r()*W,y:128+r()*40,p:r()*6}));this.shoot=null;},
+draw(t){bands(0,H,['#04050d','#0a0f2c','#1b1d48','#3a2c5a','#6a3e5c'],2);
+  this.stars.forEach(s=>{const a=(.35+.65*Math.abs(Math.sin(t/900+s.p)))*(.35+s.b*.65);R(s.x,s.y,1,1,`rgba(255,250,235,${a})`);});
+  glow(252,40,55,'#b9c8ff',.2);disc(252,40,7,'#e9edff');R(249,37,3,3,'#cbd2ee');R(254,42,2,2,'#cbd2ee');
+  if(!this.shoot&&Math.random()<.004)this.shoot={x:rnd(40,200),y:rnd(14,44),l:0};
+  if(this.shoot){const s=this.shoot;s.l++;for(let i=0;i<9;i++)R(s.x+s.l*2-i*2,s.y+s.l-i,1,1,`rgba(255,255,255,${(1-i/9)*(1-s.l/32)})`);if(s.l>32)this.shoot=null;}
+  hill(118,'#1c1a3c',.018,9,0);
+  const hy=hillY(132,.03,8,2,70);hill(132,'#110e25',.03,8,2);
+  R(60,hy-13,20,14,'#0b0919');for(let i=0;i<12;i++)R(58+i,hy-14-i,24-i*2,1,'#0b0919');R(72,hy-30,3,8,'#0b0919');
+  const fl=.85+.15*Math.sin(t/300)*Math.sin(t/170);R(65,hy-9,4,4,'#ffcf7a');R(73,hy-9,4,4,'#ffb35c');glow(70,hy-7,26,'#ffb35c',.28*fl);
+  const ty=hillY(132,.03,8,2,236);R(235,ty-18,2,18,'#0b0919');disc(236,ty-24,9,'#0b0919');disc(229,ty-19,6,'#0b0919');disc(243,ty-20,6,'#0b0919');
+  hill(150,'#07060f',.022,6,4);
+  this.ff.forEach(f=>{const x=f.x+Math.sin(t/1400+f.p)*14,y=f.y+Math.sin(t/900+f.p*2)*5,a=Math.max(0,Math.sin(t/700+f.p));R(x,y,1,1,`rgba(220,255,150,${a})`);glow(x,y,5,'#d4ff8a',.25*a);});
+}};
+
+SC.play={rim:{dir:-1,col:'rgba(255,228,170,.45)'},
+init(){this.door=0;this.dust=Array.from({length:34},()=>{const y=rnd(32,158);return{y,o:Math.random(),s:rnd(.03,.09),p:rnd(0,6)};});},
+draw(t){
+  bands(0,118,['#33281f','#503d2f','#6a523f'],2);
+  for(let x=4;x<W;x+=10)R(x,0,1,118,'rgba(255,230,190,.035)');
+  R(146,38,32,22,'#2a1f18');R(148,40,28,18,'#6f8fa6');R(148,50,28,8,'#4f6b4a');R(158,43,6,4,'#f2d08a');
+  R(196,44,22,16,'#2a1f18');R(198,46,18,12,'#c9a27a');R(203,48,8,8,'#8c4a3a');
+  R(26,26,56,60,'#2b201a');R(29,29,50,27,'#d9edf6');R(29,56,50,27,'#a9cfe3');R(58,52,3,31,'#6d8b70');R(47,38,24,16,'#8db08f');R(50,35,18,4,'#8db08f');
+  R(53,29,2,54,'#2b201a');R(29,55,50,2,'#2b201a');R(24,86,60,3,'#3a2c22');
+  R(18,22,7,68,'#8a3d3d');R(83,22,7,68,'#8a3d3d');R(16,20,76,3,'#4a3324');R(20,22,2,68,'rgba(0,0,0,.2)');R(85,22,2,68,'rgba(0,0,0,.2)');
+  R(264,56,32,64,'#2a1e17');
+  const d=this.door;
+  if(d>0.01){R(268,60,24,60,'#f1dfb1');glow(280,96,48,'#ffe2a6',.3*d);const lw=Math.round(24*(1-d));R(268,60,lw,60,'#5a3f2c');R(268+lw,60,1,60,'#3b2a1e');}
+  else{R(268,60,24,60,'#5a3f2c');R(270,63,20,24,'#4f3727');R(270,91,20,26,'#4f3727');R(287,90,2,3,'#d9b56a');}
+  R(0,118,W,3,'#2e2219');
+  for(let y=121;y<H;y+=6){R(0,y,W,6,((y/6|0)%2)?'#6a4a30':'#62442a');R(0,y,W,1,'rgba(0,0,0,.18)');for(let x=(y*7)%40;x<W;x+=40)R(x,y,1,6,'rgba(0,0,0,.22)');}
+  if(d>0.01)beam([268,120,292,120,300,150,250,150],`rgba(255,226,166,${.07*d})`);
+  R(118,138,116,22,'#6f3434');R(120,140,112,18,'#8f4d47');for(let x=124;x<228;x+=8)R(x,148,4,2,'#c99a6a');
+  // Stühle
+  R(84,116,3,24,'#8a6446');R(86,131,12,2,'#a87b55');R(86,133,1,7,'#7a573b');R(97,133,1,7,'#7a573b');
+  R(233,116,3,24,'#8a6446');R(222,131,12,2,'#a87b55');R(222,133,1,7,'#7a573b');R(233,133,1,7,'#7a573b');
+  [[160,148,'#d9534f'],[165,148,'#3c78c8'],[162,144,'#e9c46a'],[174,150,'#2a9d8f'],[154,151,'#9b5de5']].forEach(([x,y,c])=>{R(x,y,4,4,c);R(x,y,4,1,'rgba(255,255,255,.3)');R(x,y+3,4,1,'rgba(0,0,0,.25)');});
+  R(190,151,4,4,'#f4a261');R(190,151,2,2,'#ffd2a8');
+  R(204,146,8,6,'#b07a4a');R(205,144,2,2,'#b07a4a');R(209,144,2,2,'#b07a4a');R(206,148,1,1,'#222');R(209,148,1,1,'#222');
+  beam([29,29,79,29,178,160,92,160],'rgba(255,236,190,.065)');
+  glow(54,56,55,'#fff0c8',.16);
+  this.dust.forEach(p=>{p.y-=p.s;if(p.y<30)p.y=158;const xl=29+(p.y-29)*(63/131),xr=79+(p.y-29)*(99/131);const x=xl+(xr-xl)*p.o+Math.sin(t/1200+p.p)*2;R(x,p.y,1,1,`rgba(255,240,200,${.35+.3*Math.sin(t/500+p.p)})`);});
+}};
+
+SC.teen={rim:{dir:1,col:'rgba(150,175,255,.35)'},
+init(){const r=seeded(11);this.win=Array.from({length:22},()=>({x:46+r()*48|0,y:62+r()*18|0,p:r()*6}));this.st=Array.from({length:16},()=>({x:46+r()*48|0,y:36+r()*20|0,p:r()*6}));},
+draw(t){
+  bands(0,120,['#0b0f1f','#121931','#19213e'],2);
+  R(150,36,20,26,'#26324f');R(152,38,16,14,'#b5574a');R(153,53,14,2,'#e0c7a0');R(176,42,16,20,'#33264a');R(178,44,12,12,'#5cb5a5');R(198,40,14,14,'#2c2c3c');R(200,42,10,10,'#e9c46a');
+  R(40,30,60,56,'#1c2236');R(43,33,54,50,'#0a1430');
+  this.st.forEach(s=>R(s.x,s.y,1,1,`rgba(255,255,255,${.3+.5*Math.abs(Math.sin(t/800+s.p))})`));
+  disc(86,42,3,'#e4eaff');glow(86,42,18,'#aebfff',.25);
+  R(43,64,10,19,'#060a18');R(54,58,8,25,'#070b1b');R(63,66,12,17,'#060a18');R(76,60,9,23,'#070b1b');R(86,68,11,15,'#060a18');
+  this.win.forEach(w=>{if(Math.sin(t/1500+w.p*3)>-.3)R(w.x,w.y,1,1,'#f2c56b');});
+  R(69,33,2,50,'#1c2236');R(43,57,54,2,'#1c2236');R(38,86,64,3,'#2a3148');
+  beam([43,33,97,33,170,150,90,150],'rgba(120,150,255,.05)');
+  R(0,120,W,60,'#131424');for(let y=124;y<H;y+=7)R(0,y,W,1,'rgba(255,255,255,.025)');
+  R(210,126,80,8,'#232c47');R(212,120,76,7,'#56699a');R(272,114,14,7,'#c8d2ea');R(212,122,58,5,'#3b5788');R(212,134,3,6,'#1a2034');R(285,134,3,6,'#1a2034');
+  R(112,104,40,3,'#3a2c22');R(114,107,2,22,'#2a2018');R(148,107,2,22,'#2a2018');R(118,96,6,8,'#7b4a6c');R(124,98,5,6,'#3f6e8c');
+  R(140,92,2,12,'#2c2c2c');R(135,88,12,5,'#e9c46a');R(136,93,10,1,'#fff0b0');
+  const fl=.9+.1*Math.sin(t/90)*Math.sin(t/37);glow(141,98,55,'#ffcf7a',.22*fl);beam([136,93,146,93,162,120,120,120],'rgba(255,210,140,.06)');
+}};
+
+SC.yard={rim:{dir:-1,col:'rgba(255,170,110,.55)'},
+init(){const r=seeded(5);this.wl=[];for(let y=66;y<106;y+=10)for(let x=158;x<312;x+=11)this.wl.push({x,y,on:r()<.45,p:r()*6});this.birds=Array.from({length:5},()=>({x:r()*W,y:20+r()*30,s:.15+r()*.15,p:r()*6}));this.ff=Array.from({length:10},()=>({x:r()*W,y:118+r()*30,p:r()*6}));},
+draw(t){
+  bands(0,112,['#1b1736','#3a2752','#78405f','#cf6a4d','#f3a85b'],2);
+  glow(70,108,85,'#ffb36b',.38);disc(70,108,12,'#ffd590');
+  R(20,46,70,1,'rgba(255,170,140,.35)');R(36,50,50,1,'rgba(255,170,140,.25)');R(200,30,80,1,'rgba(255,170,160,.2)');
+  this.birds.forEach(b=>{b.x+=b.s;if(b.x>W+5)b.x=-5;const yy=b.y+Math.sin(t/600+b.p)*2,w=Math.floor(t/200+b.p)%2;R(b.x-2,yy-w,2,1,'#1b1730');R(b.x+1,yy-w,2,1,'#1b1730');R(b.x,yy,1,1,'#1b1730');});
+  R(150,58,170,54,'#191327');R(150,54,170,4,'#120d1e');R(220,40,40,18,'#191327');R(236,32,8,8,'#191327');
+  this.wl.forEach(w=>{R(w.x,w.y,6,6,w.on?(Math.sin(t/2000+w.p)>-.8?'#ffcf7a':'#a07840'):'#241c35');if(w.on)glow(w.x+3,w.y+3,6,'#ffb35c',.12);});
+  disc(22,88,16,'#16111f');disc(36,96,12,'#16111f');R(24,96,3,18,'#16111f');disc(130,92,13,'#16111f');R(129,100,3,14,'#16111f');
+  R(0,112,W,68,'#3a2f45');for(let y=112;y<H;y+=4)R(0,y,W,1,'rgba(0,0,0,.08)');
+  R(0,112,W,1,'rgba(255,190,140,.25)');R(40,150,240,1,'rgba(255,255,255,.12)');R(190,126,1,24,'rgba(255,255,255,.1)');
+  R(274,80,2,42,'#120d1e');R(264,74,16,11,'#2a2238');R(266,76,12,7,'#3b3150');R(266,85,9,1,'#c0563f');
+  R(96,130,38,3,'#5a4030');R(96,126,38,2,'#4a3628');R(98,133,2,6,'#2f231a');R(130,133,2,6,'#2f231a');
+  this.ff.forEach(f=>{const a=Math.max(0,Math.sin(t/800+f.p));const x=f.x+Math.sin(t/1500+f.p)*8;R(x,f.y,1,1,`rgba(255,230,150,${a*.8})`);});
+}};
+
+SC.kitchen={rim:{dir:1,col:'rgba(255,210,150,.5)'},
+draw(t){
+  bands(0,116,['#26201c','#352d26','#43382e'],2);
+  for(let y=86;y<116;y+=6)R(100,y,130,1,'rgba(255,255,255,.05)');for(let x=100;x<230;x+=6)R(x,86,1,30,'rgba(255,255,255,.04)');
+  R(28,28,54,44,'#3b3128');R(31,31,48,38,'#0c1530');R(54,31,2,38,'#3b3128');R(31,49,48,2,'#3b3128');R(36,34,6,10,'rgba(160,190,255,.12)');
+  R(108,28,116,26,'#5b4a3a');for(let x=108;x<224;x+=29)R(x,28,1,26,'#3d3127');R(120,40,4,1,'#c9b48a');R(149,40,4,1,'#c9b48a');R(178,40,4,1,'#c9b48a');R(207,40,4,1,'#c9b48a');
+  R(100,90,132,4,'#cbbca4');R(100,94,132,22,'#4d3e31');for(let x=100;x<232;x+=33)R(x,94,1,22,'#3a2f25');
+  R(118,82,8,8,'#7a8890');R(119,80,6,2,'#5d6a72');R(196,84,4,6,'#d9534f');R(201,82,4,8,'#e9c46a');
+  R(242,38,34,78,'#b8c1c7');R(242,38,34,1,'#d8e0e4');R(242,70,34,1,'#8c959b');R(270,46,2,16,'#7b848a');R(270,74,2,20,'#7b848a');R(274,38,2,78,'rgba(0,0,0,.15)');
+  R(160,12,1,44,'#1a1512');R(152,56,17,6,'#d9a441');R(154,62,13,1,'#fff0b0');
+  const fl=.95+.05*Math.sin(t/120);glow(160,72,80,'#ffcf7a',.3*fl);beam([152,62,169,62,205,140,115,140],'rgba(255,210,140,.06)');
+  R(0,116,W,64,'#2d2520');for(let y=116;y<H;y+=8)for(let x=((y/8|0)%2)*8;x<W;x+=16)R(x,y,8,8,'#352b25');
+  R(118,128,84,4,'#6b4a2f');R(118,128,84,1,'#8a6440');R(122,132,3,18,'#4a321f');R(195,132,3,18,'#4a321f');
+  R(150,124,8,4,'#e6e6e6');R(151,122,6,2,'#c94f3f');
+}};
+
+SC.bus={rain:true,rim:{dir:1,col:'rgba(255,200,120,.45)'},
+init(){const r=seeded(3);this.drops=Array.from({length:150},()=>({x:r()*(W+60),y:r()*H,v:2.6+r()*1.6}));this.bw=Array.from({length:30},()=>({x:r()*W|0,y:60+r()*50|0,on:r()<.5}));this.busX=null;},
+draw(t){
+  bands(0,120,['#04060e','#0a1022','#121a31'],2);
+  R(0,70,40,52,'#080b16');R(42,56,30,66,'#0a0e1b');R(170,62,26,60,'#080b16');R(236,50,36,72,'#0a0e1b');R(280,74,40,48,'#080b16');
+  this.bw.forEach(w=>{if(w.on)R(w.x,w.y,2,2,'rgba(255,205,120,.55)');});
+  R(0,120,W,22,'#0f121c');R(0,140,W,4,'#262a38');R(0,140,W,1,'#3a3f52');R(0,144,W,36,'#0b0d15');
+  for(let x=0;x<W;x+=40)R(x+((t/60)%0),160,20,1,'rgba(255,255,255,.07)');
+  R(210,58,2,84,'#1c1f2a');R(203,56,14,3,'#2b2f3c');R(205,59,10,1,'#ffe2a8');
+  beam([205,60,215,60,252,141,168,141],'rgba(255,200,120,.075)');glow(210,62,22,'#ffd28a',.55);glow(210,141,40,'#ffc070',.12);
+  for(let i=0;i<14;i++)R(206+Math.sin(t/300+i)*1,146+i*2,8-i*.4,1,`rgba(255,200,120,${.18-i*.012})`);
+  R(84,86,74,3,'#2e3446');R(86,89,2,51,'#2a2f3e');R(154,89,2,51,'#2a2f3e');R(88,91,66,40,'rgba(140,170,210,.1)');R(88,131,66,1,'rgba(160,190,230,.25)');
+  R(92,98,16,28,'#cfe1ff');R(94,100,12,10,'#6a9bd8');R(94,112,12,2,'#2b3c5c');R(94,116,9,2,'#2b3c5c');glow(100,112,22,'#9cc6ff',.22);
+  R(110,126,30,3,'#3b4152');R(112,129,2,8,'#262a38');R(136,129,2,8,'#262a38');
+},
+fg(t){
+  if(this.busX!==null){const x=Math.round(this.busX);
+    R(x,96,116,44,'#cdbf9a');R(x,96,116,3,'#e3d7b8');R(x,126,116,5,'#2f6f8f');R(x,131,116,9,'#a9997a');
+    for(let i=0;i<6;i++){R(x+10+i*17,102,14,16,'#ffe3a0');R(x+10+i*17,112,14,6,'rgba(120,80,30,.35)');if(i%2)R(x+14+i*17,107,4,7,'#4a3a2a');}
+    R(x+2,102,6,22,'#b8d4ea');R(x+2,99,40,2,'#1d2636');R(x+4,99,30,2,'#ff9d3a');
+    disc(x+20,140,5,'#111');disc(x+94,140,5,'#111');disc(x+20,140,2,'#555');disc(x+94,140,2,'#555');
+    glow(x+2,130,34,'#fff2c0',.55);beam([x,128,x,134,x-90,150,x-90,120],'rgba(255,240,190,.07)');glow(x+114,130,12,'#ff3b2f',.5);
+  }
+  ctx.fillStyle='rgba(170,190,230,.33)';
+  this.drops.forEach(d=>{d.y+=d.v;d.x-=d.v*.35;if(d.y>H){if(Math.random()<.3)R(d.x,142+Math.random()*30,2,1,'rgba(190,210,240,.4)');d.y=-5;d.x=Math.random()*(W+60);}ctx.fillStyle='rgba(170,190,230,.33)';ctx.fillRect(d.x|0,d.y|0,1,3);});
+}};
+
+SC.flat={rain:true,rim:{dir:-1,col:'rgba(130,200,255,.38)'},
+init(){const r=seeded(19);this.bok=Array.from({length:14},()=>({x:224+r()*64,y:34+r()*50,c:pick(['#ff9d5c','#ffd36b','#7fd3ff','#ff6b8b']),p:r()*6}));this.str=Array.from({length:10},()=>({x:224+r()*64,y:r()*60,v:.1+r()*.25}));this.lights=Array.from({length:18},(_,i)=>({x:24+i*10,p:r()*6,c:['#ffd36b','#ff9d5c','#9be3a1','#7fd3ff'][i%4]}));this.laptop=false;this.cans=false;},
+draw(t){
+  bands(0,118,['#0e1220','#151a2c','#1c2236'],2);
+  R(218,28,76,62,'#252b3e');R(221,31,70,56,'#0b1326');
+  this.bok.forEach(b=>glow(b.x,b.y,6,b.c,.25+.12*Math.sin(t/900+b.p)));
+  this.str.forEach(s=>{s.y+=s.v;if(s.y>56)s.y=0;R(s.x,31+s.y,1,3,'rgba(170,200,255,.35)');});
+  R(255,31,2,56,'#252b3e');R(221,58,70,2,'#252b3e');R(214,90,84,3,'#2f3549');
+  this.lights.forEach((l,i)=>{const y=22+Math.round(Math.sin(i*.8)*2);const a=.6+.4*Math.sin(t/600+l.p);R(l.x,y,2,2,l.c);glow(l.x+1,y+1,6,l.c,.22*a);});
+  R(20,22,190,1,'rgba(255,255,255,.08)');
+  R(26,38,26,66,'#3a2f28');R(28,40,22,62,'#3c4a66');R(30,44,2,10,'rgba(255,255,255,.18)');R(33,42,1,6,'rgba(255,255,255,.12)');
+  R(106,106,76,3,'#4a3828');R(108,109,2,20,'#33271c');R(178,109,2,20,'#33271c');
+  R(140,103,20,3,'#9aa3b0');R(142,90,16,13,this.laptop?'#8fdcff':'#1e2330');if(this.laptop){R(144,93,8,2,'#2b4c7e');R(144,97,12,1,'#3d6fa8');glow(150,96,34,'#6fd0ff',.3);}
+  if(this.cans){R(118,101,3,5,'#3ad1a0');R(122,102,3,4,'#e94f6e');R(126,101,3,5,'#3ad1a0');}
+  R(190,98,10,10,'#a0522d');R(194,86,2,12,'#3f7a4a');R(189,88,5,3,'#4f9a5a');R(196,90,6,3,'#4f9a5a');R(191,93,4,2,'#4f9a5a');
+  R(0,118,W,62,'#1a1712');for(let y=118;y<H;y+=6)R(0,y,W,1,'rgba(0,0,0,.25)');
+  beam([221,31,291,31,250,150,150,150],'rgba(120,170,255,.035)');
+}};
+
+SC.office={rim:{dir:-1,col:'rgba(255,255,255,.45)'},
+init(){this.cl=[{x:30,y:36,s:.04},{x:90,y:48,s:.03}];},
+draw(t){
+  bands(0,118,['#c3ccd4','#b5bfc8','#a6b0ba'],2);
+  R(10,22,124,80,'#59636e');R(13,25,118,74,'#a8d4f0');R(13,25,118,30,'#cde7f7');
+  this.cl.forEach(c=>{c.x+=c.s;if(c.x>135)c.x=-30;R(13+((c.x)%118),c.y,22,4,'#f3f8fb');R(17+((c.x)%118),c.y-3,12,3,'#f3f8fb');});
+  R(13,70,16,29,'#7c95aa');R(31,60,14,39,'#8ea6b8');R(47,74,20,25,'#7c95aa');R(69,64,12,35,'#6f889c');R(83,78,22,21,'#8ea6b8');R(107,68,24,31,'#7c95aa');
+  R(13,25,118,74,'rgba(255,255,255,.06)');R(72,25,2,74,'#59636e');R(13,62,118,2,'#59636e');
+  R(150,28,62,38,'#7d858d');R(152,30,58,34,'#f5f7f8');R(156,36,30,2,'#2b6cb0');R(156,42,20,2,'#d9534f');R(156,48,40,2,'#2f855a');R(180,54,24,6,'rgba(43,108,176,.4)');
+  R(168,108,86,3,'#ece7df');R(170,111,2,20,'#8d8780');R(250,111,2,20,'#8d8780');R(196,90,28,18,'#22262e');R(198,92,24,13,'#3a6ea5');R(208,108,4,2,'#22262e');
+  R(262,96,10,12,'#d9d2c4');R(264,84,2,12,'#3f7a4a');R(259,86,6,3,'#5aa864');R(266,88,7,3,'#5aa864');
+  R(0,118,W,62,'#8b939b');for(let y=118;y<H;y+=8)R(0,y,W,1,'rgba(0,0,0,.06)');
+  beam([13,25,131,25,200,160,60,160],'rgba(255,250,230,.08)');glow(70,60,70,'#fffbe8',.12);
+}};
+
+SC.stage={rim:{dir:-1,col:'rgba(200,220,255,.6)'},
+init(){const r=seeded(23);this.heads=Array.from({length:15},(_,i)=>({x:10+i*21+(r()*6-3),y:162+r()*6,c:r(),p:r()*6}));this.clap=0;this.spot=0;this.spotX=120;this.dust=Array.from({length:30},()=>({o:Math.random(),d:Math.random(),p:Math.random()*6}));},
+draw(t){
+  R(0,0,W,H,'#06060b');
+  R(166,30,128,72,'#14161e');R(168,32,124,68,'#d6e4f5');R(174,38,70,5,'#2b4c7e');R(174,46,50,2,'#5577a8');
+  [[184,72,'#e76f51',18],[198,72,'#f4a261',26],[212,72,'#2a9d8f',34],[226,72,'#264653',22]].forEach(([x,y,c,h])=>R(x,90-h,9,h,c));R(180,90,60,1,'#5a6474');
+  R(250,56,36,30,'#e9eef6');R(254,60,28,3,'#7a8aa0');R(254,66,22,3,'#7a8aa0');R(254,72,25,3,'#7a8aa0');
+  beam([30,22,34,18,292,32,292,100],'rgba(180,200,255,.045)');glow(230,66,95,'#bcd4ff',.16);glow(32,20,8,'#ffffff',.6);
+  this.dust.forEach(d=>{const u=(d.o+t/40000)%1;const x=32+u*258,y=20+u*(12+d.d*66)+Math.sin(t/900+d.p)*1.5;R(x,y,1,1,'rgba(220,230,255,.35)');});
+  R(0,120,W,60,'#101016');R(0,120,W,1,'#262632');
+  if(this.spot>0){const s=this.spot,x=this.spotX;beam([x-3,0,x+3,0,x+18,150,x-18,150],`rgba(255,240,210,${.09*s})`);glow(x,146,28,'#fff1d6',.35*s);}
+},
+fg(t){this.heads.forEach((h,i)=>{const b=this.clap?Math.round(Math.abs(Math.sin(t/90+h.p))*1.5):0;const y=h.y-b;R(h.x-7,y+4,14,12,'#030305');disc(h.x,y,5,'#030305');R(h.x-4,y-5,8,1,'rgba(190,210,255,.28)');R(h.x+4,y-3,1,5,'rgba(190,210,255,.2)');if(this.clap&&(Math.floor(t/120+i)%2))R(h.x-2,y+2,4,1,'rgba(255,230,190,.3)');});}
+};
+
+SC.dawn={rim:{dir:1,col:'rgba(255,205,150,.6)'},
+init(){this.t0=performance.now();const r=seeded(31);this.birds=Array.from({length:6},()=>({x:r()*W,y:24+r()*30,s:.12+r()*.12,p:r()*6}));},
+draw(t){
+  const e=Math.min(1,(performance.now()-this.t0)/40000);
+  bands(0,128,[mix('#141633','#2c3a6e',e),mix('#3e3260','#7f6aa0',e),mix('#9c5a78','#f0a08a',e),mix('#f09a74','#ffd9a8',e)],2);
+  const sy=128-e*34;glow(236,sy,70,'#ffc98a',.2+.15*e);disc(236,sy,12,'#fff0cc');
+  this.birds.forEach(b=>{b.x+=b.s;if(b.x>W+5)b.x=-5;const yy=b.y+Math.sin(t/700+b.p)*2,w=Math.floor(t/220+b.p)%2;R(b.x-2,yy-w,2,1,'#2a2238');R(b.x+1,yy-w,2,1,'#2a2238');R(b.x,yy,1,1,'#2a2238');});
+  hill(112,mix('#3d3358','#7a6a90',e),.016,10,1);hill(126,mix('#2a2442','#5a4c70',e),.026,8,3);hill(140,mix('#1a1628','#3a3048',e),.02,5,5);
+  R(0,148,W,32,mix('#13101c','#2a2232',e));R(0,147,W,1,'rgba(255,210,160,.25)');
+  for(let x=0;x<W;x+=6)R(x,151,3,1,'rgba(255,220,170,.12)');
+}};
+
+/* =========================================================
+   UI-HELFER
+   ========================================================= */
+const fadeEl=$('#fade'),sayEl=$('#say'),whoEl=$('#who'),txtEl=$('#txt'),hintEl=$('#hint');
+let advance=null,keyChoice=null;
+function cine(on){document.body.classList.toggle('cine',on);}
+function setHud(t){$('#chap').textContent=t;}
+function fadeOut(ms=900){fadeEl.style.transitionDuration=ms+'ms';fadeEl.style.opacity=1;return wait(ms);}
+function fadeIn(ms=1100){fadeEl.style.transitionDuration=ms+'ms';fadeEl.style.opacity=0;return wait(ms);}
+async function cut(s,acts=[],o={}){await fadeOut(o.out||800);setScene(s);actors=acts;await wait(160);await fadeIn(o.in||1100);}
+function epi(t){const e=$('#epi');if(!t){e.classList.remove('show');return;}e.textContent=t;e.classList.add('show');}
+function showMeter(on){$('#meter').style.display=on?'block':'none';}
+function setMeter(v){$('#meter .fill').style.width=Math.max(0,Math.min(10,v))*10+'%';}
+let toastT=null;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),3200);}
+function say(who,text,o={}){
+  return cancellable(res=>{
+    $('#choices').style.display='none';
+    sayEl.style.display='block';sayEl.className=who?'':'narr';whoEl.textContent=who||'';whoEl.style.display=who?'block':'none';
+    txtEl.textContent='';hintEl.style.visibility='hidden';
+    let i=0,done=false;
+    const typer=setInterval(()=>{if(i<text.length){i++;txtEl.textContent=text.slice(0,i);if(i%3===0&&who)blip();}else{clearInterval(typer);fin();}},who?24:30);
+    function fin(){if(done)return;done=true;clearInterval(typer);txtEl.textContent=text;hintEl.style.visibility='visible';if(o.auto)setTimeout(finish,o.auto);}
+    function finish(){if(advance===h)advance=null;sayEl.style.display='none';res();}
+    const h=()=>{if(!done)fin();else finish();};
+    advance=h;
+  });
+}
+function choose(prompt,opts){
+  return cancellable(res=>{
+    sayEl.style.display='none';
+    const box=$('#choices');box.innerHTML='';
+    if(prompt){const p=document.createElement('div');p.className='cq';p.textContent=prompt;box.appendChild(p);}
+    opts.forEach((o,i)=>{const b=document.createElement('button');b.className='ch';b.innerHTML=`<span class="k">${i+1}</span>${o}`;b.onclick=e=>{e.stopPropagation();done(i);};box.appendChild(b);});
+    box.style.display='flex';
+    keyChoice=n=>{if(n<opts.length)done(n);};
+    function done(i){keyChoice=null;box.style.display='none';clickS();res(i);}
+  });
+}
+function panel(html,buttons){
+  return cancellable(res=>{
+    const P=$('#panel'),C=$('#pcard');
+    C.innerHTML=html+'<div class="btns"></div>';
+    const bx=C.querySelector('.btns');
+    buttons.forEach((b,i)=>{if(typeof b==='string')b={label:b};const el=document.createElement('button');el.className='btn'+(b.primary?' pri':'');el.innerHTML=(buttons.length>1&&!b.primary?`<span class="k">${i+1}</span>`:'')+b.label;el.onclick=()=>{P.style.display='none';clickS();res(b.value!==undefined?b.value:i);};bx.appendChild(el);});
+    P.style.display='flex';C.scrollTop=0;
+  });
+}
+async function titleCard(k,t,s){
+  const c=$('#tcard');c.innerHTML=`<div class="k">${k}</div><div class="t">${t}</div><div class="s">${s}</div><div class="line"></div>`;
+  await fadeOut(800);c.classList.add('show');tone(130.8,3,'sine',.07,true);
+  await cancellable(res=>{const h=()=>{if(advance===h)advance=null;res();};advance=h;setTimeout(()=>{if(advance===h){advance=null;res();}},4300);});
+  c.classList.remove('show');await wait(900);
+}
+function resetUI(){sayEl.style.display='none';$('#choices').style.display='none';$('#panel').style.display='none';$('#tcard').classList.remove('show');epi(null);advance=null;keyChoice=null;}
+
+/* Notizbuch */
+const NB={
+ bindung:{t:'Bindungstypen nach Ainsworth',h:`<p>In der <b>Fremden Situation</b> (Ainsworth) wird das Verhalten von Kleinkindern (ca. 12–18 Monate) bei Trennung und Wiedervereinigung mit der Bezugsperson beobachtet.</p><ul><li><b>Sicher (B):</b> Nutzt die Bezugsperson als sichere Basis; Kummer bei Trennung; sucht bei Rückkehr Nähe und lässt sich schnell trösten.</li><li><b>Unsicher-vermeidend (A):</b> Kaum sichtbare Reaktion; meidet die Bezugsperson bei Rückkehr – körperlich trotzdem gestresst.</li><li><b>Unsicher-ambivalent (C):</b> Wenig Exploration, starke Belastung; sucht Nähe und wehrt sie zugleich ab.</li><li><b>Desorganisiert (D):</b> Widersprüchliches Verhalten, Erstarren (ergänzt von Main & Solomon).</li></ul><p>Entscheidend für die Entwicklung sicherer Bindung ist die <b>Feinfühligkeit</b> der Bezugsperson.</p>`},
+ ahnert:{t:'Primäre und sekundäre Bindung (Ahnert)',h:`<p>Kinder bauen neben <b>primären Bindungen</b> (meist zu den Eltern) auch <b>sekundäre Bindungen</b> auf – etwa zu Erzieherinnen und Erziehern in der Kita.</p><p>Diese entstehen vor allem durch verlässliche Zuwendung, Sicherheit, Stressreduktion und Unterstützung beim Erkunden. Frühpädagogische Fachkräfte können gelungene Bindung also aktiv fördern.</p>`},
+ marcia:{t:'Identitätsstatus nach Marcia',h:`<p>Zwei Dimensionen: <b>Exploration</b> (aktive Auseinandersetzung mit Möglichkeiten) und <b>Verpflichtung</b> (Festlegung auf Ziele und Werte).</p><ul><li><b>Diffus:</b> keine Exploration, keine Verpflichtung</li><li><b>Übernommen:</b> Verpflichtung ohne eigene Exploration</li><li><b>Moratorium:</b> aktive Exploration, noch keine Verpflichtung</li><li><b>Erarbeitet:</b> Verpflichtung nach eigener Exploration</li></ul><p>Der Status kann sich je nach Lebensbereich unterscheiden und im Lauf des Lebens wechseln.</p>`},
+ swe:{t:'Selbstwirksamkeits- und Ergebniserwartung (Bandura)',h:`<p><b>Selbstwirksamkeitserwartung</b> (auch Kompetenzerwartung): die Überzeugung, eine Handlung aus eigener Kraft erfolgreich ausführen zu können. <i>„Ich kann das.“</i></p><p><b>Ergebniserwartung</b>: die Erwartung, dass eine Handlung zu einem bestimmten Ergebnis führt. <i>„Wenn ich das tue, passiert das.“</i></p><p>Wer zwar das Ergebnis für erreichbar hält, sich die Handlung aber nicht zutraut, wird sie oft vermeiden.</p>`},
+ quellen:{t:'Vier Quellen der Selbstwirksamkeit',h:`<ol style="margin-left:20px"><li><b>Eigene Erfolgserlebnisse</b> (Meisterungserfahrungen) – die stärkste Quelle</li><li><b>Stellvertretende Erfahrungen</b> – ein Modell, das einem ähnlich ist, schafft es</li><li><b>Verbale Ermutigung</b> – glaubwürdige, konkrete Überzeugung durch andere</li><li><b>Körperliche und emotionale Zustände</b> – und wie man sie deutet</li></ol><p><b>Selbstregulation</b> nach Bandura: Selbstbeobachtung → Selbstbewertung (Vergleich mit eigenen Standards) → Selbstreaktion (z. B. Selbstbelohnung).</p>`},
+ baltes:{t:'Lebensspannenpsychologie (Baltes)',h:`<ul><li>Entwicklung ist ein <b>lebenslanger</b> Prozess.</li><li>Sie ist <b>multidirektional</b>: In jedem Alter gibt es Gewinne und Verluste.</li><li>Menschen bleiben <b>plastisch</b>, also veränderbar – in Grenzen.</li><li>Entwicklung ist <b>eingebettet</b>: altersbezogene, geschichtliche und nicht-normative (unvorhersehbare) Einflüsse wirken zusammen.</li></ul><p>Jede Lebensphase stellt typische <b>Entwicklungsaufgaben</b> – etwa im Jugendalter Identität und Berufswahl, im frühen Erwachsenenalter das Bewähren im Beruf.</p>`}
+};
+const unlocked=new Set();
+function unlock(k){if(unlocked.has(k))return;unlocked.add(k);toast('Notizbuch · '+NB[k].t);tone(1046,.6,'sine',.04,true);}
+function openNb(){const c=$('#nbcard');const items=[...unlocked].map(k=>`<div class="nbitem"><h3>${NB[k].t}</h3>${NB[k].h}</div>`).join('');c.innerHTML=`<div class="kick">Notizbuch</div><h2>Was du bisher gesammelt hast</h2>${items||'<p class="dim">Noch leer. Einträge kommen beim Spielen dazu.</p>'}<div class="btns"><button class="btn pri" id="nbClose">Schließen</button></div>`;$('#nb').style.display='flex';$('#nbClose').onclick=()=>{$('#nb').style.display='none';};}
+
+/* =========================================================
+   KAPITEL I · DIE FREMDE SITUATION
+   ========================================================= */
+const TYPES={
+ B:{name:'Sicher gebunden (Typ B)',exp:'Erkundet aktiv und nutzt die Mutter als „sichere Basis“ – schaut immer wieder zu ihr.',tr:'Zeigt Kummer, protestiert, sucht die Mutter.',wv:'Sucht Nähe, lässt sich schnell trösten und spielt dann weiter.',hg:'Die Bezugsperson verhält sich <b>feinfühlig</b>: Sie nimmt die Signale des Kindes wahr, deutet sie richtig und reagiert prompt und angemessen.'},
+ A:{name:'Unsicher-vermeidend (Typ A)',exp:'Spielt viel, beachtet die Mutter kaum.',tr:'Kaum sichtbare Reaktion – körperlich aber deutlich gestresst (Studien zeigen z. B. erhöhten Puls und Cortisolwerte).',wv:'Ignoriert die Mutter oder wendet sich ab; will schnell wieder vom Arm.',hg:'Die Bezugsperson weist Bindungswünsche häufig zurück. Das Kind lernt, sein Bindungsverhalten zu unterdrücken.'},
+ C:{name:'Unsicher-ambivalent (Typ C)',exp:'Erkundet kaum, bleibt dicht bei der Mutter.',tr:'Extrem belastet, untröstlich.',wv:'Sucht Nähe und wehrt sie gleichzeitig ärgerlich ab; lässt sich kaum beruhigen.',hg:'Die Bezugsperson reagiert <b>unvorhersehbar</b> – mal zugewandt, mal abweisend. Das Kind kann sich nicht auf sie verlassen.'},
+ D:{name:'Desorganisiert (Typ D)',exp:'Unterbrochene, unvollständige Bewegungen; plötzliches Erstarren.',tr:'Kein klares Muster, z. B. Erstarren oder zielloses Umherlaufen.',wv:'Nähert sich mit abgewandtem Blick, erstarrt, sinkt in sich zusammen.',hg:'Von Main & Solomon ergänzt. Häufig bei Bezugspersonen, die auf das Kind ängstigend wirken oder selbst verängstigt sind, etwa durch unverarbeitete Traumata.'}
+};
+const KIDS=[{n:'Mia',top:'#e07a5f',hair:'#7a4a28'},{n:'Emil',top:'#6aa36f',hair:'#d9a441'},{n:'Lina',top:'#e9c46a',hair:'#3b2416'},{n:'Noah',top:'#5e8ad6',hair:'#5a3320'}];
+const C1={done:0,correct:0,bag:[],kidBag:[],card:false};
+
+async function chapter1(){
+  setHud('Kapitel I · Bindung');mood('warm');showMeter(false);
+  await titleCard('Kapitel I','Die Fremde Situation','Ein Kind. Ein Raum. Ein Abschied.');
+  setScene(SC.play);actors=[];cine(true);await fadeIn(1400);
+  await say(null,'Ein Beobachtungsraum. Ende der 1960er-Jahre entwickelte die Psychologin Mary Ainsworth hier ein Verfahren, das etwas Unsichtbares sichtbar machen sollte: Bindung.');
+  await say(null,'Du sitzt hinter einer Einwegscheibe. Gleich kommt ein etwa einjähriges Kind mit seiner Mutter herein.');
+  let help=await panel(`<div class="kick">Beobachtungsauftrag</div><h2>Worauf du achten sollst</h2><ul><li><b>Exploration:</b> Wie frei spielt und erkundet das Kind, solange die Mutter da ist?</li><li><b>Trennung:</b> Wie reagiert es, wenn die Mutter den Raum verlässt?</li><li><b>Wiedervereinigung:</b> Was passiert, wenn sie zurückkommt?</li></ul><p class="dim">Verkürzte Fassung: Im Original besteht die Fremde Situation aus acht Episoden von je etwa drei Minuten.</p><p>Mit Beobachtungshilfe beschreiben Untertitel, was zu sehen ist. Ohne Hilfe musst du selbst genau hinschauen.</p>`,[{label:'▶ Mit Beobachtungshilfe beginnen',value:true,primary:true},{label:'Ohne Hilfe beobachten – nur Bilder',value:false}]);
+  for(;;){
+    if(!C1.bag.length)C1.bag=shuffle(['B','A','C','D']);
+    if(!C1.kidBag.length)C1.kidBag=shuffle(KIDS);
+    const type=C1.bag.pop(),kid=C1.kidBag.pop();
+    await observe(type,kid,help);
+    await classify(type,kid);
+    if(!C1.card){C1.card=true;await wissenBindung();}
+    const nx=await panel(`<div class="kick">Zwischenstand</div><h2>Wie geht es weiter?</h2><p>Du hast <b>${C1.done}</b> ${C1.done===1?'Kind':'Kinder'} beobachtet und <b>${C1.correct}</b> davon richtig zugeordnet.</p><p class="dim">Jedes Kind zeigt zufällig einen der vier Bindungstypen. Tipp: Probier es als Nächstes ohne Untertitel.</p>`,[{label:'Nächstes Kind beobachten – ohne Hilfe',value:'nohelp',primary:true},{label:'Nächstes Kind beobachten – mit Beobachtungshilfe',value:'help'},{label:nextLabel(1),value:'next'}]);
+    if(nx==='next')break;help=nx==='help';
+  }
+}
+
+async function observe(type,kid,help){
+  const N=kid.n,S=SC.play;
+  const mom=mk({kind:'adult',top:'#3f6e8c',hair:'#5a3320',long:true,skin:'#e8c09a',pants:'#2b3245',visible:false});
+  const ch=mk({kind:'tod',top:kid.top,hair:kid.hair,skin:'#f1cba5',pants:'#5b6ea6',visible:false});
+  const st=mk({kind:'adult',top:'#7d6a4f',hair:'#2a2a2a',long:true,skin:'#c99a74',pants:'#3a3a44',visible:false});
+  await cut(S,[mom,ch,st]);
+  const nar=async t=>{if(help)await say(null,t);else await wait(2200);};
+  const sitAt=(a,x,y,f)=>{a.x=x;a.y=y;a.facing=f;a.state='sit';};
+
+  // Episode 1
+  epi('Episode 1 · Mutter und Kind');
+  await tweenProp(S,'door',1,700);
+  mom.visible=ch.visible=true;mom.x=280;mom.y=122;ch.x=286;ch.y=124;
+  await par(walkTo(mom,200,140,26),walkTo(ch,206,146,20));
+  bg(tweenProp(S,'door',0,700));
+  const e1=bg((async()=>{
+    const mw=(async()=>{await walkTo(mom,92,140,28);mom.facing=1;mom.state='sit';mom.chair=true;})();
+    if(type==='B'){await walkTo(ch,152,152,20);sitAt(ch,152,152,1);for(let i=0;i<3;i++){await wait(1300);ch.facing=-1;await wait(800);ch.facing=1;}}
+    else if(type==='A'){await walkTo(ch,152,152,20);sitAt(ch,152,152,1);await wait(2500);}
+    else if(type==='C'){await walkTo(ch,106,146,18);ch.facing=-1;await wait(900);ch.state='armsUp';await wait(1600);ch.state='idle';await wait(900);ch.state='armsUp';}
+    else{await walkTo(ch,140,150,20);ch.emote='…';await wait(1800);ch.emote=null;await walkTo(ch,152,152,10);sitAt(ch,152,152,1);}
+    await mw;
+  })());
+  bg(camFollow(ch,1.45,2600));
+  await nar({B:`${N} krabbelt zu den Bauklötzen und baut. Immer wieder dreht sich ${N} kurz zur Mutter um – und spielt dann weiter.`,A:`${N} steuert sofort auf die Bauklötze zu. Zur Mutter schaut ${N} kaum.`,C:`${N} bleibt dicht bei der Mutter. Die Spielsachen locken kaum – immer wieder streckt ${N} die Arme nach ihr aus.`,D:`${N} läuft los, bleibt mitten im Raum plötzlich stehen und verharrt reglos. Dann geht es zögerlich weiter.`}[type]);
+  await e1;await wait(600);
+
+  // Episode 2
+  epi('Episode 2 · Eine fremde Person kommt dazu');
+  bg(camReset(1400));
+  await tweenProp(S,'door',1,600);st.visible=true;st.x=280;st.y=122;
+  await walkTo(st,228,140,24);bg(tweenProp(S,'door',0,600));st.facing=-1;st.state='sit';st.chair=true;
+  if(type==='C'){ch.state='idle';}
+  const e2=bg((async()=>{
+    if(type==='B'){await wait(500);ch.facing=1;ch.emote='?';await wait(1400);ch.emote=null;ch.facing=-1;await wait(1000);ch.facing=1;}
+    else if(type==='A'){await wait(2500);}
+    else if(type==='C'){ch.emote='!';ch.state='armsUp';await walkTo(ch,100,146,14,{face:false});await wait(1800);ch.emote=null;}
+    else{ch.emote='…';await wait(2600);ch.emote=null;}
+    st.state='idle';st.chair=false;await walkTo(st,192,147,18);st.facing=-1;
+  })());
+  await nar({B:`${N} mustert die fremde Frau vorsichtig und blickt zwischendurch zur Mutter. Dann spielt ${N} weiter.`,A:`${N} beachtet die fremde Frau kaum und spielt einfach weiter.`,C:`${N} wirkt beunruhigt und drängt sich noch dichter an die Mutter.`,D:`Als die Fremde hereinkommt, erstarrt ${N}. Der Blick wirkt leer.`}[type]);
+  await e2;await wait(500);
+
+  // Episode 3 – Trennung
+  epi('Episode 3 · Die Mutter verlässt den Raum');
+  mom.state='idle';mom.chair=false;
+  await walkTo(mom,270,128,30);await tweenProp(S,'door',1,500);await walkTo(mom,280,122,20);mom.visible=false;bg(tweenProp(S,'door',0,600));
+  bg(camFollow(ch,2.1,2400));
+  const e3=bg((async()=>{
+    if(type==='B'){ch.state='idle';ch.cry=true;await walkTo(ch,248,138,18);ch.facing=1;await wait(700);await walkTo(st,232,140,16);st.facing=1;await wait(2200);}
+    else if(type==='A'){ch.facing=1;await wait(700);ch.facing=1;await wait(3000);}
+    else if(type==='C'){ch.state='idle';ch.cry=true;ch.jit=1;ch.emote='!';await wait(3200);}
+    else{ch.state='idle';await walkTo(ch,206,146,18);await wait(300);ch.facing=-1;ch.emote='…';await wait(3000);}
+  })());
+  await nar({B:`${N} hört auf zu spielen, läuft zur Tür und weint. Die Fremde kann ${N} nur wenig trösten.`,A:`${N} spielt weiter, als wäre nichts geschehen. Äußerlich wirkt ${N} ruhig.`,C:`${N} schreit heftig und ist völlig aufgelöst. An Spielen ist nicht mehr zu denken.`,D:`${N} läuft Richtung Tür, dreht sich auf halbem Weg um und bleibt wie eingefroren stehen.`}[type]);
+  await e3;await wait(500);
+
+  // Episode 4 – Wiedervereinigung
+  epi('Episode 4 · Die Mutter kommt zurück');
+  bg(camFollow(ch,1.75,1500));
+  await tweenProp(S,'door',1,600);mom.visible=true;mom.x=280;mom.y=122;mom.state='idle';
+  await walkTo(mom,252,136,26);mom.facing=-1;
+  bg((async()=>{await walkTo(st,272,126,22);st.visible=false;await tweenProp(S,'door',0,600);})());
+  const e4=bg((async()=>{
+    if(type==='B'){await walkTo(ch,244,140,22);ch.state='armsUp';await wait(500);ch.state='idle';ch.attach=mom;await wait(1300);ch.cry=false;ch.emote='♥';await wait(1700);ch.attach=null;ch.emote=null;ch.x=244;ch.y=142;await walkTo(ch,160,152,20);sitAt(ch,160,152,1);await wait(800);}
+    else if(type==='A'){ch.facing=1;await wait(700);ch.facing=-1;await wait(900);await walkTo(mom,162,150,28);mom.facing=-1;ch.attach=mom;ch.facing=1;ch.jit=1;await wait(1400);ch.attach=null;ch.jit=0;ch.x=152;ch.y=152;sitAt(ch,152,152,-1);await wait(1400);}
+    else if(type==='C'){ch.emote=null;await walkTo(ch,244,140,20);ch.state='armsUp';await wait(600);ch.state='idle';ch.attach=mom;ch.emote='#';await wait(2200);ch.attach=null;ch.x=242;ch.y=142;ch.facing=1;await wait(500);ch.state='armsUp';await wait(1400);}
+    else{ch.emote=null;await walkTo(ch,238,140,9,{face:false,facing:-1});ch.emote='…';await wait(1800);ch.emote=null;ch.state='slump';await wait(1800);}
+  })());
+  await nar({B:`${N} läuft der Mutter entgegen und lässt sich hochnehmen. Nach kurzer Zeit ist ${N} beruhigt – und spielt bald wieder.`,A:`${N} blickt kurz auf und wendet sich dann ab. Auf dem Arm will ${N} gleich wieder herunter.`,C:`${N} will unbedingt auf den Arm – und strampelt sich gleichzeitig wütend weg. ${N} lässt sich lange nicht beruhigen.`,D:`${N} nähert sich der Mutter mit abgewandtem Blick, erstarrt kurz vor ihr und sinkt dann in sich zusammen.`}[type]);
+  await e4;await wait(1200);
+  epi(null);await fadeOut(1200);
+}
+
+async function classify(type,kid){
+  const order=['B','A','C','D'];
+  const a=await panel(`<div class="kick">Auswertung · ${kid.n}</div><h2>Welcher Bindungstyp?</h2><p>Ordne ${kid.n} auf Grundlage deiner Beobachtung einem Bindungstyp zu.</p>`,order.map(k=>({label:TYPES[k].name,value:k})));
+  const b=await panel(`<div class="kick">Begründung</div><h2>Woran hast du das vor allem festgemacht?</h2><p>Welche Beobachtung war für deine Einordnung am aussagekräftigsten?</p>`,[{label:'Am Verhalten bei der Wiedervereinigung',value:'re'},{label:'Daran, wie stark das Kind bei der Trennung weint',value:'cry'},{label:'An der Reaktion auf die fremde Person',value:'str'}]);
+  const ok=a===type;C1.done++;if(ok)C1.correct++;ok?goodS():badS();
+  const T_=TYPES[type];
+  const ind={re:`<div class="note"><b class="good">Gute Begründung.</b> Die Wiedervereinigung gilt als aussagekräftigster Moment: Hier zeigt sich, ob das Kind bei der Bezugsperson Trost und Sicherheit findet.</div>`,
+   cry:`<div class="note warn"><b class="bad">Typische Falle:</b> Auch sicher gebundene Kinder weinen bei der Trennung – unsicher-ambivalent gebundene oft noch stärker. Wie stark ein Kind weint, unterscheidet die Typen deshalb nicht eindeutig. Aussagekräftiger ist die <b>Wiedervereinigung</b>.</div>`,
+   str:`<div class="note warn"><b class="bad">Nur ein Hinweis.</b> Die Reaktion auf die Fremde liefert Indizien, ist aber nicht das Hauptkriterium. Am aussagekräftigsten ist die <b>Wiedervereinigung</b>: Findet das Kind bei der Bezugsperson Trost?</div>`}[b];
+  await panel(`<div class="kick">Rückmeldung</div><div class="verdict ${ok?'good':'bad'}">${ok?'Richtig erkannt.':'Nicht ganz.'}</div><p>${ok?'':'Du hast <b>'+TYPES[a].name+'</b> gewählt. '}${kid.n} zeigte das Muster <b>${T_.name}</b>.</p><table class="tbl"><tr><th>Exploration</th><td>${T_.exp}</td></tr><tr><th>Trennung</th><td>${T_.tr}</td></tr><tr><th>Wiedervereinigung</th><td>${T_.wv}</td></tr><tr><th>Hintergrund</th><td>${T_.hg}</td></tr></table>${ind}`,[{label:'Weiter',primary:true}]);
+  unlock('bindung');
+}
+
+async function wissenBindung(){
+  await panel(`<div class="kick">Wissenskarte</div><h2>Bindung – mehr als Liebe</h2><p><b>Bindung</b> ist nach John Bowlby ein emotional enges, dauerhaftes Band zu einer bestimmten Person, das Schutz und Sicherheit gibt.</p><p>Bindungs- und Erkundungsverhalten funktionieren wie eine <b>Wippe</b>: Fühlt sich das Kind sicher, kann es erkunden. Wird es verunsichert, wird das Bindungsverhalten aktiviert – es sucht Nähe.</p><h3>Nicht nur die Eltern</h3><p>Nach <b>Lieselotte Ahnert</b> bauen Kinder neben primären Bindungen auch <b>sekundäre Bindungen</b> auf, etwa zu Erzieherinnen und Erziehern in der Kita. Verlässliche Zuwendung, Sicherheit, Stressreduktion und Unterstützung beim Erkunden machen den Unterschied.</p><details><summary>Denkfrage: Ist ein vermeidend gebundenes Kind einfach besonders selbstständig?</summary><p>Nein. Es wirkt nur nach außen ruhig. Körperlich zeigt es bei der Trennung deutliche Stressreaktionen. Es hat gelernt, sein Bedürfnis nach Nähe zu verbergen, weil die Bezugsperson darauf oft abweisend reagiert. Echte Selbstständigkeit entsteht eher aus <b>sicherer</b> Bindung.</p></details>`,[{label:'Ins Notizbuch übernehmen',primary:true}]);
+  unlock('ahnert');
+}
+
+/* =========================================================
+   KAPITEL II · WER BIN ICH?
+   ========================================================= */
+const ST={dif:{n:'Diffuse Identität',d:'keine echte Erkundung, keine Festlegung'},ueb:{n:'Übernommene Identität',d:'Festlegung, ohne selbst erkundet zu haben – oft von Eltern übernommen'},mor:{n:'Moratorium',d:'aktive Erkundung, aber noch keine Festlegung'},era:{n:'Erarbeitete Identität',d:'feste Ziele und Werte nach eigener Erkundung'}};
+function statusOf(E,C){const e=E>=4,c=C>=4;return e&&c?'era':e?'mor':c?'ueb':'dif';}
+function alexMk(){return mk({kind:'teen',top:'#4a6fa5',hair:'#2b1d14',skin:'#e2b892',pants:'#2d2d3a'});}
+
+async function chapter2(){
+  setHud('Kapitel II · Identität');mood('dusk');showMeter(false);
+  await titleCard('Kapitel II','Wer bin ich?','Alex, 16 Jahre');
+  const alex=alexMk();
+  let E=0,C=0;const log=[];
+  async function decide(domain,prompt,opts){
+    const o=shuffle(opts);const i=await choose(prompt,o.map(x=>x.t));const c=o[i];E+=c.e;C+=c.c;log.push({domain,...c});
+    if(c.r)await say(null,c.r);return c;
+  }
+  alex.x=242;alex.y=134;alex.state='sit';alex.chair=true;alex.facing=-1;alex.phone=true;
+  setScene(SC.teen);actors=[alex];cine(true);await fadeIn(1400);
+  await panel(`<div class="kick">Deine Rolle</div><h2>Du entscheidest für Alex</h2><p>Der Psychologe <b>James Marcia</b> beschreibt Identität im Jugendalter über zwei Fragen:</p><ul><li><b>Exploration:</b> Setzt sich Alex aktiv mit Möglichkeiten auseinander, probiert aus, hinterfragt?</li><li><b>Verpflichtung:</b> Hat sich Alex auf Ziele und Werte festgelegt?</li></ul><p>Triff vier Entscheidungen. Es gibt dabei kein Richtig oder Falsch. Am Ende ordnest du Alex einem Identitätsstatus zu – ohne die Werte vorher zu sehen.</p>`,[{label:'▶ Los geht’s',primary:true}]);
+  bg(camTo(234,110,1.6,7000));
+  await say(null,'23:12 Uhr. Morgen ist Berufsinfotag in der Stadthalle.');
+  await say('Alex','Alle anderen scheinen genau zu wissen, was sie mal machen wollen …');
+  await decide('Beruf','Was denkt Alex über die Berufswahl?',[
+    {t:'„Ich schau mir morgen Stände an, die ich noch gar nicht kenne – und frag die Azubis dort aus.“',e:2,c:0,r:'Alex macht sich eine Liste mit Fragen. Es wird spät.'},
+    {t:'„Mama sagt, ich fange nach der Schule in ihrem Steuerbüro an. Passt doch.“',e:0,c:2,r:'Alex legt das Handy weg. Die Sache ist ja geregelt.'},
+    {t:'„Keine Ahnung. Ich geh da morgen gar nicht erst hin.“',e:0,c:0,r:'Alex scrollt weiter – durch Videos, nicht durch Berufe.'},
+    {t:'„Seit dem Praktikum in der Schreinerei weiß ich: Das ist meins. Morgen frag ich dort nach der Ausbildung.“',e:1,c:2,r:'Alex lächelt und stellt den Wecker.'}]);
+  alex.phone=false;await wait(400);
+
+  const sam=mk({kind:'teen',top:'#c05a4a',hair:'#d9a441',long:true,skin:'#f0c8a0',pants:'#2a2f3f',x:182,y:142,facing:-1});
+  alex.state='idle';alex.chair=false;alex.x=60;alex.y=142;alex.facing=1;
+  await cut(SC.yard,[alex,sam]);
+  await walkTo(alex,150,142,26);
+  bg(camTo(166,126,1.85,2600));
+  await say('Sam','Freitag sammeln wir Unterschriften gegen die Schließung vom Jugendzentrum. Bist du dabei?');
+  await decide('Engagement & Werte','Was antwortet Alex?',[
+    {t:'„Ich hab mit Leuten von der Stadt und von euch geredet. Ich finde, wir haben recht – ich bin dabei.“',e:2,c:2,r:'Sam grinst. „Wusste ich doch.“'},
+    {t:'„Mein Vater sagt, sowas bringt eh nichts. Ich lass das.“',e:0,c:2,r:'Sam zuckt mit den Schultern.'},
+    {t:'„Weiß noch nicht. Ich will erst hören, was die Stadt sagt – und was genau ihr vorhabt.“',e:2,c:0,r:'„Fair“, sagt Sam. „Komm einfach zum Treffen.“'},
+    {t:'„Ist mir ehrlich gesagt egal.“',e:0,c:0,r:'Die Sonne verschwindet hinter dem Schulhaus.'}]);
+
+  const mama=mk({kind:'adult',top:'#6a8d73',hair:'#4a2e1c',long:true,skin:'#e5bb95',pants:'#3a3340',x:212,y:146,facing:-1});
+  alex.x=128;alex.y=146;alex.facing=1;
+  await cut(SC.kitchen,[alex,mama]);
+  bg(camTo(170,128,1.6,3200));
+  await say('Mama','Dein Bruder zieht nach der Schule nach Hamburg. Und du – hast du dir überlegt, ob du hierbleibst?');
+  await decide('Lebensentwurf','Was sagt Alex?',[
+    {t:'„Ich will nach der Schule erst mal ein Jahr weg. Jobben, reisen, schauen, was zu mir passt.“',e:2,c:0,r:'Mama zieht die Augenbrauen hoch – und nickt langsam.'},
+    {t:'„Klar bleib ich hier. Hier ist die Familie – so macht man das bei uns.“',e:0,c:2,r:'Mama lächelt erleichtert.'},
+    {t:'„Ich hab mir drei Städte angeschaut und dort mit Leuten geredet. Ich will nach Leipzig – das passt zu mir.“',e:2,c:2,r:'„Leipzig also“, sagt Mama. „Du hast dir das echt überlegt.“'},
+    {t:'„Weiß nicht. Mal sehen. Gibt’s heute noch was zu essen?“',e:0,c:0,r:'Das Gespräch versandet.'}]);
+
+  alex.x=122;alex.y=139;alex.facing=1;
+  await cut(SC.bus,[alex]);
+  bg(camTo(124,120,1.9,6000));
+  await say(null,'Der letzte Bus hat Verspätung. Regen trommelt auf das Dach des Wartehäuschens.');
+  await say('Alex (denkt)','Wer will ich eigentlich sein?');
+  await decide('Selbstbild','Was geht Alex durch den Kopf?',[
+    {t:'„Ich probier gerade alles aus – Band, Theater, Kletterhalle. Festlegen will ich mich noch nicht.“',e:2,c:-1},
+    {t:'„So, wie meine Familie mich sieht. Darüber muss ich nicht nachdenken.“',e:0,c:1},
+    {t:'„Ich hab lange gesucht. Inzwischen weiß ich ziemlich genau, was mir wichtig ist.“',e:1,c:2},
+    {t:'„Ist doch egal. Ich lass mich treiben.“',e:-1,c:0}]);
+  await camReset(1500);
+  SC.bus.busX=340;await tweenProp(SC.bus,'busX',84,3200);tone(98,1.2,'sine',.06);
+  await wait(700);alex.visible=false;await wait(900);
+  await tweenProp(SC.bus,'busX',-140,3600);
+  await wait(800);await fadeOut(1400);
+
+  const s=statusOf(E,C);
+  const guess=await panel(`<div class="kick">Auswertung</div><h2>Welchen Identitätsstatus hat Alex jetzt?</h2><p>Denk an die vier Entscheidungen zurück: Hat Alex Möglichkeiten erkundet? Hat Alex sich festgelegt?</p><details><summary>Hilfe: die vier Status nach Marcia</summary><ul>${Object.values(ST).map(x=>`<li><b>${x.n}:</b> ${x.d}</li>`).join('')}</ul></details>`,['dif','ueb','mor','era'].map(k=>({label:ST[k].n,value:k})));
+  const ok=guess===s;ok?goodS():badS();
+  const pos=v=>v<4?Math.max(4,4+(v+1)/4.5*42):Math.min(96,54+(v-4)/4*42);
+  const quad=`<div style="position:relative;padding-left:28px"><div class="axy">Verpflichtung →</div><div class="quad"><div class="q ${s==='ueb'?'on':''}">Übernommen</div><div class="q ${s==='era'?'on':''}">Erarbeitet</div><div class="q ${s==='dif'?'on':''}">Diffus</div><div class="q ${s==='mor'?'on':''}">Moratorium</div><div class="dot" style="left:${pos(E)}%;bottom:${pos(C)}%"></div></div><div class="ax">Exploration →</div></div>`;
+  const tg=(v,cls,lab)=>v>0?`<span class="tag ${cls}">${lab} +${v}</span>`:v<0?`<span class="tag n">${lab} ${v}</span>`:`<span class="tag n">${lab} ±0</span>`;
+  const lg=log.map(l=>`<div><b>${l.domain}:</b> ${l.t}<br>${tg(l.e,'e','Exploration')}${tg(l.c,'c','Verpflichtung')}</div>`).join('');
+  await panel(`<div class="kick">Auflösung</div><div class="verdict ${ok?'good':'bad'}">${ok?'Richtig eingeschätzt.':'Nicht ganz.'}</div><p>Alex zeigt eine <b>${ST[s].n}</b>: ${ST[s].d}.${ok?'':' Du hattest „'+ST[guess].n+'“ gewählt.'}</p>${quad}<h3>Deine Entscheidungen im Rückblick</h3><div class="log">${lg}</div>`,[{label:'Weiter',primary:true}]);
+  await panel(`<div class="kick">Wissenskarte</div><h2>Identität nach Marcia</h2><ul>${Object.values(ST).map(x=>`<li><b>${x.n}:</b> ${x.d}</li>`).join('')}</ul><div class="note">Identität ist <b>bereichsspezifisch</b>: Alex kann beim Beruf schon festgelegt sein und beim Lebensentwurf noch suchen. Und sie ist <b>veränderbar</b> – viele Menschen durchlaufen mehrmals Phasen von Moratorium und Erarbeitung.</div><details><summary>Denkfrage: Warum gilt die übernommene Identität als stabil, aber verletzlich?</summary><p>Ziele und Werte stehen fest, wurden aber nie selbst geprüft. Gerät die Person in eine neue Umgebung oder in Widerspruch zu den übernommenen Überzeugungen, fehlt eine eigene Begründung – die Identität kann ins Wanken geraten.</p></details><details><summary>Denkfrage: Ist das Moratorium etwas Schlechtes?</summary><p>Nein. Das Moratorium ist eine normale, oft produktive Phase des Jugendalters – und häufig der Weg zur erarbeiteten Identität. Problematisch wird es eher, wenn es dauerhaft mit starker Verunsicherung einhergeht.</p></details><p class="dim">Entwicklungsaufgaben des Jugendalters, etwa Berufswahl, Ablösung von den Eltern und ein eigenes Wertesystem, hängen eng mit der Identitätsentwicklung zusammen.</p>`,[{label:'Ins Notizbuch übernehmen',primary:true}]);
+  unlock('marcia');
+  const nx=await panel(`<div class="kick">Kapitel II beendet</div><h2>Noch einmal anders entscheiden?</h2><p>Spiel das Kapitel erneut und versuche gezielt, Alex in einen anderen Status zu bringen.</p>`,[{label:nextLabel(2),value:'next',primary:true},{label:'Kapitel II noch einmal spielen',value:'again'}]);
+  if(nx==='again')return chapter2();
+}
+
+/* =========================================================
+   KAPITEL III · ICH SCHAFFE DAS
+   ========================================================= */
+const SRC={M:'Eigene Erfolgserlebnisse (Meisterungserfahrungen)',S:'Stellvertretende Erfahrungen (Modelllernen)',V:'Verbale Ermutigung (Überzeugung durch andere)',P:'Körperliche und emotionale Zustände'};
+const ACTS=[
+ {id:'m1',src:'M',d:3,t:'Die ersten zwei Minuten vor dem Spiegel üben – so lange, bis sie wirklich sitzen.',fb:'Eigene Erfolgserlebnisse sind laut Bandura die <b>stärkste Quelle</b>: Alex erlebt selbst, dass es klappt. Kleine, erreichbare Teilziele machen solche Erfolge wahrscheinlich.'},
+ {id:'m2',src:'M',d:3,t:'Die ganze Präsentation einmal vor Mitbewohnerin Jule halten.',fb:'Eine echte Probe vor Publikum ist eine <b>Meisterungserfahrung</b>. Es lief besser als befürchtet – das zählt mehr als jedes Lob.'},
+ {id:'m3',src:'M',d:-1,t:'Gleich alles auf einmal: zehn Minuten frei sprechen, ohne Notizen, vor der Handykamera.',fb:'Auch das ist eine Erfahrung mit eigenem Handeln – aber eine <b>Misserfolgserfahrung</b>. Beim dritten Versuch bricht Alex ab. Gerade am Anfang schwächen Misserfolge die Selbstwirksamkeit. Besser: in kleinen Schritten üben.'},
+ {id:'s1',src:'S',d:2,t:'Das Video von Mehmet ansehen – Azubi aus dem letzten Jahrgang, genauso nervös, und am Ende hat es geklappt.',fb:'<b>Stellvertretende Erfahrung</b>: Ein Modell, das Alex ähnlich ist, schafft es. „Wenn er das kann, kann ich das auch.“'},
+ {id:'s2',src:'S',d:0,t:'Den Vortrag einer Starrednerin ansehen, die seit zwanzig Jahren auf großen Bühnen steht.',fb:'Auch das ist eine <b>stellvertretende Erfahrung</b> – aber das Modell ist Alex zu unähnlich. „Die kann das halt.“ Die Wirkung bleibt aus; der Vergleich kann sogar entmutigen.'},
+ {id:'v1',src:'V',d:2,t:'Frau Lindner schreibt: „Du kennst das Projekt besser als alle anderen. Erzähl einfach, wie du es gebaut hast.“',fb:'<b>Verbale Ermutigung</b> von einer glaubwürdigen, kompetenten Person mit konkretem Bezug wirkt. Sie ist aber schwächer und weniger dauerhaft als eigene Erfolge.'},
+ {id:'v2',src:'V',d:0,t:'Ein Kumpel schreibt: „Wird schon, easy.“',fb:'Formal eine <b>verbale Ermutigung</b> – aber pauschal und ohne Bezug zu Alex’ Können. So etwas verpufft meist.'},
+ {id:'p1',src:'P',d:2,t:'Eine Atemübung lernen – und das Herzklopfen als „Energie“ statt als „Angst“ deuten.',fb:'<b>Körperliche Zustände</b> werden interpretiert. Wer Erregung als Bereitschaft statt als Versagenszeichen deutet, traut sich mehr zu.'},
+ {id:'p2',src:'P',d:-2,t:'Bis zwei Uhr nachts wach liegen, Energydrinks trinken und Horrorszenarien googeln.',fb:'<b>Körperliche und emotionale Zustände</b> – hier negativ: Erschöpfung, Herzrasen und Angst deutet Alex als „Ich schaffe das nicht“. Die Selbstwirksamkeit sinkt.'}
+];
+async function chapter3(){
+  setHud('Kapitel III · Selbstwirksamkeit');mood('hope');
+  await titleCard('Kapitel III','Ich schaffe das','Alex, 19 Jahre · erstes Ausbildungsjahr');
+  const alex=alexMk();alex.top='#3d5a80';
+  const lin=mk({kind:'adult',top:'#2f5d62',hair:'#1e1e1e',long:true,skin:'#d9a87e',pants:'#2a2a33',x:200,y:146,facing:-1});
+  alex.x=130;alex.y=146;alex.facing=1;
+  let swe=2;const log=[];
+  setScene(SC.office);actors=[alex,lin];cine(true);bg(camTo(165,128,1.6,3500));await fadeIn(1300);
+  await say('Frau Lindner','Alex, am Freitag stellst du dein Projekt dem ganzen Team vor. Zehn Minuten, rund zwanzig Leute.');
+  await say('Alex','Vor allen? Ich … ich weiß nicht, ob ich das hinkriege.');
+  showMeter(true);setMeter(0);await wait(300);setMeter(swe);
+  await say(null,'Der Balken oben links zeigt, wie sehr Alex sich die Präsentation zutraut.');
+  const q1=await panel(`<div class="kick">Zwei Gedanken</div><h2>„Wenn die Präsentation gut läuft, darf ich das Projekt weiterführen.“</h2><p>Welche Art von Erwartung ist das?</p>`,[{label:'Ergebniserwartung',value:'E'},{label:'Selbstwirksamkeitserwartung (Kompetenzerwartung)',value:'S'}]);
+  const q2=await panel(`<div class="kick">Zwei Gedanken</div><h2>„Ich traue mir nicht zu, vor zwanzig Leuten frei zu sprechen.“</h2><p>Und das?</p>`,[{label:'Ergebniserwartung',value:'E'},{label:'Selbstwirksamkeitserwartung (Kompetenzerwartung)',value:'S'}]);
+  const ok12=(q1==='E')+(q2==='S');ok12===2?goodS():badS();
+  await panel(`<div class="kick">Rückmeldung · ${ok12} von 2 richtig</div><h2>Ergebnis- und Selbstwirksamkeitserwartung</h2><p><b>Ergebniserwartung:</b> Eine Handlung führt zu einem bestimmten Ergebnis – „Gute Präsentation → Projekt geht weiter.“ Die ist bei Alex <b>hoch</b>.</p><p><b>Selbstwirksamkeitserwartung</b> (auch Kompetenzerwartung): Ich kann die Handlung selbst erfolgreich ausführen – „Ich kann frei sprechen.“ Die ist bei Alex <b>niedrig</b>.</p><div class="note">Genau diese Kombination ist heikel: Alex weiß, was auf dem Spiel steht, traut sich die Handlung aber nicht zu. Nach Bandura führt das oft zu Vermeidung.</div><p>Du hast <b>vier Abende</b>, um Alex’ Selbstwirksamkeit zu stärken. Wähle jeweils eine Aktivität und bestimme, welche Quelle sie anspricht.</p>`,[{label:'▶ Zum ersten Abend',primary:true}]);
+  unlock('swe');
+  const used=new Set();
+  const days=[['Montag','21:40 Uhr'],['Dienstag','20:15 Uhr'],['Mittwoch','22:05 Uhr'],['Donnerstag','21:30 Uhr']];
+  for(let d=0;d<4;d++){
+    const jule=mk({kind:'adult',top:'#9b5de5',hair:'#e9c46a',long:true,skin:'#f0c8a0',pants:'#2a2a33',x:88,y:150,facing:1,visible:false});
+    alex.x=160;alex.y=148;alex.facing=-1;alex.state='idle';alex.chair=false;alex.phone=false;alex.emote=null;
+    SC.flat.laptop=false;SC.flat.cans=false;
+    await cut(SC.flat,[alex,jule]);
+    bg(camFollow(alex,1.6,2600));
+    await say(null,`${days[d][0]}, ${days[d][1]}. Noch ${4-d} ${4-d===1?'Abend':'Abende'} bis zur Präsentation.`);
+    let pool=shuffle(ACTS.filter(a=>!used.has(a.id)));const opts=[];const srcs=new Set();
+    for(const a of pool){if(opts.length<3&&!srcs.has(a.src)){opts.push(a);srcs.add(a.src);}}
+    for(const a of pool){if(opts.length<3&&!opts.includes(a))opts.push(a);}
+    const i=await choose('Wie verbringt Alex den Abend?',opts.map(o=>o.t));const act=opts[i];used.add(act.id);
+    await playAct(act,alex,jule);
+    const g=await panel(`<div class="kick">Quelle bestimmen</div><h2>Welche Quelle der Selbstwirksamkeit spricht diese Situation an?</h2><p class="dim">${act.t}</p>`,['M','S','V','P'].map(k=>({label:SRC[k],value:k})));
+    const ok=g===act.src;ok?goodS():badS();
+    const before=swe;swe=Math.max(0,Math.min(10,swe+act.d));
+    log.push({act,ok,g});
+    await panel(`<div class="kick">Rückmeldung</div><div class="verdict ${ok?'good':'bad'}">${ok?'Richtig zugeordnet.':'Nicht ganz – gesucht war: '+SRC[act.src]+'.'}</div><p>${act.fb}</p><p><b>Selbstwirksamkeit:</b> ${act.d>0?'+'+act.d:act.d===0?'±0':act.d} <span class="dim">(${before} → ${swe} von 10)</span></p>`,[{label:d<3?'Nächster Tag':'Zur Präsentation',primary:true}]);
+    setMeter(swe);await wait(900);
+  }
+  // Präsentation
+  mood('tense');
+  alex.x=-10;alex.y=148;alex.state='idle';alex.phone=false;alex.emote=null;alex.facing=1;
+  SC.stage.spotX=120;
+  await cut(SC.stage,[alex],{in:1600});
+  await say(null,'Freitag, 10 Uhr. Zwanzig Leute. Ein Beamer, der leise summt.');
+  await walkTo(alex,120,148,22);alex.facing=1;
+  await tweenProp(SC.stage,'spot',1,1200);
+  bg(camFollow(alex,1.85,2600,-12));
+  const iv=await choose('Herzklopfen. Was denkt Alex?',['„Das ist Energie. Mein Körper macht sich bereit.“','„Gleich blamiere ich mich vor allen.“','„Die ersten zwei Minuten habe ich geübt. Damit fange ich an.“']);
+  const ivd=[1,-1,1][iv];swe=Math.max(0,Math.min(10,swe+ivd));setMeter(swe);await wait(700);
+  if(swe>=7){
+    await say('Alex','Ich zeige euch heute, wie ich unser Lager-Tool neu aufgebaut habe – und warum.');
+    await say(null,'Die Stimme zittert kurz, dann trägt sie. Alex spricht frei und beantwortet sogar eine kritische Nachfrage.');
+    bg(camReset(1500));SC.stage.clap=1;applause();alex.emote='♪';await wait(2600);SC.stage.clap=0;
+    await say('Frau Lindner','Stark, Alex. Das Projekt gehört dir.');
+  }else if(swe>=4){
+    await say('Alex','Also … ich zeige euch heute mein Projekt. Das Lager-Tool.');
+    await say(null,'Alex liest viel vom Zettel ab und verhaspelt sich zweimal – kommt aber durch. Am Ende nicken einige anerkennend.');
+    SC.stage.clap=1;applause();await wait(1800);SC.stage.clap=0;
+    await say('Frau Lindner','Gut gemacht. Nächstes Mal ohne Zettel – das traust du dir zu.');
+  }else{
+    await say('Alex','Ich … also. Ich zeige euch …');
+    alex.emote='…';await wait(1600);alex.emote=null;
+    await say(null,'Nach dem dritten Satz ist alles weg. Stille. Ein Blick auf die Notizen – irgendwie geht es holprig weiter.');
+    await say('Frau Lindner','Danke, Alex. Wir üben das zusammen – in kleinen Schritten. Beim nächsten Mal wird es leichter.');
+  }
+  await tweenProp(SC.stage,'spot',0,1000);await fadeOut(1400);showMeter(false);
+  const st=await panel(`<div class="kick">Reflexion</div><h2>Welche Quelle wirkt nach Bandura am stärksten?</h2>`,['M','S','V','P'].map(k=>({label:SRC[k],value:k})));
+  st==='M'?goodS():badS();
+  const lg=log.map(l=>`<div><b>${l.act.t}</b><br><span class="tag ${l.ok?'e':'n'}">${SRC[l.act.src]}</span><span class="tag ${l.act.d>0?'c':'n'}">${l.act.d>0?'+'+l.act.d:l.act.d===0?'±0':l.act.d}</span></div>`).join('');
+  await panel(`<div class="kick">Auflösung</div><div class="verdict ${st==='M'?'good':'bad'}">${st==='M'?'Genau.':'Nicht ganz.'}</div><p><b>Eigene Erfolgserlebnisse</b> wirken am stärksten, weil sie direkte Belege für das eigene Können sind. Danach folgen stellvertretende Erfahrungen, verbale Ermutigung und die Deutung körperlicher Zustände.</p><h3>Alex’ Woche</h3><div class="log">${lg}</div><p>Selbstwirksamkeit am Ende: <b>${swe} von 10</b> · Quellen richtig bestimmt: <b>${log.filter(l=>l.ok).length} von 4</b></p><h3>Selbstregulation</h3><p>Nach Bandura steuern Menschen ihr Verhalten selbst: <b>Selbstbeobachtung</b> („Wo hänge ich?“) → <b>Selbstbewertung</b> (Vergleich mit eigenen Standards) → <b>Selbstreaktion</b> (z. B. sich belohnen oder nachbessern). Realistische Teilziele machen Erfolgserlebnisse wahrscheinlicher – und stärken so die Selbstwirksamkeit.</p><details><summary>Denkfrage: Warum hat der Starvortrag kaum geholfen?</summary><p>Stellvertretende Erfahrungen wirken vor allem, wenn das Modell einem <b>ähnlich</b> ist. Bei einem unerreichbaren Vorbild denkt man eher: „Die kann das, ich nicht.“</p></details>`,[{label:'Ins Notizbuch übernehmen',primary:true}]);
+  unlock('quellen');
+  const nx=await panel(`<div class="kick">Kapitel III beendet</div><h2>Andere Woche, anderer Freitag?</h2><p>Spiel das Kapitel noch einmal und probiere andere Aktivitäten aus.</p>`,[{label:nextLabel(3),value:'next',primary:true},{label:'Kapitel III noch einmal spielen',value:'again'}]);
+  if(nx==='again')return chapter3();
+}
+async function playAct(a,alex,jule){
+  const S=SC.flat;
+  switch(a.id){
+    case 'm1':await walkTo(alex,46,150,24);alex.facing=-1;await wait(900);alex.emote='♪';await wait(1500);alex.emote='!';await wait(1100);break;
+    case 'm2':jule.visible=true;jule.state='sit';jule.x=86;jule.y=150;jule.facing=1;await walkTo(alex,140,148,24);alex.facing=-1;alex.emote='♪';await wait(1800);alex.emote=null;jule.emote='♥';await wait(1500);break;
+    case 'm3':alex.phone=true;alex.facing=1;await wait(900);alex.emote='…';await wait(1200);alex.emote='#';await wait(1300);alex.phone=false;break;
+    case 's1':case 's2':await walkTo(alex,150,134,24);alex.facing=1;alex.state='sit';alex.chair=true;S.laptop=true;await wait(2400);alex.emote=a.id==='s1'?'!':'?';await wait(1200);break;
+    case 'v1':case 'v2':alex.phone=true;await wait(1600);alex.emote=a.id==='v1'?'♥':'…';await wait(1300);alex.phone=false;break;
+    case 'p1':await walkTo(alex,170,150,20);alex.facing=1;for(let i=0;i<2;i++){alex.emote='~';await wait(1100);alex.emote=null;await wait(500);}break;
+    case 'p2':S.cans=true;await walkTo(alex,150,134,24);alex.facing=1;alex.state='sit';alex.chair=true;alex.phone=true;await wait(1500);alex.emote='#';await wait(1500);break;
+  }
+  alex.emote=null;jule.emote=null;
+  await say(null,{m1:'Satz für Satz. Beim zwölften Durchgang sitzt der Einstieg.',m2:'Jule klatscht. „Ehrlich? Das war richtig gut.“',m3:'Nach dem dritten Abbruch legt Alex das Handy weg. „Ich kann das einfach nicht.“',s1:'Mehmet stottert am Anfang auch. Und dann … läuft es.',s2:'Perfekt, souverän, mühelos. Alex klappt den Laptop zu.',v1:'Alex liest die Nachricht zweimal.',v2:'Alex schickt einen Daumen zurück.',p1:'Einatmen, vier Sekunden. Ausatmen, sechs. Das Herz klopft – und das ist okay.',p2:'2:07 Uhr. Das Herz rast. An Schlaf ist nicht zu denken.'}[a.id]);
+}
+
+/* =========================================================
+   EPILOG
+   ========================================================= */
+async function epilog(){
+  setHud('Epilog · Lebensspanne');mood('dawn');showMeter(false);
+  await titleCard('Epilog','Ein ganzes Leben','Entwicklung hört nie auf');
+  const w=mk({kind:'tod',top:'#e07a5f',hair:'#5a3320',skin:'#efc6a0',pants:'#5b6ea6',x:-8,y:150,facing:1});
+  const morph=()=>{if(w.x<80){w.kind='tod';}else if(w.x<160){w.kind='teen';w.top='#4a6fa5';w.pants='#2d2d3a';}else if(w.x<240){w.kind='adult';w.top='#3d5a80';}else{w.kind='elder';w.hair='#cfcfcf';w.cane=true;w.top='#6b5a7a';}};
+  const iv=setInterval(morph,100);
+  try{
+    setScene(SC.dawn);actors=[w];cine(true);bg(camFollow(w,1.35,3000,-14));await fadeIn(1600);
+    const walk=bg((async()=>{await walkTo(w,80,150,13);await walkTo(w,160,150,17);await walkTo(w,240,150,17);await walkTo(w,292,150,8);w.facing=-1;})());
+    await say(null,'Ein Kind, das bei der Mutter Sicherheit sucht.');
+    await say(null,'Ein junger Mensch, der fragt: Wer bin ich?');
+    await say(null,'Jemand, der lernt: Ich kann das.');
+    await say(null,'Der Entwicklungspsychologe Paul B. Baltes betonte: Entwicklung endet nie. Sie verläuft ein Leben lang – mit Gewinnen und mit Verlusten.');
+    await walk;await wait(1200);
+  }finally{clearInterval(iv);}
+  await fadeOut(1400);
+  await panel(`<div class="kick">Wissenskarte</div><h2>Entwicklung über die Lebensspanne</h2><p>Paul B. Baltes beschreibt Entwicklung mit einigen Leitsätzen:</p><ul><li>Entwicklung ist ein <b>lebenslanger</b> Prozess – keine Lebensphase hat Vorrang.</li><li>Sie ist <b>multidirektional</b>: In jedem Alter gibt es Gewinne und Verluste.</li><li>Menschen bleiben <b>plastisch</b>, also veränderbar – in Grenzen.</li><li>Entwicklung ist <b>eingebettet</b> in Kontexte: altersbezogene, geschichtliche und nicht-normative (unvorhersehbare) Einflüsse.</li></ul>`,[{label:'Weiter',primary:true}]);
+  unlock('baltes');
+  const a=await panel(`<div class="kick">Letzte Frage</div><h2>Welche Entwicklungsaufgabe stand für Alex in Kapitel III im Mittelpunkt?</h2>`,[{label:'Berufliche Kompetenzen aufbauen und sich im Arbeitsleben bewähren',value:'ok'},{label:'Eine sichere Bindung zu einer Bezugsperson aufbauen',value:'b'},{label:'Sich vom Elternhaus ablösen und eine eigene Wohnung finden',value:'c'}]);
+  a==='ok'?goodS():badS();
+  await panel(`<div class="kick">Ende</div><div class="verdict ${a==='ok'?'good':'bad'}">${a==='ok'?'Richtig.':'Nicht ganz.'}</div><p>Im frühen Erwachsenenalter rückt das <b>Bewähren im Beruf</b> in den Mittelpunkt – eng verknüpft mit Selbstwirksamkeit. Die Ablösung vom Elternhaus spielt ebenfalls eine Rolle, war aber nicht Thema der Präsentationswoche.</p><h3>Deine Reise</h3><p>Kapitel I: ${C1.done?`<b>${C1.correct} von ${C1.done}</b> Kindern richtig zugeordnet`:'noch nicht gespielt'}<br>Notizbuch: <b>${unlocked.size} von ${Object.keys(NB).length}</b> Einträgen</p><p class="dim">Danke fürs Spielen.</p>`,[{label:'Zurück zum Menü',primary:true}]);
+}
+
+/* =========================================================
+   ABLAUF & MENÜ
+   ========================================================= */
+let MODE='all';
+function nextLabel(n){if(MODE!=='all')return'Zurück zum Menü';return['','Weiter zu Kapitel II','Weiter zu Kapitel III','Weiter zum Epilog'][n];}
+function showMenu(on){$('#menu').style.display=on?'flex':'none';}
+function goMenu(){abortAll();resetUI();showMeter(false);setScene(SC.title);actors=[];cine(false);setHud('');mood('title');fadeEl.style.transitionDuration='1200ms';fadeEl.style.opacity=0;showMenu(true);}
+async function startRun(what){
+  abortAll();resetUI();showMenu(false);MODE=what;const my=runId;
+  try{
+    if(what==='all'){await chapter1();await chapter2();await chapter3();await epilog();}
+    else if(what==='1')await chapter1();else if(what==='2')await chapter2();else if(what==='3')await chapter3();else await epilog();
+    if(runId===my)goMenu();
+  }catch(e){if(e!==ABORT){console.error(e);goMenu();}}
+}
+document.querySelectorAll('#menu button').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();clickS();startRun(b.dataset.run);}));
+$('#bMenu').addEventListener('click',e=>{e.stopPropagation();goMenu();});
+$('#bNb').addEventListener('click',e=>{e.stopPropagation();openNb();});
+$('#bSnd').addEventListener('click',e=>{e.stopPropagation();AU.on=!AU.on;if(AU.master)AU.master.gain.value=AU.on?.55:0;e.target.textContent='Ton: '+(AU.on?'an':'aus');});
+$('#stage').addEventListener('click',()=>{if(advance)advance();});
+document.addEventListener('keydown',e=>{
+  if($('#nb').style.display==='flex'){if(e.key==='Escape')$('#nb').style.display='none';return;}
+  const P=$('#panel');
+  if(P.style.display==='flex'){const bs=P.querySelectorAll('.btn');const n=parseInt(e.key,10);if(n>=1&&n<=bs.length){bs[n-1].click();e.preventDefault();}else if((e.key==='Enter'||e.key===' ')&&bs.length===1){bs[0].click();e.preventDefault();}return;}
+  if(keyChoice){const n=parseInt(e.key,10);if(n>=1){keyChoice(n-1);e.preventDefault();}return;}
+  if(e.key===' '||e.key==='Enter'){if(advance){advance();e.preventDefault();}}
+});
+$('#splash').addEventListener('click',e=>{e.stopPropagation();au();if(AU.ac&&AU.ac.state==='suspended')AU.ac.resume();$('#splash').style.display='none';goMenu();});
+setScene(SC.title);
+function frame(ts){
+  T=ts;ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+  if(scene){scene.draw(T);actors.forEach(updActor);actors.filter(a=>a.visible).sort((a,b)=>a.y-b.y).forEach(drawPerson);if(scene.fg)scene.fg(T);}
+  camDraw();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

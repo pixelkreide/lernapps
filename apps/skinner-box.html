@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skinner-Box – Labor für operante Konditionierung</title>
+<style>
+:root{
+  --g:#97B400; --gd:#6c8200; --gl:#eef5d6;
+  --ink:#1f271a; --mut:#5b6455; --bg:#f5f6f1; --card:#fff; --line:#dfe3d5;
+  --ok:#3f8a2e; --okbg:#e8f4e2; --bad:#b8402f; --badbg:#fbe9e5; --info:#2f6aa8; --infobg:#e7f0fa;
+  --amber:#c98a12;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.5}
+button{font:inherit;cursor:pointer}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.bar{height:8px;background:var(--g)}
+.head{max-width:1180px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{width:40px;height:40px;border-radius:10px;background:var(--g);display:grid;place-items:center;flex:none}
+.head h1{font-size:1.15rem;margin:0;line-height:1.2}
+.head .sub{font-size:.85rem;color:var(--mut)}
+.head .sp{flex:1}
+.gbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font-size:.9rem}
+.gbtn:hover{border-color:var(--g)}
+nav{max-width:1180px;margin:0 auto;padding:0 12px 10px;display:flex;gap:6px;overflow-x:auto}
+nav button{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font-size:.9rem;display:flex;align-items:center;gap:7px;color:var(--ink)}
+nav button .n{width:22px;height:22px;border-radius:50%;background:#eceee6;display:grid;place-items:center;font-size:.78rem;font-weight:700}
+nav button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+nav button.on .n{background:var(--g);color:#fff}
+nav button.done .n{background:var(--g);color:#fff}
+main{max-width:1180px;margin:0 auto;padding:18px}
+section{display:none}
+section.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+h2{font-size:1.5rem;margin:.2em 0 .2em}
+h3{font-size:1.1rem;margin:0 0 .5em}
+.lead{color:var(--mut);margin:0 0 1em;max-width:760px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-lab{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.grid2,.grid-lab{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--gd);background:var(--gl);border-radius:6px;padding:2px 8px;margin-bottom:8px}
+.op{font-weight:700;color:var(--gd)}
+.step{display:flex;gap:10px;align-items:baseline}
+.step .num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--gl);color:var(--gd);font-weight:700;display:grid;place-items:center;font-size:.85rem}
+.btn{border:none;background:var(--ink);color:#fff;border-radius:10px;padding:9px 16px;font-weight:600}
+.btn:hover{filter:brightness(1.15)}
+.btn.g{background:var(--g);color:#fff}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.mc{display:grid;gap:8px;margin:.6em 0}
+.mc button{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;color:var(--ink)}
+.mc button:hover:not(:disabled){border-color:var(--g)}
+.mc button.ok{border-color:var(--ok);background:var(--okbg)}
+.mc button.bad{border-color:var(--bad);background:var(--badbg)}
+.mc button.pick{border-color:var(--info);background:var(--infobg)}
+.mc button:disabled{cursor:default}
+.fb{border-radius:10px;padding:10px 12px;margin-top:6px;font-size:.95rem}
+.fb.ok{background:var(--okbg);border-left:4px solid var(--ok)}
+.fb.bad{background:var(--badbg);border-left:4px solid var(--bad)}
+.fb.info{background:var(--infobg);border-left:4px solid var(--info)}
+.fb:empty{display:none}
+.q{margin-bottom:14px}
+.q .p{font-weight:600}
+textarea{width:100%;min-height:96px;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;resize:vertical}
+textarea:focus{outline:none;border-color:var(--g)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{border:1px dashed var(--gd);background:var(--gl);color:var(--ink);border-radius:999px;padding:3px 10px;font-size:.85rem}
+.chip.word{border-style:solid;background:#fff}
+.solution{display:none;margin-top:10px;background:#fafbf6;border:1px solid var(--line);border-radius:10px;padding:12px}
+.solution.on{display:block}
+.check{display:flex;gap:8px;align-items:flex-start;margin:4px 0}
+.check input{margin-top:5px;accent-color:var(--g)}
+canvas{display:block;width:100%;border-radius:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.stat{background:#f4f6ee;border-radius:10px;padding:8px 10px}
+.stat b{display:block;font-size:1.35rem;line-height:1.1}
+.stat span{font-size:.78rem;color:var(--mut)}
+.profile .pr{display:grid;grid-template-columns:150px 1fr 40px;gap:8px;align-items:center;font-size:.85rem;margin:4px 0}
+.profile .track{height:12px;background:#eef0e8;border-radius:6px;overflow:hidden}
+.profile .fill{height:100%;background:var(--g);border-radius:6px;transition:width .3s}
+.profile .pr:last-child .fill{background:var(--gd)}
+.big{font-size:1.05rem;padding:12px 20px}
+.msg{min-height:48px}
+.hintbox .h{display:none}
+.hintbox .h.on{display:block}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;color:var(--mut)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+select,input[type=range]{font:inherit}
+select{border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;max-width:100%}
+.matrix{display:grid;grid-template-columns:130px 1fr 1fr;gap:8px}
+.matrix .hd{font-weight:700;font-size:.85rem;color:var(--mut);display:flex;align-items:flex-end;padding:4px}
+.matrix .rh{font-weight:700;font-size:.85rem;color:var(--mut);display:flex;align-items:center;padding:4px}
+.cell{border:2px solid var(--line);border-radius:12px;padding:12px;background:#fff;text-align:left;min-height:96px}
+.cell:hover{border-color:var(--g)}
+.cell .t{font-weight:700;font-size:1.02rem}
+.cell .e{font-size:.85rem;color:var(--mut)}
+.cell.up .arr{color:var(--ok)} .cell.down .arr{color:var(--bad)}
+.cell.sel{border-color:var(--ink);box-shadow:0 0 0 3px var(--gl)}
+@media (max-width:560px){.matrix{grid-template-columns:80px 1fr 1fr}.cell{padding:8px}.cell .t{font-size:.9rem}}
+.sort{display:grid;gap:10px}
+.sitem{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
+.sitem .opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.sitem .opts button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px;font-size:.85rem}
+.sitem .opts button.ok{border-color:var(--ok);background:var(--okbg)}
+.sitem .opts button.bad{border-color:var(--bad);background:var(--badbg)}
+.sitem.solved{border-color:var(--ok)}
+.recall{background:var(--infobg);border:1px solid #cfe0f2}
+.recall .tag{background:#fff;color:var(--info)}
+.modelnote{font-size:.82rem;color:var(--mut)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.85rem;margin:8px 0}
+.success{display:none;border:2px solid var(--g);background:var(--gl)}
+.success.on{display:block}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:640px){.compare{grid-template-columns:1fr}}
+.cbox{border-radius:12px;padding:12px;border:1.5px solid}
+.cbox.good{border-color:var(--ok);background:var(--okbg)}
+.cbox.poor{border-color:var(--bad);background:var(--badbg)}
+.dumpres span{display:inline-block;margin:3px;padding:2px 9px;border-radius:999px;font-size:.85rem}
+.dumpres .hit{background:var(--okbg);border:1px solid var(--ok)}
+.dumpres .miss{background:#f1f1ee;border:1px solid var(--line);color:var(--mut)}
+.reveal{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.reveal > button{width:100%;text-align:left;background:#fff;border:none;padding:12px 14px;font-weight:700;display:flex;justify-content:space-between}
+.reveal .body{display:none;padding:0 14px 14px}
+.reveal.on .body{display:block}
+/* Glossar */
+#gloss{position:fixed;top:0;right:0;height:100%;width:min(380px,92vw);background:#fff;border-left:1px solid var(--line);box-shadow:-8px 0 30px rgba(0,0,0,.08);transform:translateX(105%);transition:transform .25s;z-index:50;overflow-y:auto;padding:18px}
+#gloss.on{transform:none}
+#gloss dt{font-weight:700;margin-top:12px}
+#gloss dd{margin:2px 0 0;color:var(--mut);font-size:.92rem}
+.close{float:right}
+@media (max-width:600px){header{position:static}.head .sub{display:none}.logo{width:32px;height:32px}.head{padding:8px 14px}}
+footer{max-width:1180px;margin:0 auto;padding:10px 18px 30px;color:var(--mut);font-size:.8rem}
+kbd{background:#eee;border:1px solid #ccc;border-bottom-width:2px;border-radius:4px;padding:0 5px;font-size:.85em}
+.next{display:flex;justify-content:flex-end;margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar"></div>
+  <div class="head">
+    <div class="logo" aria-hidden="true">
+      <svg width="26" height="26" viewBox="0 0 26 26"><rect x="2" y="4" width="22" height="18" rx="2" fill="none" stroke="#fff" stroke-width="2.2"/><rect x="18" y="10" width="6" height="3" fill="#fff"/><circle cx="20" cy="18" r="2" fill="#fff"/></svg>
+    </div>
+    <div>
+      <h1>Skinner-Box</h1>
+      <div class="sub">Labor für operante Konditionierung · Pädagogik/Psychologie</div>
+    </div>
+    <div class="sp"></div>
+    <button class="gbtn" id="openGloss">📖 Fachbegriffe</button>
+  </div>
+  <nav id="nav"></nav>
+</header>
+
+<main>
+<!-- ============ STATION 0 ============ -->
+<section id="s0">
+  <span class="tag">Start</span>
+  <h2>Lernen aus Konsequenzen</h2>
+  <p class="lead">In diesem Labor trainierst du selbst eine virtuelle Ratte, vergleichst Verstärkerpläne in einem Experiment und überträgst die Ergebnisse auf Schule, Erziehung und Alltag.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Worum geht es?</h3>
+      <p>Der US-Psychologe <b>B. F. Skinner</b> (1904–1990) baute in den 1930er-Jahren eine Versuchskammer, in der Ratten einen Hebel drücken konnten. Auf den Hebeldruck folgte zum Beispiel ein Futterkügelchen. Skinner selbst sprach von einer „operanten Kammer“, bekannt wurde sie als <b>Skinner-Box</b>.</p>
+      <p>Er knüpfte an <b>Edward L. Thorndike</b> an: Nach dessen <b>Effektgesetz</b> wird Verhalten, auf das eine befriedigende Konsequenz folgt, häufiger gezeigt.</p>
+      <p style="margin-bottom:0"><b>Operante Konditionierung</b> heißt: Ein Lebewesen lernt den Zusammenhang zwischen seinem <i>eigenen Verhalten</i> und dessen <i>Konsequenz</i>.</p>
+    </div>
+    <div class="card">
+      <h3>Dein Weg durchs Labor</h3>
+      <div class="step"><span class="num">1</span><p style="margin:.2em 0">Du formst das Verhalten einer Ratte (<b>Shaping</b>).</p></div>
+      <div class="step"><span class="num">2</span><p style="margin:.2em 0">Du vergleichst im Experiment fünf <b>Verstärkerpläne</b>.</p></div>
+      <div class="step"><span class="num">3</span><p style="margin:.2em 0">Du unterscheidest <b>Verstärkung und Bestrafung</b>.</p></div>
+      <div class="step"><span class="num">4</span><p style="margin:.2em 0">Du wendest alles auf <b>Alltagsfälle</b> an.</p></div>
+      <div class="step"><span class="num">5</span><p style="margin:.2em 0">Du prüfst dein Wissen und beurteilst die <b>Grenzen</b> der Theorie.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Vorwissen aktivieren</span>
+    <h3>Klassisch oder operant?</h3>
+    <p>Die klassische Konditionierung (Pawlow) kennst du vielleicht schon. <span class="op">Ordne zu</span>, zu welcher Form des Lernens die Aussage passt.</p>
+    <div class="sort" id="sortKO"></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Vorhersage</span>
+    <h3>Was glaubst du?</h3>
+    <p>Hund A bekommt <b>jedes Mal</b> ein Leckerli, wenn er sich auf „Sitz!“ hinsetzt. Hund B bekommt es nur <b>manchmal</b> – mal beim zweiten, mal beim fünften Mal. Ab heute gibt es für beide <b>nie wieder</b> ein Leckerli.</p>
+    <div id="pred0"></div>
+    <p class="modelnote">Du musst hier noch nichts wissen. In Station 2 überprüfst du deine Vorhersage im Experiment.</p>
+  </div>
+  <div class="next"><button class="btn g big" data-go="1">Zur Station 1: Shaping →</button></div>
+</section>
+
+<!-- ============ STATION 1 ============ -->
+<section id="s1">
+  <span class="tag">Station 1 · Shaping</span>
+  <h2>Bring der Ratte das Hebeldrücken bei</h2>
+  <p class="lead">Die Ratte kennt den Hebel noch nicht. Der Hebel ist mit dem Futterspender verbunden: Drückt sie ihn, fällt automatisch Futter in die Schale. Bis sie ihn zufällig drückt, kann es aber sehr lange dauern. Deine Aufgabe: <b>Gib per Knopfdruck Futter genau dann, wenn die Ratte etwas tut, das dem Ziel näherkommt.</b></p>
+
+  <div class="grid-lab">
+    <div>
+      <div class="card" style="padding:12px">
+        <canvas id="box1" aria-label="Skinner-Box mit Ratte von oben"></canvas>
+        <div class="row" style="margin-top:10px">
+          <button class="btn g big" id="feed">🍪 Futter geben <span style="opacity:.75;font-weight:400">(Leertaste)</span></button>
+          <button class="btn ghost" id="run1">⏸ Pause</button>
+          <button class="btn ghost" id="speed1">Tempo 1×</button>
+          <button class="btn ghost" id="reset1">↺ Neu starten</button>
+        </div>
+        <div class="fb info msg" id="msg1" style="margin-top:10px">Beobachte die Ratte zuerst ein paar Sekunden. Wo hält sie sich auf?</div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>Messwerte</h3>
+        <div class="stats">
+          <div class="stat"><b id="st-feed">0</b><span>Futter von dir</span></div>
+          <div class="stat"><b id="st-press">0 / 10</b><span>eigene Hebeldrücke</span></div>
+          <div class="stat"><b id="st-time">0:00</b><span>Versuchszeit</span></div>
+        </div>
+        <h3 style="margin-top:14px">Verhaltensprofil</h3>
+        <p class="modelnote" style="margin-top:-4px">Wie wahrscheinlich die Ratte ein Verhalten als Nächstes zeigt. Achte darauf, wie sich die Balken durch dein Futter verändern.</p>
+        <div class="profile" id="profile"></div>
+      </div>
+      <div class="card hintbox">
+        <h3>Hilfen</h3>
+        <p class="modelnote" style="margin-top:-4px">Probiere es erst ohne Hilfe. Öffne die Hilfen nacheinander, wenn du nicht weiterkommst.</p>
+        <div class="h" id="h1"><div class="fb info">💡 <b>Hilfe 1:</b> Warte nicht, bis die Ratte den Hebel drückt. Verstärke auch schon kleine Schritte in die richtige Richtung.</div></div>
+        <div class="h" id="h2"><div class="fb info">💡 <b>Hilfe 2:</b> Gib zuerst Futter, sobald die Ratte in der <b>rechten Hälfte</b> ist. Achte auf das Timing: Belohne nie, während sie vom Hebel <b>wegläuft</b>.</div></div>
+        <div class="h" id="h3"><div class="fb info">💡 <b>Hilfe 3:</b> Hebe das Kriterium schrittweise an: Belohne bald nur noch, wenn sie <b>nahe am Hebel</b> ist, und schließlich nur noch, wenn sie sich <b>am Hebel aufrichtet</b>.</div></div>
+        <button class="btn ghost" id="hintBtn" style="margin-top:8px">Hilfe anzeigen (1/3)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card success" id="succ1">
+    <h3>🎉 Geschafft! Die Ratte drückt den Hebel selbstständig.</h3>
+    <p>Das, was du gemacht hast, heißt <b>Shaping</b> (Verhaltensformung): Du hast <b>schrittweise Annäherungen</b> an das Zielverhalten verstärkt (<b>sukzessive Approximation</b>). Jetzt verstärkt der Hebel das Verhalten von selbst.</p>
+    <div class="q">
+      <div class="p"><span class="op">Erkläre</span> in zwei bis drei Sätzen, wie du vorgegangen bist und warum das funktioniert hat.</div>
+      <div class="chips" data-for="t1a">
+        <button class="chip">Zuerst habe ich verstärkt, wenn …</button>
+        <button class="chip">Dann habe ich das Kriterium angehoben, indem …</button>
+        <button class="chip">Das funktioniert, weil verstärktes Verhalten …</button>
+      </div>
+      <textarea id="t1a" placeholder="Deine Erklärung …"></textarea>
+      <button class="btn ghost" data-sol="sol1a">Musterlösung vergleichen</button>
+      <div class="solution" id="sol1a"><b>Musterlösung:</b> Zuerst habe ich jedes Verhalten verstärkt, das grob in Richtung Hebel ging, z. B. den Aufenthalt in der rechten Hälfte. Dann habe ich das Kriterium angehoben und nur noch Verhalten nahe am Hebel und schließlich das Aufrichten am Hebel verstärkt. Das funktioniert, weil verstärktes Verhalten häufiger auftritt. So wird das Verhalten Schritt für Schritt in Richtung Zielverhalten geformt, das dann selbst verstärkt wird.</div>
+    </div>
+    <div class="q">
+      <div class="p">Der Futterspender macht beim Auslösen ein Klickgeräusch. Warum wirkt dieses Klicken nach einiger Zeit selbst schon als Verstärker?</div>
+      <div id="mc1b"></div>
+    </div>
+    <div class="q">
+      <div class="p">Was ist dir beim <b>Timing</b> aufgefallen?</div>
+      <div id="mc1c"></div>
+    </div>
+    <div class="next"><button class="btn g" data-go="2">Weiter zu Station 2 →</button></div>
+  </div>
+</section>
+
+<!-- ============ STATION 2 ============ -->
+<section id="s2">
+  <span class="tag">Station 2 · Verstärkerpläne</span>
+  <h2>Immer oder nur manchmal belohnen?</h2>
+  <p class="lead">Eine bereits trainierte Ratte wird 10 Minuten nach einem bestimmten <b>Verstärkerplan</b> mit Futter belohnt. Danach wird der Futterspender abgeschaltet (<b>Löschung</b>). Ein <b>kumulativer Schreiber</b> zeichnet alle Hebeldrücke auf.</p>
+
+  <div class="card recall">
+    <span class="tag">Kurz erinnert</span>
+    <div id="rc2"></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Vorhersage</span>
+    <h3>Lege dich fest, bevor du experimentierst</h3>
+    <div id="pred2a"></div>
+    <div id="pred2b"></div>
+  </div>
+
+  <div class="card">
+    <h3>Die fünf Pläne</h3>
+    <table>
+      <thead><tr><th>Plan</th><th>Futter gibt es …</th></tr></thead>
+      <tbody>
+        <tr><td><span class="dot" style="background:#6b7280"></span><b>Kontinuierlich (KV)</b></td><td>nach <b>jedem</b> Hebeldruck</td></tr>
+        <tr><td><span class="dot" style="background:#2f6aa8"></span><b>Feste Quote (FQ 10)</b></td><td>nach <b>genau 10</b> Hebeldrücken</td></tr>
+        <tr><td><span class="dot" style="background:#c0392b"></span><b>Variable Quote (VQ 10)</b></td><td>nach <b>durchschnittlich 10</b> Drücken – mal nach 2, mal nach 17</td></tr>
+        <tr><td><span class="dot" style="background:#c98a12"></span><b>Festes Intervall (FI 60 s)</b></td><td>für den ersten Druck, nachdem <b>genau 60 Sekunden</b> vergangen sind</td></tr>
+        <tr><td><span class="dot" style="background:#7a4fb5"></span><b>Variables Intervall (VI 60 s)</b></td><td>für den ersten Druck nach <b>durchschnittlich 60 Sekunden</b> – mal nach 10, mal nach 110</td></tr>
+      </tbody>
+    </table>
+    <p class="modelnote" style="margin-bottom:0">Quote = abhängig von der <b>Anzahl</b> der Reaktionen. Intervall = abhängig von der <b>Zeit</b>. Alle Pläne außer KV sind <b>intermittierend</b> (nur manche Reaktionen werden verstärkt).</p>
+  </div>
+
+  <div class="grid-lab">
+    <div class="card" style="padding:12px">
+      <div class="row" style="justify-content:space-between">
+        <h3 style="margin:0">Kumulativer Schreiber</h3>
+        <span class="modelnote" id="phase2">bereit</span>
+      </div>
+      <div class="row" style="margin:8px 0">
+        <button class="btn ghost" id="viewAll" style="padding:5px 12px;border-color:var(--ink)">Gesamtansicht</button>
+        <button class="btn ghost" id="viewZoom" style="padding:5px 12px">🔍 Lupe: Lernphase Minute 4–7</button>
+      </div>
+      <canvas id="rec" aria-label="Kumulative Kurve der Hebeldrücke"></canvas>
+      <div class="legend" id="legend"></div>
+      <p class="modelnote" style="margin:0">So liest du die Kurve: Jeder Hebeldruck hebt die Linie ein Stück an. <b>Steil = schnelles Drücken</b>, <b>waagrecht = keine Reaktion</b>. Die kleinen Striche markieren Futtergaben.</p>
+    </div>
+    <div>
+      <div class="card">
+        <h3>Versuch starten</h3>
+        <label for="plan" class="modelnote">Verstärkerplan</label><br>
+        <select id="plan">
+          <option value="KV">Kontinuierlich (KV)</option>
+          <option value="FQ">Feste Quote (FQ 10)</option>
+          <option value="VQ">Variable Quote (VQ 10)</option>
+          <option value="FI">Festes Intervall (FI 60 s)</option>
+          <option value="VI">Variables Intervall (VI 60 s)</option>
+        </select>
+        <div style="margin:10px 0">
+          <label for="spd" class="modelnote">Zeitraffer: <b id="spdv">60×</b></label>
+          <input type="range" id="spd" min="0" max="3" step="1" value="2" style="width:100%">
+        </div>
+        <canvas id="box2" style="max-width:320px;margin:0 auto 8px"></canvas>
+        <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat"><b id="s2t">0:00</b><span>Versuchszeit</span></div>
+          <div class="stat"><b id="s2p">0</b><span>Hebeldrücke</span></div>
+          <div class="stat"><b id="s2r">0</b><span>Futtergaben</span></div>
+        </div>
+        <div class="row">
+          <button class="btn g" id="start2">▶ Versuch starten</button>
+          <button class="btn ghost" id="instant2">⚡ Sofort auswerten</button>
+          <button class="btn ghost" id="clear2">Kurven löschen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Ergebnisse</h3>
+    <div style="overflow-x:auto"><table id="res2"><thead><tr><th>Plan</th><th>Drücke Lernphase</th><th>Futtergaben</th><th>Drücke Löschphase</th><th>Löschung</th></tr></thead><tbody><tr><td colspan="5" class="modelnote">Noch keine Versuche. Teste am besten alle fünf Pläne.</td></tr></tbody></table></div>
+    <p class="modelnote" style="margin-bottom:0">„Gelöscht“ bedeutet hier: Die Ratte hat 2 Minuten lang nicht mehr gedrückt. Angegeben ist der Zeitpunkt des letzten Drucks nach dem Abschalten.</p>
+  </div>
+
+  <div class="card" id="eval2" style="display:none">
+    <span class="tag">Auswertung</span>
+    <h3>Deine Vorhersagen im Vergleich</h3>
+    <div id="predcmp"></div>
+    <div class="q" style="margin-top:12px">
+      <div class="p">Woran erkennst du in der Kurve, wie schnell die Ratte drückt?</div>
+      <div id="mc2a"></div>
+    </div>
+    <div class="q">
+      <div class="p">Bei welchem Plan steigt die Kurve in der Lernphase am steilsten an?</div>
+      <div id="mc2b"></div>
+    </div>
+    <div class="q">
+      <div class="p"><span class="op">Erkläre</span>, warum intermittierende Verstärkung zu einer höheren <b>Löschungsresistenz</b> führt.</div>
+      <div class="chips" data-for="t2a">
+        <button class="chip">Bei kontinuierlicher Verstärkung merkt die Ratte sofort, dass …</button>
+        <button class="chip">Bei intermittierender Verstärkung hat sie schon in der Lernphase erlebt, dass …</button>
+        <button class="chip">Deshalb unterscheidet sich die Löschphase …</button>
+      </div>
+      <textarea id="t2a" placeholder="Deine Erklärung …"></textarea>
+      <button class="btn ghost" data-sol="sol2a">Musterlösung vergleichen</button>
+      <div class="solution" id="sol2a"><b>Musterlösung:</b> Bei kontinuierlicher Verstärkung folgt auf jeden Druck Futter. Bleibt es aus, ist der Unterschied zur Lernphase sofort spürbar, und das Verhalten wird schnell gelöscht. Bei intermittierender Verstärkung hat die Ratte schon in der Lernphase oft gedrückt, ohne Futter zu bekommen. Die Löschphase unterscheidet sich deshalb zunächst kaum von der Lernphase. Die Ratte „rechnet“ weiter mit einer Belohnung und drückt länger weiter. Besonders ausgeprägt ist das bei <b>variablen</b> Plänen, weil die nächste Belohnung nie vorhersehbar ist.
+      <br><br><b>Zusatz:</b> Achte auf die KV-Kurve direkt nach dem Abschalten. Häufig wird kurz <b>schneller</b> gedrückt, bevor das Verhalten abbricht. Das nennt man <b>Löschungstrotz</b> (engl. <i>extinction burst</i>).</div>
+    </div>
+    <p class="modelnote">Hinweis: Das Labor ist ein vereinfachtes Modell einer trainierten Ratte, keine echte Messung. Die Muster sind an den klassischen Befunden von Ferster und Skinner (1957) orientiert. Bei einer echten Ratte schwanken die Werte stärker.</p>
+    <div class="next"><button class="btn g" data-go="3">Weiter zu Station 3 →</button></div>
+  </div>
+</section>
+
+<!-- ============ STATION 3 ============ -->
+<section id="s3">
+  <span class="tag">Station 3 · Vier Konsequenzen</span>
+  <h2>Verstärkung oder Bestrafung?</h2>
+  <p class="lead">Konsequenzen unterscheiden sich in zwei Dimensionen: Wird ein Reiz <b>hinzugefügt</b> oder <b>entfernt</b>? Ist der Reiz <b>angenehm</b> oder <b>unangenehm</b>?</p>
+
+  <div class="card recall">
+    <span class="tag">Kurz erinnert</span>
+    <div id="rc3"></div>
+  </div>
+
+  <div class="card">
+    <div class="fb info" style="margin:0 0 14px"><b>Merke:</b> „Positiv“ und „negativ“ bedeuten hier nicht „gut“ und „schlecht“, sondern <b>+ (hinzufügen)</b> und <b>− (wegnehmen)</b>. <b>Verstärkung</b> heißt immer: Das Verhalten wird <b>häufiger</b>. <b>Bestrafung</b> heißt immer: Das Verhalten wird <b>seltener</b>.</div>
+    <div class="matrix" id="matrix">
+      <div></div>
+      <div class="hd">Reiz wird hinzugefügt (+)</div>
+      <div class="hd">Reiz wird entfernt (−)</div>
+      <div class="rh">angenehmer Reiz</div>
+      <button class="cell up" data-c="pv"><div class="t"><span class="arr">▲</span> Positive Verstärkung</div><div class="e">Verhalten wird häufiger</div></button>
+      <button class="cell down" data-c="b2"><div class="t"><span class="arr">▼</span> Bestrafung Typ II</div><div class="e">Verhalten wird seltener</div></button>
+      <div class="rh">unangenehmer Reiz</div>
+      <button class="cell down" data-c="b1"><div class="t"><span class="arr">▼</span> Bestrafung Typ I</div><div class="e">Verhalten wird seltener</div></button>
+      <button class="cell up" data-c="nv"><div class="t"><span class="arr">▲</span> Negative Verstärkung</div><div class="e">Verhalten wird häufiger</div></button>
+    </div>
+    <div class="fb info" id="cellinfo" style="margin-top:12px">Klicke auf ein Feld, um Beispiele aus der Skinner-Box und aus dem Alltag zu sehen.</div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Musterbeispiel</span>
+    <h3>In drei Fragen zur richtigen Bestimmung</h3>
+    <p><i>Tim räumt sein Zimmer auf, und seine Mutter hört auf zu meckern. In Zukunft räumt Tim häufiger auf.</i></p>
+    <div class="step"><span class="num">1</span><p style="margin:.2em 0"><b>Wird ein Reiz hinzugefügt oder entfernt?</b> Das Meckern hört auf, also wird ein Reiz <b>entfernt (−)</b>.</p></div>
+    <div class="step"><span class="num">2</span><p style="margin:.2em 0"><b>Ist der Reiz angenehm oder unangenehm?</b> Meckern ist für Tim <b>unangenehm</b>.</p></div>
+    <div class="step"><span class="num">3</span><p style="margin:.2em 0"><b>Wird das Verhalten häufiger oder seltener?</b> Tim räumt <b>häufiger</b> auf, also handelt es sich um Verstärkung.</p></div>
+    <div class="fb ok">→ Ein unangenehmer Reiz wird entfernt, das Verhalten wird häufiger: <b>negative Verstärkung</b>.</div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Lückenbeispiel</span>
+    <h3>Jetzt du – Schritt 1 ist schon erledigt</h3>
+    <p><i>Sara kommt zwei Stunden zu spät nach Hause. Ihre Eltern verbieten ihr den Konzertbesuch am Wochenende. Danach kommt Sara pünktlicher.</i></p>
+    <div class="step"><span class="num">1</span><p style="margin:.2em 0"><b>Hinzugefügt oder entfernt?</b> Der Konzertbesuch wird gestrichen, also wird etwas <b>entfernt (−)</b>.</p></div>
+    <div class="step"><span class="num">2</span><div style="flex:1"><b>Angenehm oder unangenehm?</b><div class="mc" id="gap2" style="grid-template-columns:1fr 1fr"></div></div></div>
+    <div class="step"><span class="num">3</span><div style="flex:1"><b>Häufiger oder seltener?</b> <span class="modelnote">(Gemeint ist das Zuspätkommen.)</span><div class="mc" id="gap3" style="grid-template-columns:1fr 1fr"></div></div></div>
+    <div class="step"><span class="num">4</span><div style="flex:1"><b>Also liegt vor …</b><div class="mc" id="gap4" style="grid-template-columns:1fr 1fr"></div></div></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Übung</span>
+    <h3>Bestimme die Form der Konsequenz</h3>
+    <p class="modelnote">Gehe jedes Mal die drei Fragen durch. Bei einem Fehler bekommst du eine Erklärung und kannst es noch einmal versuchen.</p>
+    <div class="sort" id="sort4"></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Fehler finden</span>
+    <h3>Was ist hier falsch?</h3>
+    <div class="compare">
+      <div class="cbox poor"><b>Max schreibt:</b><br>„Negative Verstärkung heißt, dass ein Kind für schlechtes Verhalten bestraft wird, zum Beispiel mit Hausarrest.“</div>
+      <div class="cbox good" id="maxgood" style="display:none"><b>Korrigierte Fassung:</b><br>„Negative Verstärkung heißt, dass ein <b>unangenehmer Reiz entfernt</b> wird und das Verhalten dadurch <b>häufiger</b> auftritt. Hausarrest ist dagegen <b>Bestrafung Typ II</b>: Ein angenehmer Reiz (Freizeit mit Freunden) wird entzogen.“</div>
+    </div>
+    <p style="margin-top:12px"><span class="op">Wähle</span> die <b>zwei</b> Fehler aus, die Max macht.</p>
+    <div class="mc" id="maxerr"></div>
+    <button class="btn ghost" id="maxcheck">Prüfen</button>
+    <div class="fb" id="maxfb"></div>
+  </div>
+
+  <div class="card">
+    <h3>Warum Bestrafung in der Erziehung problematisch ist</h3>
+    <p>Bestrafung kann Verhalten <b>unterdrücken</b>, zeigt aber nicht, welches Verhalten <b>erwünscht</b> ist. Mögliche Nebenwirkungen sind Angst, Flucht und Vermeidung, Aggression und eine gestörte Beziehung zur strafenden Person. Lernpsychologisch wirksamer ist es, erwünschtes Alternativverhalten zu verstärken.</p>
+    <div class="q">
+      <div class="p"><span class="op">Begründe</span>: Ein Kind wird jedes Mal ausgeschimpft, wenn es im Unterricht stört. Trotzdem stört es immer häufiger. Wie ist das möglich?</div>
+      <div class="chips" data-for="t3a"><button class="chip">Für das Kind ist das Schimpfen möglicherweise …</button><button class="chip">Entscheidend ist nicht die Absicht der Lehrkraft, sondern …</button></div>
+      <textarea id="t3a" placeholder="Deine Begründung …"></textarea>
+      <button class="btn ghost" data-sol="sol3a">Musterlösung vergleichen</button>
+      <div class="solution" id="sol3a"><b>Musterlösung:</b> Für das Kind ist das Schimpfen möglicherweise gar nicht unangenehm. Es bekommt dadurch Aufmerksamkeit von der Lehrkraft und der Klasse, also einen angenehmen Reiz. Dann wirkt das Schimpfen als <b>positive Verstärkung</b>, und das Stören wird häufiger. Ob eine Konsequenz verstärkt oder bestraft, entscheidet nicht die Absicht der Lehrkraft, sondern <b>ihre Wirkung auf das Verhalten</b>.</div>
+    </div>
+    <div class="next"><button class="btn g" data-go="4">Weiter zu Station 4 →</button></div>
+  </div>
+</section>
+
+<!-- ============ STATION 4 ============ -->
+<section id="s4">
+  <span class="tag">Station 4 · Transfer</span>
+  <h2>Die Skinner-Box im Alltag</h2>
+  <p class="lead">Verstärkerpläne gibt es nicht nur im Labor. Bestimme in jedem Fall zuerst das Prinzip. Erkläre dann den Fall mit Fachbegriffen und vergleiche mit der Musterlösung.</p>
+
+  <div class="card recall">
+    <span class="tag">Kurz erinnert</span>
+    <div id="rc4"></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Wortbank</span>
+    <p class="modelnote" style="margin-top:0">Klicke einen Begriff an, um ihn in das zuletzt gewählte Textfeld einzufügen.</p>
+    <div class="chips" id="wordbank"></div>
+  </div>
+
+  <div id="cases"></div>
+  <div class="next"><button class="btn g" data-go="5">Weiter zu Station 5 →</button></div>
+</section>
+
+<!-- ============ STATION 5 ============ -->
+<section id="s5">
+  <span class="tag">Station 5 · Sichern &amp; Beurteilen</span>
+  <h2>Was bleibt hängen?</h2>
+  <p class="lead">Zum Abschluss holst du dein Wissen aus dem Gedächtnis, prüfst es im Quiz und beurteilst die Grenzen der Theorie.</p>
+
+  <div class="card">
+    <span class="tag">Brain-Dump</span>
+    <h3>Alles raus aus dem Kopf</h3>
+    <p>Schreibe ohne nachzuschauen <b>alle Fachbegriffe</b> auf, die dir zur operanten Konditionierung einfallen. Danach siehst du, welche dir gefehlt haben.</p>
+    <textarea id="dump" placeholder="z. B. Verstärkung, …"></textarea>
+    <button class="btn ghost" id="dumpbtn" style="margin-top:6px">Mit der Begriffsliste vergleichen</button>
+    <div class="dumpres" id="dumpres" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Quiz</span>
+    <h3>Abrufübung</h3>
+    <p class="modelnote" id="lastquiz" style="margin-top:-4px"></p>
+    <div id="quiz"></div>
+    <div class="row"><button class="btn ghost" id="requiz">↺ Neu mischen</button><span id="qscore" class="modelnote"></span></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Beurteilen</span>
+    <h3>Grenzen der operanten Konditionierung</h3>
+    <div class="reveal"><button>🧭 Lernen ohne Verstärkung? <span>+</span></button><div class="body">Edward C. <b>Tolman</b> ließ Ratten tagelang ohne Futter durch ein Labyrinth laufen. Als am Ziel plötzlich Futter lag, fanden sie den Weg fast sofort so schnell wie Ratten, die von Anfang an belohnt worden waren (Tolman &amp; Honzik, 1930). Sie hatten also auch ohne Verstärkung gelernt und eine Art „innere Landkarte“ gebildet. Das nennt man <b>latentes Lernen</b>. Verstärkung entscheidet offenbar eher darüber, ob Gelerntes <i>gezeigt</i> wird.</div></div>
+    <div class="reveal"><button>🎨 Kann Belohnung schaden? <span>+</span></button><div class="body">In einem bekannten Experiment malten Kinder, die gern malten und dafür eine <b>angekündigte</b> Belohnung bekamen, danach in ihrer freien Zeit <b>seltener</b> als Kinder ohne Belohnung (Lepper, Greene &amp; Nisbett, 1973). Äußere Belohnung kann die <b>intrinsische Motivation</b> untergraben (<b>Korrumpierungseffekt</b>). Das spricht gegen den unbedachten Einsatz von Belohnungen in der Schule.</div></div>
+    <div class="reveal"><button>🧠 Ratte = Mensch? <span>+</span></button><div class="body">Menschen handeln auch aufgrund von <b>Einsicht, Erwartungen, Zielen und Werten</b>. Sie lernen außerdem durch <b>Beobachtung</b> anderer, ohne selbst verstärkt zu werden (Modelllernen nach Bandura). Die strenge Beschränkung auf beobachtbares Verhalten blendet solche kognitiven Prozesse aus. Zudem stellt sich die ethische Frage, wann gezielte Verhaltenssteuerung zur <b>Manipulation</b> wird, etwa bei Lootboxen oder Social-Media-Apps.</div></div>
+    <div class="q" style="margin-top:12px">
+      <div class="p"><span class="op">Beurteile</span>, inwieweit sich das Lernen von Schülerinnen und Schülern mit der operanten Konditionierung erklären lässt.</div>
+      <div class="chips" data-for="t5a">
+        <button class="chip">Einerseits lässt sich gut erklären, warum …</button>
+        <button class="chip">Ein Beispiel dafür ist …</button>
+        <button class="chip">Andererseits greift die Theorie zu kurz, wenn …</button>
+        <button class="chip">Insgesamt komme ich zu dem Urteil, dass …</button>
+      </div>
+      <textarea id="t5a" style="min-height:140px" placeholder="Dein begründetes Urteil …"></textarea>
+      <button class="btn ghost" data-sol="sol5a">Checkliste und Musterlösung</button>
+      <div class="solution" id="sol5a">
+        <b>Prüfe deinen Text:</b>
+        <label class="check"><input type="checkbox"> Ich nenne mindestens ein Argument <b>für</b> die Erklärungskraft (z. B. Lob, Noten, Lernen vor Tests).</label>
+        <label class="check"><input type="checkbox"> Ich nenne mindestens ein Argument <b>gegen</b> sie (z. B. latentes Lernen, Korrumpierungseffekt, Modelllernen, Einsicht).</label>
+        <label class="check"><input type="checkbox"> Ich verwende Fachbegriffe korrekt.</label>
+        <label class="check"><input type="checkbox"> Ich formuliere am Ende ein eigenes, begründetes Urteil.</label>
+        <hr style="border:none;border-top:1px solid var(--line)">
+        <b>Musterlösung (Auszug):</b> Einerseits lässt sich gut erklären, warum Schülerinnen und Schüler Verhalten zeigen, das Lob oder gute Noten einbringt, und warum bei angekündigten Tests oft erst kurz vorher gelernt wird (festes Intervall). Andererseits greift die Theorie zu kurz, wenn Lernende aus Interesse lernen, durch Beobachtung von Mitschülern lernen oder Zusammenhänge durch Einsicht verstehen. Außerdem kann Belohnung die intrinsische Motivation sogar schwächen. Insgesamt erklärt die operante Konditionierung einen wichtigen Teil des Lernverhaltens, besonders die Motivation durch Konsequenzen. Für ein vollständiges Bild muss sie aber durch kognitive und sozial-kognitive Theorien ergänzt werden.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Selbstcheck</span>
+    <h3>Ich kann …</h3>
+    <div id="selfcheck"></div>
+    <p class="modelnote" style="margin-bottom:0">Komm in ein paar Tagen zurück und mach das Quiz noch einmal. Die Fragen werden neu gemischt. Wiederholung mit Abstand sichert das Gelernte am besten.</p>
+  </div>
+</section>
+</main>
+
+<aside id="gloss" aria-label="Fachbegriffe">
+  <button class="gbtn close" id="closeGloss">✕</button>
+  <h3>Fachbegriffe</h3>
+  <dl id="glosslist"></dl>
+</aside>
+
+<footer>Lernlabor als einzelne HTML-Datei · läuft offline · es werden keine Daten übertragen. Die Simulationen sind vereinfachte Modelle zu Lernzwecken.</footer>
+
+<script>
+'use strict';
+/* ================= Hilfsfunktionen ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rnd = (a,b) => a + Math.random()*(b-a);
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const fmt = s => { s=Math.max(0,Math.floor(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem('skinnerbox_'+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k,v){ try{ localStorage.setItem('skinnerbox_'+k, JSON.stringify(v)); }catch(e){} }
+};
+let state = store.get('state', {done:{}, preds:{}, text:{}});
+const save = () => store.set('state', state);
+
+/* ================= Navigation ================= */
+const stations = ['Start','Shaping','Verstärkerpläne','Vier Konsequenzen','Transfer','Sichern'];
+function buildNav(){
+  const nav = $('#nav'); nav.innerHTML='';
+  stations.forEach((n,i)=>{
+    const b=document.createElement('button');
+    b.innerHTML=`<span class="n">${state.done[i]?'✓':i}</span>${n}`;
+    b.onclick=()=>go(i);
+    b.dataset.i=i;
+    if(state.done[i]) b.classList.add('done');
+    nav.appendChild(b);
+  });
+}
+let cur=0;
+function go(i){
+  cur=i;
+  $$('section').forEach((s,k)=>s.classList.toggle('on',k===i));
+  $$('#nav button').forEach((b,k)=>b.classList.toggle('on',k===i));
+  window.scrollTo({top:0,behavior:'smooth'});
+  S1.visible = i===1;
+  if(i===1) resize1();
+  if(i===2) { resize2(); draw2(); }
+}
+function markDone(i){ if(!state.done[i]){ state.done[i]=true; save(); buildNav(); $$('#nav button')[cur].classList.add('on'); } }
+document.addEventListener('click', e=>{
+  const g=e.target.closest('[data-go]'); if(g){ markDone(cur); go(+g.dataset.go); }
+  const s=e.target.closest('[data-sol]'); if(s){ $('#'+s.dataset.sol).classList.toggle('on'); }
+  const c=e.target.closest('.chips[data-for] .chip'); if(c){ insertText($('#'+c.parentElement.dataset.for), c.textContent); }
+  const r=e.target.closest('.reveal > button'); if(r){ r.parentElement.classList.toggle('on'); r.querySelector('span').textContent = r.parentElement.classList.contains('on')?'−':'+'; }
+});
+let lastTA=null;
+function insertText(ta, txt){
+  if(!ta) return;
+  const v=ta.value; const pos = ta.selectionStart ?? v.length;
+  const pre = v.slice(0,pos), post=v.slice(pos);
+  const add = (pre && !/\s$/.test(pre) ? ' ' : '') + txt.replace(/ …$/,' ');
+  ta.value = pre + add + post; ta.focus();
+  const np = (pre+add).length; ta.setSelectionRange(np,np);
+  ta.dispatchEvent(new Event('input'));
+}
+function bindTextareas(){
+  $$('textarea').forEach(ta=>{
+    if(state.text[ta.id]) ta.value=state.text[ta.id];
+    ta.addEventListener('input',()=>{ state.text[ta.id]=ta.value; save(); });
+    ta.addEventListener('focus',()=>lastTA=ta);
+  });
+}
+
+/* ================= Multiple Choice ================= */
+function mc(el, q){
+  el = typeof el==='string' ? $(el) : el;
+  el.innerHTML='';
+  if(q.prompt){ const p=document.createElement('div'); p.className='p'; p.innerHTML=q.prompt; el.appendChild(p); }
+  const box=document.createElement('div'); box.className='mc'; el.appendChild(box);
+  const fb=document.createElement('div'); fb.className='fb'; el.appendChild(fb);
+  const opts = q.noShuffle ? q.options : shuffle(q.options);
+  let solved=false;
+  opts.forEach(o=>{
+    const b=document.createElement('button'); b.innerHTML=o.t; box.appendChild(b);
+    b.onclick=()=>{
+      if(solved) return;
+      if(o.ok){
+        solved=true; b.classList.add('ok');
+        box.querySelectorAll('button').forEach(x=>x.disabled=true);
+        fb.className='fb ok'; fb.innerHTML='✓ '+(q.explain||'Richtig!');
+        q.onSolve && q.onSolve(q._firstTry!==false);
+      } else {
+        q._firstTry=false;
+        b.classList.add('bad'); b.disabled=true;
+        fb.className='fb bad'; fb.innerHTML='✗ '+(o.fb||'Noch nicht. Versuche es noch einmal.');
+      }
+    };
+  });
+}
+function predict(el, key, q){
+  el = $(el); el.innerHTML='';
+  const p=document.createElement('div'); p.className='p'; p.innerHTML=q.prompt; p.style.fontWeight='600'; el.appendChild(p);
+  const box=document.createElement('div'); box.className='mc'; el.appendChild(box);
+  const fb=document.createElement('div'); fb.className='fb'; el.appendChild(fb);
+  q.options.forEach(o=>{
+    const b=document.createElement('button'); b.innerHTML=o.t; box.appendChild(b);
+    if(state.preds[key]===o.v){ b.classList.add('pick'); }
+    b.onclick=()=>{
+      if(state.preds[key]!==undefined) return;
+      state.preds[key]=o.v; save();
+      b.classList.add('pick');
+      box.querySelectorAll('button').forEach(x=>x.disabled=true);
+      fb.className='fb info'; fb.innerHTML='🔒 Vorhersage gespeichert. '+(q.after||'');
+    };
+  });
+  if(state.preds[key]!==undefined){ box.querySelectorAll('button').forEach(x=>x.disabled=true); fb.className='fb info'; fb.innerHTML='🔒 Vorhersage gespeichert. '+(q.after||''); }
+}
+
+/* ================= Station 0 ================= */
+function sorter(el, items, cats){
+  el=$(el); el.innerHTML='';
+  shuffle(items).forEach(it=>{
+    const d=document.createElement('div'); d.className='sitem';
+    d.innerHTML=`<div>${it.t}</div><div class="opts"></div><div class="fb"></div>`;
+    const opts=d.querySelector('.opts'), fb=d.querySelector('.fb');
+    cats.forEach(c=>{
+      const b=document.createElement('button'); b.textContent=c.l; opts.appendChild(b);
+      b.onclick=()=>{
+        if(d.classList.contains('solved')) return;
+        if(c.v===it.c){ b.classList.add('ok'); d.classList.add('solved'); opts.querySelectorAll('button').forEach(x=>x.disabled=true); fb.className='fb ok'; fb.innerHTML='✓ '+it.why; }
+        else { b.classList.add('bad'); b.disabled=true; fb.className='fb bad'; fb.innerHTML='✗ '+(it.hint||'Noch nicht. Gehe die drei Fragen durch.'); }
+      };
+    });
+    el.appendChild(d);
+  });
+}
+sorter('#sortKO', [
+  {t:'Ein Hund speichelt beim Klang einer Glocke, weil die Glocke oft vor dem Futter ertönte.', c:'k', why:'Klassisch: Ein neutraler Reiz (Glocke) wird mit einem Reiz (Futter) gekoppelt und löst danach einen Reflex aus.', hint:'Was wird hier verknüpft: zwei Reize oder ein Verhalten mit seiner Folge?'},
+  {t:'Eine Ratte drückt immer öfter einen Hebel, weil danach Futter kommt.', c:'o', why:'Operant: Das Verhalten (Hebeldruck) wird durch seine Konsequenz (Futter) häufiger.', hint:'Achte darauf, was nach dem Verhalten passiert.'},
+  {t:'Gelernt wird ein Zusammenhang zwischen zwei Reizen.', c:'k', why:'Klassisch: Reiz-Reiz-Verknüpfung (z. B. Glocke und Futter).'},
+  {t:'Gelernt wird ein Zusammenhang zwischen Verhalten und Konsequenz.', c:'o', why:'Operant: Verhalten-Konsequenz-Verknüpfung.'},
+  {t:'Die Reaktion ist meist ein unwillkürlicher Reflex.', c:'k', why:'Klassisch: Speichelfluss, Lidschlag oder Angst laufen unwillkürlich ab.'},
+  {t:'Das Lebewesen zeigt das Verhalten aktiv und von sich aus.', c:'o', why:'Operant: Das Lebewesen „operiert“ aktiv auf seine Umwelt ein, daher der Name.'}
+], [{l:'klassisch',v:'k'},{l:'operant',v:'o'}]);
+
+predict('#pred0','dog',{prompt:'Welcher Hund setzt sich auf „Sitz!“ länger weiterhin hin?', options:[
+  {t:'Hund A, der immer belohnt wurde', v:'A'},
+  {t:'Hund B, der nur manchmal belohnt wurde', v:'B'},
+  {t:'Beide gleich lange', v:'gleich'}], after:'Du überprüfst sie in Station 2.'});
+
+/* ================= Zeichnen: Box & Ratte ================= */
+// Koordinaten in Box-Einheiten: x 0..1.6, y 0..1
+const BW=1.6, BH=1.0;
+const LEVER={x:1.6,y:0.5}, APPROACH={x:1.47,y:0.5}, CUP={x:1.52,y:0.8}, LAMP={x:1.6,y:0.22};
+function drawBox(ctx, W, H, o){
+  const pad = W*0.03, s = (W-2*pad)/BW;
+  const X = x=>pad+x*s, Y=y=>pad+y*s;
+  ctx.clearRect(0,0,W,H);
+  // Boden
+  ctx.fillStyle='#eef0e7'; ctx.fillRect(X(0),Y(0),BW*s,BH*s);
+  ctx.strokeStyle='rgba(90,100,80,.12)'; ctx.lineWidth=Math.max(1,s*0.004);
+  for(let x=0.08;x<BW;x+=0.08){ ctx.beginPath(); ctx.moveTo(X(x),Y(0)); ctx.lineTo(X(x),Y(BH)); ctx.stroke(); }
+  // Zonen (optional)
+  if(o.zones){
+    ctx.save(); ctx.beginPath(); ctx.rect(X(0),Y(0),BW*s,BH*s); ctx.clip();
+    ctx.fillStyle='rgba(151,180,0,.06)'; ctx.fillRect(X(1.0),Y(0),0.6*s,BH*s);
+    ctx.fillStyle='rgba(151,180,0,.10)'; ctx.beginPath(); ctx.arc(X(APPROACH.x),Y(APPROACH.y),0.22*s,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(90,100,80,.45)'; ctx.font=`${Math.max(10,s*0.045)}px system-ui`;
+    ctx.fillText('linke Hälfte', X(0.04), Y(0.97)); ctx.fillText('rechte Hälfte', X(1.03), Y(0.97));
+    ctx.restore();
+  }
+  // Wände
+  ctx.strokeStyle='#3a4234'; ctx.lineWidth=s*0.03; ctx.strokeRect(X(0),Y(0),BW*s,BH*s);
+  // Lampe
+  const lit = o.light>0;
+  if(lit){ const gr=ctx.createRadialGradient(X(LAMP.x),Y(LAMP.y),1,X(LAMP.x),Y(LAMP.y),0.25*s); gr.addColorStop(0,'rgba(255,220,90,.75)'); gr.addColorStop(1,'rgba(255,220,90,0)'); ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(X(LAMP.x),Y(LAMP.y),0.25*s,0,Math.PI*2); ctx.fill(); }
+  ctx.fillStyle= lit?'#ffd34d':'#c9ccc0'; ctx.beginPath(); ctx.arc(X(LAMP.x-0.025),Y(LAMP.y),0.035*s,0,Math.PI*2); ctx.fill(); ctx.strokeStyle='#3a4234'; ctx.lineWidth=s*0.008; ctx.stroke();
+  // Hebel
+  const ext = o.leverDown>0 ? 0.05 : 0.09;
+  ctx.fillStyle = o.leverDown>0 ? '#6c8200' : '#97B400';
+  ctx.fillRect(X(LEVER.x-0.015-ext), Y(LEVER.y-0.035), ext*s, 0.07*s);
+  ctx.strokeStyle='#3a4234'; ctx.lineWidth=s*0.008; ctx.strokeRect(X(LEVER.x-0.015-ext), Y(LEVER.y-0.035), ext*s, 0.07*s);
+  // Futterschale
+  ctx.fillStyle='#d9dbd2'; ctx.beginPath(); ctx.arc(X(CUP.x+0.065),Y(CUP.y),0.07*s,Math.PI*0.5,Math.PI*1.5); ctx.fill(); ctx.strokeStyle='#3a4234'; ctx.stroke();
+  if(o.pellet){ ctx.fillStyle='#8a5a2b'; ctx.beginPath(); ctx.arc(X(CUP.x+0.035),Y(CUP.y),0.018*s,0,Math.PI*2); ctx.fill(); }
+  // Beschriftungen
+  if(o.labels){
+    ctx.fillStyle='#3a4234'; ctx.font=`600 ${Math.max(10,s*0.045)}px system-ui`; ctx.textAlign='right';
+    ctx.fillText('Hebel', X(LEVER.x-0.12), Y(LEVER.y-0.05));
+    ctx.fillText('Futterschale', X(CUP.x-0.03), Y(CUP.y+0.11));
+    ctx.fillText('Lampe', X(LAMP.x-0.08), Y(LAMP.y-0.05));
+    ctx.textAlign='left';
+  }
+  // Ratte
+  if(o.rat) drawRat(ctx, X(o.rat.x), Y(o.rat.y), o.rat.a, s, o.rat.pose, o.t||0);
+  // Futterflug
+  if(o.fly){ ctx.fillStyle='#8a5a2b'; ctx.beginPath(); ctx.arc(X(o.fly.x),Y(o.fly.y),0.018*s,0,Math.PI*2); ctx.fill(); }
+}
+function drawRat(ctx, x, y, a, s, pose, t){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(a);
+  const rear = pose==='rear', eat = pose==='eat';
+  const L = s*(rear?0.085:0.1), Wd = s*(rear?0.062:0.055);
+  // Schatten
+  ctx.fillStyle='rgba(0,0,0,'+(rear?0.18:0.1)+')'; ctx.beginPath(); ctx.ellipse(s*0.01, s*0.012, L*1.05, Wd*1.05, 0, 0, Math.PI*2); ctx.fill();
+  // Schwanz
+  const wig = Math.sin(t*5)*0.04*s;
+  ctx.strokeStyle='#e7a9a4'; ctx.lineWidth=s*0.014; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(-L*0.9,0); ctx.quadraticCurveTo(-L*1.7, wig*1.5, -L*2.35, wig*-1.2+s*0.02); ctx.stroke();
+  // Körper
+  ctx.fillStyle='#f7f4ee'; ctx.strokeStyle='#9c938a'; ctx.lineWidth=s*0.006;
+  ctx.beginPath(); ctx.ellipse(0,0,L,Wd,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  // Kopf
+  const hb = eat ? Math.sin(t*14)*s*0.006 : 0;
+  const hx = L*0.95 + hb;
+  ctx.beginPath(); ctx.ellipse(hx, 0, s*0.055, s*0.04, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(hx+s*0.03,-s*0.025); ctx.quadraticCurveTo(hx+s*0.085,0,hx+s*0.03,s*0.025); ctx.fill(); ctx.stroke();
+  // Ohren
+  ctx.fillStyle='#f2c3bf';
+  ctx.beginPath(); ctx.arc(hx-s*0.015,-s*0.038,s*0.02,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(hx-s*0.015, s*0.038,s*0.02,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  // Nase, Augen
+  ctx.fillStyle='#e48e8a'; ctx.beginPath(); ctx.arc(hx+s*0.07,0,s*0.01,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#c0392b'; ctx.beginPath(); ctx.arc(hx+s*0.02,-s*0.018,s*0.007,0,Math.PI*2); ctx.arc(hx+s*0.02,s*0.018,s*0.007,0,Math.PI*2); ctx.fill();
+  // Pfoten beim Aufrichten
+  if(rear){ ctx.fillStyle='#f2c3bf'; ctx.beginPath(); ctx.ellipse(hx+s*0.06,-s*0.03,s*0.014,s*0.009,0,0,Math.PI*2); ctx.ellipse(hx+s*0.06,s*0.03,s*0.014,s*0.009,0,0,Math.PI*2); ctx.fill(); }
+  // Schnurrhaare
+  ctx.strokeStyle='rgba(120,110,100,.6)'; ctx.lineWidth=s*0.003;
+  [-1,1].forEach(d=>{ ctx.beginPath(); ctx.moveTo(hx+s*0.06,d*s*0.01); ctx.lineTo(hx+s*0.1,d*s*0.045); ctx.moveTo(hx+s*0.06,d*s*0.01); ctx.lineTo(hx+s*0.11,d*s*0.015); ctx.stroke(); });
+  ctx.restore();
+}
+
+/* ================= Ton ================= */
+let actx=null;
+function clickSound(){
+  try{
+    if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)();
+    const t=actx.currentTime;
+    const o=actx.createOscillator(), g=actx.createGain();
+    o.type='square'; o.frequency.setValueAtTime(1800,t); o.frequency.exponentialRampToValueAtTime(600,t+0.04);
+    g.gain.setValueAtTime(0.12,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.06);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t+0.07);
+  }catch(e){}
+}
+
+/* ================= Station 1: Shaping ================= */
+const ZN = ['linke Hälfte','Mitte','rechte Hälfte','nahe am Hebel','am Hebel aufgerichtet'];
+const BASE = [4,3,2,1,0.4];
+const S1 = { visible:false, speed:1, running:true };
+function reset1(){
+  Object.assign(S1, {
+    w: BASE.slice(), t:0, feeds:0, presses:0, done:false, leverDown:0, light:0, pellet:false,
+    rat:{x:0.3,y:0.5,a:0,state:'idle',timer:1.5,tx:0.3,ty:0.5,goal:null,pressed:false,pendingCup:false},
+    hist:[], farFeeds:0, lastMsgT:-9, fly:null
+  });
+  setMsg('Beobachte die Ratte zuerst ein paar Sekunden. Wo hält sie sich auf?','info');
+  $('#succ1').classList.remove('on');
+  updateProfile(); updateStats1();
+}
+function zoneOf(r){
+  if(r.state==='rear') return 4;
+  if(Math.hypot(r.x-APPROACH.x, r.y-APPROACH.y) < 0.22) return 3;
+  if(r.x >= 1.0) return 2;
+  if(r.x >= 0.53) return 1;
+  return 0;
+}
+function targetIn(z){
+  for(let k=0;k<20;k++){
+    let x,y;
+    if(z===0){ x=rnd(0.12,0.5); y=rnd(0.13,0.87); }
+    else if(z===1){ x=rnd(0.58,0.97); y=rnd(0.13,0.87); }
+    else if(z===2){ x=rnd(1.04,1.45); y=rnd(0.13,0.87); if(Math.hypot(x-APPROACH.x,y-APPROACH.y)<0.24) continue; }
+    else { const an=rnd(Math.PI*0.5,Math.PI*1.5), r=rnd(0.07,0.19); x=APPROACH.x+Math.cos(an)*r; y=APPROACH.y+Math.sin(an)*r; x=Math.min(x,1.47); }
+    return {x,y};
+  }
+  return {x:1.2,y:0.2};
+}
+function chooseNext(){
+  const r=S1.rat;
+  // langsames Verblassen nicht verstärkter Tendenzen (Löschung)
+  S1.w = S1.w.map((w,i)=> BASE[i] + (w-BASE[i])*0.985);
+  const sum = S1.w.reduce((a,b)=>a+b,0); let u=Math.random()*sum, z=0;
+  for(;z<5;z++){ u-=S1.w[z]; if(u<=0) break; } z=Math.min(z,4);
+  if(z===4){ r.tx=APPROACH.x; r.ty=APPROACH.y; r.goal='lever'; }
+  else { const p=targetIn(z); r.tx=p.x; r.ty=p.y; r.goal='spot'; }
+  r.state='walk';
+  updateProfile();
+}
+function step1(dt){
+  const r=S1.rat; S1.t+=dt;
+  if(S1.leverDown>0) S1.leverDown-=dt;
+  if(S1.light>0) S1.light-=dt;
+  if(S1.fly){ S1.fly.p+=dt*4; if(S1.fly.p>=1){ S1.fly=null; S1.pellet=true; } }
+  S1.hist.push({t:S1.t, z:zoneOf(r)}); while(S1.hist.length && S1.hist[0].t < S1.t-1.5) S1.hist.shift();
+  if(r.state==='walk'){
+    const dx=r.tx-r.x, dy=r.ty-r.y, d=Math.hypot(dx,dy);
+    const want=Math.atan2(dy,dx); let da=want-r.a; while(da>Math.PI)da-=2*Math.PI; while(da<-Math.PI)da+=2*Math.PI;
+    r.a += da*Math.min(1,dt*8);
+    const v=0.3*dt;
+    if(d<=v){ r.x=r.tx; r.y=r.ty; arrive(); }
+    else { r.x+=dx/d*v; r.y+=dy/d*v; }
+  } else if(r.state==='idle'){
+    r.timer-=dt; r.a += Math.sin(S1.t*3)*dt*0.6; if(r.timer<=0) chooseNext();
+  } else if(r.state==='rear'){
+    r.timer-=dt;
+    if(!r.pressed && r.timer<0.45){
+      r.pressed=true;
+      const p=Math.min(0.92, 0.06+0.14*Math.max(0,S1.w[4]-0.4));
+      if(Math.random()<p) selfPress();
+    }
+    if(r.timer<=0){ if(r.pendingCup) goCup(); else chooseNext(); }
+  } else if(r.state==='eat'){
+    r.timer-=dt; if(r.timer<=0) chooseNext();
+  }
+}
+function arrive(){
+  const r=S1.rat;
+  if(r.goal==='lever'){ r.state='rear'; r.timer=0.9; r.pressed=false; r.a=0; }
+  else if(r.goal==='cup'){ r.state='eat'; r.timer=1.6; S1.pellet=false; r.a=0.15; }
+  else { r.state='idle'; r.timer=rnd(0.5,1.5); }
+}
+function goCup(){ const r=S1.rat; r.pendingCup=false; r.tx=CUP.x-0.06; r.ty=CUP.y; r.goal='cup'; r.state='walk'; }
+function dispense(){
+  clickSound(); S1.light=0.5; S1.fly={p:0};
+  const r=S1.rat;
+  if(r.state==='rear'){ r.pendingCup=true; r.timer=Math.min(r.timer,0.25); }
+  else if(r.goal!=='cup') goCup();
+}
+function reinforce(z, amt){
+  S1.w[z]+=amt;
+  if(z>0) S1.w[z-1]+=amt*0.25;
+  if(z<4) S1.w[z+1]+=amt*0.35;
+  updateProfile();
+}
+function selfPress(){
+  S1.leverDown=0.3; S1.presses++;
+  reinforce(4,1.6);
+  dispense(); updateStats1();
+  if(S1.presses===1) setMsg('🎯 Die Ratte hat den Hebel zum ersten Mal selbst gedrückt! Der Hebel liefert jetzt selbst Futter.','ok');
+  else if(S1.presses<10) setMsg(`🎯 Eigener Hebeldruck Nr. ${S1.presses}. Das Verhalten verstärkt sich nun selbst.`,'ok');
+  if(S1.presses>=10 && !S1.done){ S1.done=true; $('#succ1').classList.add('on'); setMsg('🎉 Ziel erreicht: 10 selbstständige Hebeldrücke!','ok'); markDone(1); setTimeout(()=>$('#succ1').scrollIntoView&&$('#succ1').scrollIntoView({behavior:'smooth',block:'start'}),400); }
+}
+function userFeed(){
+  if(!S1.running) return;
+  const r=S1.rat;
+  if(r.goal==='cup' || r.state==='eat'){
+    S1.feeds++; updateStats1();
+    setMsg('Die Ratte frisst gerade noch. Futter in diesem Moment verstärkt nur das Fressen. Warte, bis sie wieder etwas tut, das zum Ziel passt.','bad');
+    clickSound(); return;
+  }
+  const z=zoneOf(r);
+  const maxRecent = Math.max(...S1.hist.map(h=>h.z));
+  const away = r.state==='walk' && r.goal==='spot' && zoneOfPoint(r.tx,r.ty) < z;
+  S1.feeds++;
+  reinforce(z,2.0);
+  dispense(); updateStats1();
+  if(z<=1) S1.farFeeds++;
+  let txt, kind='info';
+  if(away){ txt=`⏱ Timing! Die Ratte läuft gerade vom Hebel weg. Du hast das Weglaufen verstärkt (${ZN[z]}).`; kind='bad'; }
+  else if(z===0){ txt = S1.farFeeds>3 ? '⚠ Du verstärkst immer wieder den Aufenthalt links. Schau aufs Profil: Die Ratte bleibt jetzt gern dort. Ist das ein Schritt zum Hebel?' : 'Verstärkt: Aufenthalt in der linken Hälfte. Bringt das die Ratte näher an den Hebel?'; kind=S1.farFeeds>3?'bad':'info'; }
+  else if(z===1){ txt='Verstärkt: Aufenthalt in der Mitte. Ein erster kleiner Schritt nach rechts.'; }
+  else if(z===2){ txt='👍 Verstärkt: rechte Hälfte. Die Ratte hält sich jetzt öfter in Hebelnähe auf.'; kind='ok'; }
+  else if(z===3){ txt='👍👍 Verstärkt: direkt am Hebel. Jetzt lohnt es sich, das Kriterium weiter anzuheben.'; kind='ok'; }
+  else { txt='🎯 Volltreffer: Aufrichten am Hebel verstärkt. So kommt es bald zum Hebeldruck.'; kind='ok'; }
+  if(maxRecent>z && !away && z<3) txt += ' (Kurz vorher war sie schon näher dran!)';
+  setMsg(txt,kind);
+}
+function zoneOfPoint(x,y){ return zoneOf({x,y,state:'walk'}); }
+function setMsg(t,k){ const m=$('#msg1'); m.className='fb msg '+(k||'info'); m.innerHTML=t; }
+function updateStats1(){
+  $('#st-feed').textContent=S1.feeds; $('#st-press').textContent=Math.min(S1.presses,10)+' / 10'; $('#st-time').textContent=fmt(S1.t);
+}
+function updateProfile(){
+  const el=$('#profile'); if(!el.children.length){ el.innerHTML=ZN.map((n,i)=>`<div class="pr"><span>${n}</span><div class="track"><div class="fill" id="pf${i}"></div></div><span id="pv${i}"></span></div>`).join(''); }
+  const sum=S1.w.reduce((a,b)=>a+b,0);
+  S1.w.forEach((w,i)=>{ const p=Math.round(w/sum*100); $('#pf'+i).style.width=p+'%'; $('#pv'+i).textContent=p+'%'; });
+}
+const c1=$('#box1'), x1=c1.getContext('2d');
+function resize1(){ const dpr=window.devicePixelRatio||1; const w=c1.clientWidth||700; c1.width=w*dpr; c1.height=w*dpr*(BH/BW)*1.02; }
+let last=performance.now(), statT=0;
+function loop(now){
+  const realDt=Math.min(0.1,(now-last)/1000); last=now;
+  if(S1.visible && S1.running){
+    let dt=realDt*S1.speed; while(dt>0){ const d=Math.min(0.05,dt); step1(d); dt-=d; }
+    statT+=realDt; if(statT>0.25){ statT=0; updateStats1(); }
+  }
+  if(S1.visible){
+    let fly=null; if(S1.fly){ const p=S1.fly.p; fly={x:LAMP.x-0.06+(CUP.x+0.035-LAMP.x+0.06)*p, y:CUP.y-0.25+0.25*p}; }
+    drawBox(x1,c1.width,c1.height,{rat:{...S1.rat,pose:S1.rat.state==='rear'?'rear':(S1.rat.state==='eat'?'eat':'walk')}, light:S1.light, leverDown:S1.leverDown, pellet:S1.pellet, labels:true, zones:true, t:S1.t, fly});
+  }
+  if(S2.anim) tick2(realDt);
+  requestAnimationFrame(loop);
+}
+$('#feed').onclick=userFeed;
+document.addEventListener('keydown',e=>{ if(e.code==='Space' && cur===1 && !(e.target instanceof HTMLTextAreaElement)){ e.preventDefault(); userFeed(); } });
+$('#run1').onclick=()=>{ S1.running=!S1.running; $('#run1').textContent=S1.running?'⏸ Pause':'▶ Weiter'; };
+const speeds=[1,2,4]; let si=0;
+$('#speed1').onclick=()=>{ si=(si+1)%speeds.length; S1.speed=speeds[si]; $('#speed1').textContent='Tempo '+S1.speed+'×'; };
+$('#reset1').onclick=reset1;
+let hintN=0;
+$('#hintBtn').onclick=()=>{ if(hintN<3){ hintN++; $('#h'+hintN).classList.add('on'); } $('#hintBtn').textContent = hintN<3 ? `Hilfe anzeigen (${hintN+1}/3)` : 'Alle Hilfen angezeigt'; $('#hintBtn').disabled = hintN>=3; };
+mc('#mc1b',{options:[
+  {t:'Es wurde immer wieder zusammen mit dem Futter dargeboten.', ok:true},
+  {t:'Es ist ein angeborener Reiz, der Hunger direkt stillt.', fb:'Ein Klicken stillt keinen Hunger. Angeborene (primäre) Verstärker sind z. B. Futter oder Wasser.'},
+  {t:'Es kündigt der Ratte eine unangenehme Konsequenz an.', fb:'Das Klicken kündigt etwas Angenehmes an: Futter.'},
+  {t:'Es ist für die Ratte lauter als alle anderen Geräusche.', fb:'Die Lautstärke ist nicht entscheidend, sondern die wiederholte Kopplung mit Futter.'}],
+  explain:'Das Klicken ist ein <b>sekundärer (gelernter) Verstärker</b>. Es hat seine Wirkung durch die Kopplung mit dem <b>primären Verstärker</b> Futter erhalten. Hier greifen klassische und operante Konditionierung ineinander. Beim Menschen sind z. B. Geld, Lob oder Noten sekundäre Verstärker.'});
+mc('#mc1c',{options:[
+  {t:'Futter wirkt nur auf das Verhalten, das direkt davor gezeigt wurde.', ok:true},
+  {t:'Futter wirkt auf alles, was die Ratte in der letzten Minute tat.', fb:'Dann wäre es egal gewesen, wann du klickst. Hast du das so erlebt?'},
+  {t:'Der Zeitpunkt ist egal, entscheidend ist nur die Futtermenge.', fb:'Achte auf die Rückmeldungen beim Weglaufen: Spät gegebenes Futter verstärkt das falsche Verhalten.'},
+  {t:'Futter wirkt am besten, wenn es erst nach Minuten folgt.', fb:'Je größer der Abstand, desto unklarer ist der Zusammenhang zum Verhalten.'}],
+  explain:'Verstärkung muss <b>unmittelbar</b> auf das Verhalten folgen (<b>Kontiguität</b>, zeitliche Nähe). Sonst wird das Verhalten verstärkt, das zufällig gerade gezeigt wird.'});
+
+/* ================= Station 2: Verstärkerpläne ================= */
+const PLANS = {
+  KV:{name:'Kontinuierlich (KV)', color:'#6b7280', tau:45, burst:1.1},
+  FQ:{name:'Feste Quote (FQ 10)', color:'#2f6aa8', tau:150, burst:0.3},
+  VQ:{name:'Variable Quote (VQ 10)', color:'#c0392b', tau:420, burst:0.25},
+  FI:{name:'Festes Intervall (FI 60 s)', color:'#c98a12', tau:160, burst:0.3},
+  VI:{name:'Variables Intervall (VI 60 s)', color:'#7a4fb5', tau:360, burst:0.25}
+};
+const TACQ=600, TEXT=900, TT=TACQ+TEXT, EAT=3;
+const S2 = { runs:{}, anim:false, sim:null, speed:60 };
+const SPEEDS=[10,30,60,120];
+function newSim(plan){
+  return {plan, t:0, presses:0, reinf:0, pts:[[0,0]], marks:[], eatUntil:0, pauseUntil:0, count:0, need:Math.floor(rnd(1,20)), lastR:0, armed:rnd(4,116), acqP:0, extP:0, lastPress:0, stop:null, flash:0, pelletFlash:0};
+}
+function simStep(S, dt){
+  const P=S.plan; const t=S.t;
+  let lam=0;
+  if(t<TACQ){
+    if(t>=S.eatUntil){
+      if(P==='KV') lam=0.5;
+      else if(P==='FQ') lam = t<S.pauseUntil ? 0 : 1.25;
+      else if(P==='VQ') lam=1.1;
+      else if(P==='FI'){ const s=(t-S.lastR)/60; lam = 1.1*Math.pow(Math.min(1,Math.max(0,s)),2.5)+0.004; }
+      else if(P==='VI') lam=0.42;
+    }
+  } else {
+    if(S.acqRate===undefined) S.acqRate = S.acqP/TACQ;
+    const te=t-TACQ, pl=PLANS[P];
+    lam = S.acqRate*Math.exp(-te/pl.tau)*(1+pl.burst*Math.exp(-te/12));
+    if(P==='FQ' && Math.floor(te/18)%3===2) lam*=0.15; // Pausen zwischen „Läufen“
+  }
+  if(Math.random()<lam*dt){
+    S.presses++; S.flash=0.12; S.lastPress=t;
+    S.pts.push([t,S.presses]);
+    if(t<TACQ){
+      S.acqP++;
+      let r=false;
+      if(P==='KV') r=true;
+      else if(P==='FQ'){ S.count++; if(S.count>=10){ r=true; S.count=0; S.pauseUntil=t+EAT+3+(-Math.log(Math.random()))*4; } }
+      else if(P==='VQ'){ S.count++; if(S.count>=S.need){ r=true; S.count=0; S.need=Math.floor(rnd(1,20)); } }
+      else if(P==='FI'){ if(t-S.lastR>=60) r=true; }
+      else if(P==='VI'){ if(t>=S.armed) r=true; }
+      if(r){ S.reinf++; S.eatUntil=t+EAT; S.lastR=t; S.marks.push([t,S.presses]); S.pelletFlash=0.5; if(P==='VI') S.armed=t+rnd(4,116); }
+    } else S.extP++;
+  }
+  if(t>=TACQ && S.stop===null){
+    const ref = Math.max(S.lastPress, TACQ);
+    if(t-ref>=120) S.stop = S.lastPress>=TACQ ? S.lastPress-TACQ : 0;
+  }
+  S.t+=dt;
+}
+function runInstant(plan){
+  const S=newSim(plan); while(S.t<TT) simStep(S,0.05); S.pts.push([TT,S.presses]); return S;
+}
+function finishRun(S){
+  S2.runs[S.plan]=S; S2.anim=false; S2.sim=null;
+  $('#start2').disabled=false; $('#instant2').disabled=false; $('#plan').disabled=false;
+  $('#phase2').textContent='Versuch beendet';
+  renderTable2(); draw2(); checkEval2();
+}
+$('#start2').onclick=()=>{
+  const S=newSim($('#plan').value); S2.sim=S; S2.anim=true; S2.acc=0;
+  $('#start2').disabled=true; $('#instant2').disabled=true; $('#plan').disabled=true;
+  delete S2.runs[S.plan];
+};
+$('#instant2').onclick=()=>{ const S=runInstant($('#plan').value); S2.sim=S; finishRun(S); };
+$('#clear2').onclick=()=>{ if(S2.anim) return; S2.runs={}; renderTable2(); draw2(); };
+$('#spd').oninput=e=>{ S2.speed=SPEEDS[+e.target.value]; $('#spdv').textContent=S2.speed+'×'; };
+function tick2(realDt){
+  const S=S2.sim; if(!S) return;
+  let dt=realDt*S2.speed;
+  while(dt>0 && S.t<TT){ const d=Math.min(0.05,dt); simStep(S,d); dt-=d; }
+  S.flash-=realDt; S.pelletFlash-=realDt;
+  $('#s2t').textContent=fmt(S.t); $('#s2p').textContent=S.presses; $('#s2r').textContent=S.reinf;
+  $('#phase2').textContent = S.t<TACQ ? 'Lernphase: Futterspender AN' : 'Löschphase: Futterspender AUS';
+  draw2(); drawMini(S);
+  if(S.t>=TT){ S.pts.push([TT,S.presses]); finishRun(S); }
+}
+const cr=$('#rec'), xr=cr.getContext('2d'), cb2=$('#box2'), xb2=cb2.getContext('2d');
+function resize2(){
+  const dpr=window.devicePixelRatio||1;
+  const w=cr.clientWidth||700; cr.width=w*dpr; cr.height=Math.min(440,w*0.62)*dpr;
+  const w2=cb2.clientWidth||300; cb2.width=w2*dpr; cb2.height=w2*dpr*(BH/BW);
+  drawMini(S2.sim);
+}
+function drawMini(S){
+  const pose = S && S.t<TACQ && S.t<S.eatUntil ? 'eat':'rear';
+  const rat = pose==='eat' ? {x:CUP.x-0.06,y:CUP.y,a:0.15} : {x:APPROACH.x,y:APPROACH.y,a:0};
+  drawBox(xb2,cb2.width,cb2.height,{rat:{...rat,pose}, leverDown:S&&S.flash>0?1:0, light:S&&S.pelletFlash>0?1:0, pellet:S&&S.pelletFlash>0, labels:false, t:performance.now()/1000});
+}
+S2.view='all';
+$('#viewAll').onclick=()=>{ S2.view='all'; $('#viewAll').style.borderColor='var(--ink)'; $('#viewZoom').style.borderColor=''; draw2(); };
+$('#viewZoom').onclick=()=>{ S2.view='zoom'; $('#viewZoom').style.borderColor='var(--ink)'; $('#viewAll').style.borderColor=''; draw2(); };
+function countAt(S,t){ let n=0; for(const [tt,c] of S.pts){ if(tt<=t) n=c; else break; } return n; }
+function draw2(){
+  const all=Object.values(S2.runs); if(S2.sim && S2.anim) all.push(S2.sim);
+  if(S2.view==='zoom') return drawZoom(all);
+  const W=cr.width,H=cr.height, dpr=window.devicePixelRatio||1;
+  const L=52*dpr, R=14*dpr, T=16*dpr, B=36*dpr;
+  xr.clearRect(0,0,W,H);
+  let ymax=Math.max(100,...all.map(s=>s.presses)); ymax=Math.ceil(ymax/100)*100;
+  const X=t=>L+(t/TT)*(W-L-R), Y=n=>H-B-(n/ymax)*(H-T-B);
+  // Löschphase
+  xr.fillStyle='rgba(192,57,43,.05)'; xr.fillRect(X(TACQ),T,X(TT)-X(TACQ),H-T-B);
+  // Gitter
+  xr.strokeStyle='#e4e7dc'; xr.lineWidth=1*dpr; xr.fillStyle='#5b6455'; xr.font=`${11*dpr}px system-ui`;
+  const ystep = ymax<=200?50:(ymax<=600?100:200);
+  for(let n=0;n<=ymax;n+=ystep){ xr.beginPath(); xr.moveTo(L,Y(n)); xr.lineTo(W-R,Y(n)); xr.stroke(); xr.textAlign='right'; xr.fillText(n,L-6*dpr,Y(n)+4*dpr); }
+  for(let m=0;m<=25;m+=5){ xr.textAlign='center'; xr.fillText(m+' min',X(m*60),H-B+16*dpr); }
+  xr.save(); xr.translate(13*dpr,(T+H-B)/2); xr.rotate(-Math.PI/2); xr.textAlign='center'; xr.fillText('Hebeldrücke (kumuliert)',0,0); xr.restore();
+  // Trennlinie
+  xr.strokeStyle='#b8402f'; xr.setLineDash([6*dpr,4*dpr]); xr.beginPath(); xr.moveTo(X(TACQ),T); xr.lineTo(X(TACQ),H-B); xr.stroke(); xr.setLineDash([]);
+  xr.fillStyle='#b8402f'; xr.textAlign='left'; xr.font=`600 ${11*dpr}px system-ui`; xr.fillText('Futterspender aus →',X(TACQ)+6*dpr,T+12*dpr);
+  xr.fillStyle='#5b6455'; xr.fillText('Lernphase',L+6*dpr,T+12*dpr);
+  // Kurven
+  all.forEach(S=>{
+    const col=PLANS[S.plan].color;
+    xr.strokeStyle=col; xr.lineWidth=2.2*dpr; xr.lineJoin='round'; xr.beginPath();
+    let prev=null;
+    S.pts.forEach(([t,n],i)=>{ if(i===0){ xr.moveTo(X(t),Y(n)); } else { xr.lineTo(X(t),Y(prev)); xr.lineTo(X(t),Y(n)); } prev=n; });
+    xr.lineTo(X(Math.min(S.t,TT)),Y(S.presses)); xr.stroke();
+    xr.lineWidth=1.4*dpr;
+    S.marks.forEach(([t,n])=>{ xr.beginPath(); xr.moveTo(X(t),Y(n)); xr.lineTo(X(t)+5*dpr,Y(n)+7*dpr); xr.stroke(); });
+  });
+  // Legende
+  $('#legend').innerHTML = Object.keys(PLANS).filter(k=>S2.runs[k]||(S2.sim&&S2.anim&&S2.sim.plan===k)).map(k=>`<span><span class="dot" style="background:${PLANS[k].color}"></span>${PLANS[k].name}</span>`).join('') || '<span class="modelnote">Wähle einen Plan und starte den Versuch.</span>';
+}
+function drawZoom(all){
+  const W=cr.width,H=cr.height, dpr=window.devicePixelRatio||1;
+  const L=52*dpr, R=14*dpr, T=16*dpr, B=36*dpr, T0=240, T1=420;
+  xr.clearRect(0,0,W,H);
+  const vis=all.filter(S=>S.t>T0);
+  let ymax=Math.max(20,...vis.map(S=>countAt(S,Math.min(S.t,T1))-countAt(S,T0))); ymax=Math.ceil(ymax/20)*20;
+  const X=t=>L+((t-T0)/(T1-T0))*(W-L-R), Y=n=>H-B-(n/ymax)*(H-T-B);
+  xr.strokeStyle='#e4e7dc'; xr.lineWidth=1*dpr; xr.fillStyle='#5b6455'; xr.font=`${11*dpr}px system-ui`;
+  const ystep=ymax<=100?20:50;
+  for(let n=0;n<=ymax;n+=ystep){ xr.beginPath(); xr.moveTo(L,Y(n)); xr.lineTo(W-R,Y(n)); xr.stroke(); xr.textAlign='right'; xr.fillText(n,L-6*dpr,Y(n)+4*dpr); }
+  for(let s=T0;s<=T1;s+=30){ xr.textAlign='center'; xr.fillText(fmt(s),X(s),H-B+16*dpr); }
+  xr.save(); xr.translate(13*dpr,(T+H-B)/2); xr.rotate(-Math.PI/2); xr.textAlign='center'; xr.fillText('Hebeldrücke ab Minute 4',0,0); xr.restore();
+  xr.textAlign='left'; xr.font=`600 ${11*dpr}px system-ui`; xr.fillText('Lupe: Jede Kurve startet bei 0. So erkennst du die typischen Muster.',L+6*dpr,T+12*dpr);
+  vis.forEach(S=>{
+    const base=countAt(S,T0), col=PLANS[S.plan].color;
+    xr.strokeStyle=col; xr.lineWidth=2.2*dpr; xr.lineJoin='round'; xr.beginPath(); xr.moveTo(X(T0),Y(0));
+    let prev=0;
+    S.pts.forEach(([t,n])=>{ if(t<=T0||t>T1) return; xr.lineTo(X(t),Y(prev)); xr.lineTo(X(t),Y(n-base)); prev=n-base; });
+    xr.lineTo(X(Math.min(S.t,T1)),Y(prev)); xr.stroke();
+    xr.lineWidth=1.4*dpr;
+    S.marks.forEach(([t,n])=>{ if(t<=T0||t>T1) return; xr.beginPath(); xr.moveTo(X(t),Y(n-base)); xr.lineTo(X(t)+6*dpr,Y(n-base)+8*dpr); xr.stroke(); });
+  });
+  $('#legend').innerHTML = vis.map(S=>`<span><span class="dot" style="background:${PLANS[S.plan].color}"></span>${PLANS[S.plan].name}</span>`).join('') || '<span class="modelnote">Die Lupe zeigt Minute 4–7. Starte zuerst einen Versuch.</span>';
+}
+function renderTable2(){
+  const tb=$('#res2 tbody'); const ks=Object.keys(PLANS).filter(k=>S2.runs[k]);
+  if(!ks.length){ tb.innerHTML='<tr><td colspan="5" class="modelnote">Noch keine Versuche. Teste am besten alle fünf Pläne.</td></tr>'; return; }
+  tb.innerHTML=ks.map(k=>{ const S=S2.runs[k]; return `<tr><td><span class="dot" style="background:${PLANS[k].color}"></span>${PLANS[k].name}</td><td>${S.acqP}</td><td>${S.reinf}</td><td><b>${S.extP}</b></td><td>${S.stop===null?'<b>nach 15 min noch aktiv</b>':'letzter Druck nach '+fmt(S.stop)+' min'}</td></tr>`; }).join('');
+}
+function checkEval2(){
+  const n=Object.keys(S2.runs).length;
+  if(n>=3 || (S2.runs.KV && (S2.runs.VQ||S2.runs.VI))){
+    $('#eval2').style.display='block';
+    const pa=state.preds.p2a, pb=state.preds.p2b, dog=state.preds.dog;
+    const nm=v=>v&&PLANS[v]?PLANS[v].name:'keine Angabe';
+    $('#predcmp').innerHTML = `
+      <div class="fb ${pa==='VQ'||pa==='VI'?'ok':'info'}"><b>Längstes Weiterdrücken:</b> Deine Vorhersage: ${nm(pa)}. Im Experiment zeigen die <b>variablen</b> Pläne (VQ, VI) die höchste Löschungsresistenz, KV die geringste.</div>
+      <div class="fb ${pb==='FI'?'ok':'info'}"><b>Bogenmuster:</b> Deine Vorhersage: ${nm(pb)}. Den typischen Bogen zeigt das <b>feste Intervall</b>: Nach jeder Belohnung kommt eine Pause, dann wird immer schneller gedrückt, bis die 60 Sekunden um sind. Bei der festen Quote siehst du dagegen eine <b>Treppe</b>: Pause, dann sofort schnelles Drücken. Am deutlichsten wird das mit der <b>Lupe</b>.</div>
+      <div class="fb ${dog==='B'?'ok':'info'}"><b>Die Hunde aus dem Start:</b> Deine Vorhersage: ${dog==='A'?'Hund A':dog==='B'?'Hund B':dog==='gleich'?'beide gleich':'keine Angabe'}. Hund B wurde <b>intermittierend</b> verstärkt und setzt sich deshalb länger hin.</div>`;
+    if(n>=3) markDone(2);
+  }
+}
+predict('#pred2a','p2a',{prompt:'Bei welchem Plan drückt die Ratte nach dem Abschalten des Futterspenders am längsten weiter?', options:Object.keys(PLANS).map(k=>({t:PLANS[k].name,v:k}))});
+predict('#pred2b','p2b',{prompt:'Bei welchem Plan entsteht ein „Bogen“: erst langsam, kurz vor der nächsten Belohnung immer schneller?', options:Object.keys(PLANS).map(k=>({t:PLANS[k].name,v:k}))});
+mc('#mc2a',{options:[
+  {t:'an der Steigung der Kurve', ok:true},
+  {t:'an der Anzahl der kleinen Striche', fb:'Die Striche zeigen Futtergaben, nicht das Tempo des Drückens.'},
+  {t:'an der Länge der waagrechten Achse', fb:'Die Zeitachse ist bei allen Versuchen gleich lang.'},
+  {t:'an der Farbe der jeweiligen Linie', fb:'Die Farbe steht nur für den Plan.'}],
+  explain:'Je <b>steiler</b> die Kurve, desto mehr Drücke pro Zeit, also desto höher die <b>Reaktionsrate</b>. Eine waagrechte Linie bedeutet: keine Reaktion.'});
+mc('#mc2b',{options:[
+  {t:'Variable Quote (VQ 10)', ok:true},{t:'Kontinuierlich (KV)', fb:'Bei KV frisst die Ratte nach jedem Druck. Dadurch bleibt die Rate eher niedrig.'},{t:'Festes Intervall (FI 60 s)', fb:'Bei FI lohnt sich schnelles Drücken nicht. Es zählt nur der erste Druck nach 60 s.'},{t:'Variables Intervall (VI 60 s)', fb:'VI erzeugt eine gleichmäßige, aber eher mittlere Rate, weil schnelles Drücken die Zeit nicht verkürzt.'}],
+  explain:'Bei Quotenplänen hängt die Belohnung von der <b>Anzahl</b> der Reaktionen ab. Schnelles Drücken bringt also schneller Futter. Bei der <b>variablen</b> Quote kann zudem jeder Druck der belohnte sein, deshalb entstehen kaum Pausen.'});
+mc('#rc2',{prompt:'Wie heißt das schrittweise Verstärken von Annäherungen an ein Zielverhalten aus Station 1?', options:[
+  {t:'Shaping', ok:true},{t:'Generalisierung', fb:'Generalisierung bedeutet, auf ähnliche Reize gleich zu reagieren.'},{t:'Löschung', fb:'Löschung ist das Verschwinden eines Verhaltens ohne Verstärkung.'},{t:'Diskrimination', fb:'Diskrimination bedeutet, zwischen ähnlichen Reizen zu unterscheiden.'}],
+  explain:'Shaping, also <b>sukzessive Annäherung</b>.'});
+
+/* ================= Station 3 ================= */
+const CELLS={
+  pv:{t:'Positive Verstärkung', box:'Die Ratte drückt den Hebel, und ein Futterkügelchen fällt in die Schale. Sie drückt häufiger.', day:'Eine Schülerin meldet sich, und die Lehrkraft lobt ihren Beitrag. Sie meldet sich öfter.'},
+  nv:{t:'Negative Verstärkung', box:'Durch den Gitterboden fließt ein leichter, unangenehmer Strom. Drückt die Ratte den Hebel, schaltet er sich ab. Sie drückt häufiger.', day:'Der Wecker klingelt schrill. Man drückt die Schlummertaste, und das Klingeln hört auf. Man drückt sie öfter.'},
+  b1:{t:'Bestrafung Typ I', box:'Auf den Hebeldruck folgt ein unangenehm lauter Ton. Die Ratte drückt seltener.', day:'Ein Kind fasst auf die heiße Herdplatte und spürt Schmerz. Es fasst nicht mehr hin.'},
+  b2:{t:'Bestrafung Typ II', box:'Auf den Hebeldruck hin wird der Futterspender für eine Minute gesperrt („Auszeit“). Die Ratte drückt seltener.', day:'Ein Jugendlicher kommt zu spät nach Hause und muss das Handy für einen Tag abgeben. Er kommt seltener zu spät.'}
+};
+$$('#matrix .cell').forEach(c=>c.onclick=()=>{
+  $$('#matrix .cell').forEach(x=>x.classList.remove('sel')); c.classList.add('sel');
+  const d=CELLS[c.dataset.c];
+  $('#cellinfo').innerHTML=`<b>${d.t}</b><br>🐀 <b>Skinner-Box:</b> ${d.box}<br>🏫 <b>Alltag:</b> ${d.day}${c.dataset.c==='b1'||c.dataset.c==='b2'?'<br><span class="modelnote">Andere Bezeichnungen: Typ I = positive Bestrafung (Darbietung), Typ II = negative Bestrafung (Entzug).</span>':''}`;
+});
+mc('#gap2',{noShuffle:true,options:[{t:'angenehm',ok:true},{t:'unangenehm',fb:'Was wird Sara weggenommen? Das Konzert. Wäre das für sie unangenehm?'}],explain:'Das Konzert ist für Sara ein angenehmer Reiz.'});
+mc('#gap3',{noShuffle:true,options:[{t:'seltener',ok:true},{t:'häufiger',fb:'Lies noch einmal: Sara kommt danach pünktlicher.'}],explain:'Das Zuspätkommen wird seltener.'});
+mc('#gap4',{options:[{t:'Bestrafung Typ II',ok:true},{t:'Negative Verstärkung',fb:'Bei negativer Verstärkung wird ein <b>unangenehmer</b> Reiz entfernt und das Verhalten wird <b>häufiger</b>.'},{t:'Bestrafung Typ I',fb:'Bei Typ I wird etwas Unangenehmes <b>hinzugefügt</b>. Hier wird aber etwas weggenommen.'},{t:'Positive Verstärkung',fb:'Das Verhalten wird seltener, also kann es keine Verstärkung sein.'}],explain:'Ein angenehmer Reiz wird entzogen, das Verhalten wird seltener: <b>Bestrafung Typ II</b>.'});
+const K4=[{l:'Positive Verstärkung',v:'pv'},{l:'Negative Verstärkung',v:'nv'},{l:'Bestrafung Typ I',v:'b1'},{l:'Bestrafung Typ II',v:'b2'}];
+const H4={pv:'Prüfe: Kommt hier etwas Angenehmes hinzu?', nv:'Prüfe: Wird etwas Unangenehmes weggenommen und das Verhalten häufiger?', b1:'Prüfe: Kommt etwas Unangenehmes hinzu und das Verhalten wird seltener?', b2:'Prüfe: Wird etwas Angenehmes weggenommen und das Verhalten seltener?'};
+sorter('#sort4',[
+  {t:'Ein Schüler hält ein gelungenes Referat und bekommt von der Klasse Applaus. Er meldet sich danach häufiger für Referate.', c:'pv', why:'Angenehmer Reiz (Applaus) kommt hinzu, Verhalten wird häufiger.'},
+  {t:'Im Auto piept ein Warnton, bis sich der Fahrer anschnallt. Künftig schnallt er sich schneller an.', c:'nv', why:'Unangenehmer Reiz (Warnton) wird entfernt, Verhalten wird häufiger.'},
+  {t:'Lena nimmt bei Kopfschmerzen eine Tablette, und der Schmerz lässt nach. Künftig greift sie schneller zur Tablette.', c:'nv', why:'Unangenehmer Reiz (Schmerz) wird entfernt, Verhalten wird häufiger. Hier zeigt sich, wie problematisches Verhalten durch negative Verstärkung entstehen kann.'},
+  {t:'Eine Katze springt auf den Esstisch und bekommt einen Wasserspritzer ab. Sie springt seltener auf den Tisch.', c:'b1', why:'Unangenehmer Reiz (Wasser) kommt hinzu, Verhalten wird seltener.'},
+  {t:'Ein Kind haut beim Spielen seinen Bruder und muss für fünf Minuten das Spielzimmer verlassen. Es haut seltener.', c:'b2', why:'Angenehmer Reiz (das Spielen) wird entzogen, Verhalten wird seltener. In der Pädagogik heißt das „Auszeit“ (Time-out).'},
+  {t:'Eine Kellnerin ist besonders freundlich und bekommt mehr Trinkgeld. Sie ist danach noch öfter besonders freundlich.', c:'pv', why:'Angenehmer Reiz (Trinkgeld) kommt hinzu, Verhalten wird häufiger.'},
+  {t:'Ein Spieler foult im Fußballspiel und muss für zehn Minuten vom Platz. Er foult danach seltener.', c:'b2', why:'Angenehmer Reiz (das Mitspielen) wird entzogen, Verhalten wird seltener.'},
+  {t:'Ein Mitarbeiter kommt zu spät und wird vor allen Kollegen laut zurechtgewiesen. Er kommt seltener zu spät.', c:'b1', why:'Unangenehmer Reiz (öffentliche Zurechtweisung) kommt hinzu, Verhalten wird seltener.'}
+].map(it=>({...it, hint:null})), K4);
+// passgenaue Hinweise je falscher Wahl
+$('#sort4').addEventListener('click',e=>{
+  const b=e.target.closest('.opts button'); if(!b||!b.classList.contains('bad')) return;
+  const v=K4.find(k=>k.l===b.textContent).v; const fb=b.closest('.sitem').querySelector('.fb'); fb.innerHTML='✗ '+H4[v]+' Gehe die drei Fragen durch: hinzugefügt oder entfernt? angenehm oder unangenehm? häufiger oder seltener?';
+});
+const MAXERR=[
+  {t:'Er verwechselt negative Verstärkung mit Bestrafung.', ok:true},
+  {t:'Er versteht „negativ“ als „schlecht“ statt als „wegnehmen“.', ok:true},
+  {t:'Er hält Hausarrest fälschlich für positive Verstärkung.', ok:false},
+  {t:'Er übersieht, dass Strafen immer wirkungslos bleiben.', ok:false}
+];
+(function(){
+  const box=$('#maxerr'); const picked=new Set();
+  shuffle(MAXERR).forEach(o=>{ const b=document.createElement('button'); b.textContent=o.t; b.onclick=()=>{ if(box.dataset.lock) return; if(picked.has(o)){picked.delete(o);b.classList.remove('pick');} else {picked.add(o);b.classList.add('pick');} }; b._o=o; box.appendChild(b); });
+  $('#maxcheck').onclick=()=>{
+    const right=[...picked].filter(o=>o.ok).length, wrong=[...picked].filter(o=>!o.ok).length;
+    const fb=$('#maxfb');
+    if(right===2 && wrong===0){
+      box.dataset.lock=1; box.querySelectorAll('button').forEach(b=>{ b.classList.remove('pick'); if(b._o.ok) b.classList.add('ok'); b.disabled=true; });
+      fb.className='fb ok'; fb.innerHTML='✓ Genau. Diese Verwechslung ist der häufigste Fehler bei diesem Thema. Merke: <b>Verstärkung = häufiger</b>, auch wenn sie „negativ“ heißt.'; $('#maxgood').style.display='block'; markDone(3);
+    } else {
+      fb.className='fb bad'; fb.innerHTML = wrong ? '✗ Mindestens eine deiner Wahlen trifft nicht zu. Max sagt nichts über positive Verstärkung, und dass Strafe „immer wirkungslos“ sei, behauptet er nicht.' : '✗ Es sind genau zwei Fehler. Achte auf die Bedeutung von „negativ“ und auf den Unterschied zwischen Verstärkung und Bestrafung.';
+    }
+  };
+})();
+mc('#rc3',{prompt:'Welche Pläne zeigten in Station 2 die höchste Löschungsresistenz?', options:[
+  {t:'die variablen Pläne (VQ, VI)', ok:true},{t:'die kontinuierliche Verstärkung', fb:'Bei KV bricht das Verhalten nach dem Abschalten am schnellsten ab.'},{t:'die festen Pläne (FQ, FI)', fb:'Feste Pläne liegen im Mittelfeld. Am längsten wird bei den variablen Plänen gedrückt.'},{t:'alle Pläne gleichermaßen', fb:'Schau noch einmal in die Ergebnistabelle von Station 2.'}],
+  explain:'Bei variablen Plänen ist die nächste Belohnung nie vorhersehbar. Deshalb wird am längsten weitergedrückt.'});
+
+/* ================= Station 4: Transfer ================= */
+const WORDS=['positive Verstärkung','negative Verstärkung','Bestrafung Typ I','Bestrafung Typ II','Löschung','Löschungsresistenz','intermittierende Verstärkung','variable Quote','festes Intervall','variables Intervall','Shaping','sukzessive Annäherung','sekundärer Verstärker','Löschungstrotz'];
+$('#wordbank').innerHTML=WORDS.map(w=>`<button class="chip word">${w}</button>`).join('');
+$('#wordbank').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(b) insertText(lastTA||$('#t4_0'), b.textContent); });
+const CASES=[
+  {title:'Quengeln an der Supermarktkasse', text:'Der vierjährige Paul quengelt an der Kasse nach Süßigkeiten. Meistens bleibt seine Mutter hart, aber ab und zu – wenn sie müde ist oder es eilig hat – gibt sie nach.',
+   q:'Welcher Verstärkerplan liegt für Paul vor?', opts:[{t:'variable Quote',ok:true},{t:'kontinuierliche Verstärkung',fb:'Paul bekommt nicht jedes Mal etwas.'},{t:'feste Quote',fb:'Die Mutter gibt nicht nach einer festen Zahl von Versuchen nach.'},{t:'festes Intervall',fb:'Es hängt nicht von einer festen Zeitspanne ab.'}],
+   ex:'Die Belohnung kommt nach einer unvorhersehbaren Anzahl von Quengelversuchen, also nach einer variablen Quote.',
+   task:'<span class="op">Erkläre</span>, warum es so schwer ist, Pauls Quengeln abzustellen, und was passiert, wenn die Mutter ab heute konsequent nie mehr nachgibt.',
+   starters:['Weil Paul nur manchmal belohnt wurde, …','Wenn die Mutter nie mehr nachgibt, wird das Quengeln zunächst …','Auch die Mutter wird konditioniert: Wenn sie nachgibt, …'],
+   sol:'Weil Paul nur manchmal belohnt wurde (intermittierende Verstärkung nach variabler Quote), ist sein Quengeln besonders <b>löschungsresistent</b>. Jeder neue Versuch könnte der erfolgreiche sein. Gibt die Mutter nie mehr nach, wird das Quengeln zunächst oft sogar <b>stärker</b> (Löschungstrotz), bevor es allmählich verschwindet (<b>Löschung</b>). Gibt sie in dieser Phase doch nach, verstärkt sie gerade das besonders heftige Quengeln.<br><br><b>Doppelte Konditionierung:</b> Auch die Mutter lernt. Wenn sie nachgibt, hört das unangenehme Quengeln auf. Ihr Nachgeben wird also <b>negativ verstärkt</b>.',
+   check:['Ich nenne den Plan und den Begriff Löschungsresistenz.','Ich beschreibe den vorübergehenden Anstieg beim Löschen.','Ich erkenne die negative Verstärkung bei der Mutter.']},
+  {title:'Der Freitagstest', text:'In einer Klasse wird jeden Freitag ein angekündigter Vokabeltest geschrieben. Die Lehrkraft beobachtet, dass viele erst am Donnerstagabend lernen.',
+   q:'Welchem Verstärkerplan entspricht diese Situation am ehesten?', opts:[{t:'festes Intervall',ok:true},{t:'variables Intervall',fb:'Der Test kommt immer im gleichen Abstand und ist angekündigt.'},{t:'feste Quote',fb:'Die gute Note hängt nicht von einer festen Anzahl von Lerneinheiten ab, sondern vom Termin.'},{t:'variable Quote',fb:'Der Zeitpunkt des Tests ist hier das Entscheidende.'}],
+   ex:'Die Gelegenheit zur Verstärkung (gute Note) kommt in einem festen zeitlichen Abstand: festes Intervall.',
+   task:'<span class="op">Beschreibe</span> das zu erwartende Lernverhalten mithilfe der kumulativen Kurve aus Station 2 und <span class="op">entwickle</span> einen Vorschlag, wie die Lehrkraft gleichmäßigeres Lernen erreichen kann.',
+   starters:['Nach jedem Test wird zunächst …','Kurz vor dem nächsten Test …','Die Lehrkraft könnte stattdessen …'],
+   sol:'Wie bei FI 60 s entsteht ein <b>Bogenmuster</b>: Nach jedem Test wird zunächst kaum gelernt, kurz vor dem nächsten Freitag steigt die Lernaktivität stark an. Die Lehrkraft könnte stattdessen <b>unangekündigte Kurztests</b> zu unvorhersehbaren Zeitpunkten schreiben (<b>variables Intervall</b>). Dann lohnt es sich, gleichmäßig zu lernen. Zu bedenken ist allerdings, dass unangekündigte Tests Stress erzeugen können. Eine Alternative wären verteilte, unbenotete Übungstests.',
+   check:['Ich beschreibe das Bogenmuster (Pause, dann Anstieg).','Mein Vorschlag nutzt ein variables Intervall.','Ich bedenke eine mögliche Nebenwirkung.']},
+  {title:'Lootboxen und Likes', text:'In vielen Handyspielen kann man „Lootboxen“ öffnen. Ihr Inhalt ist zufällig, und nur manchmal ist ein seltenes Item dabei. Ähnlich ist es bei Social-Media-Beiträgen: Mal gibt es viele Likes, mal kaum welche.',
+   q:'Welcher Verstärkerplan steckt hinter dem Öffnen von Lootboxen?', opts:[{t:'variable Quote',ok:true},{t:'feste Quote',fb:'Man weiß gerade nicht, nach wie vielen Boxen das seltene Item kommt.'},{t:'festes Intervall',fb:'Die Belohnung hängt hier von der Zahl der geöffneten Boxen ab, nicht von der Zeit.'},{t:'kontinuierliche Verstärkung',fb:'Ein seltenes Item gibt es eben nicht jedes Mal.'}],
+   ex:'Die Belohnung hängt von der Zahl der geöffneten Boxen ab, ist aber unvorhersehbar: variable Quote, wie beim Glücksspielautomaten.',
+   task:'<span class="op">Erkläre</span>, warum solche Mechanismen besonders stark an ein Spiel oder eine App binden, und <span class="op">nimm Stellung</span> zu ihrem Einsatz.',
+   starters:['Die variable Quote erzeugt …','Weil jede Box die gewinnbringende sein könnte, …','Problematisch finde ich …'],
+   sol:'Die variable Quote erzeugt die <b>höchste Reaktionsrate</b> und eine sehr hohe <b>Löschungsresistenz</b>. Weil jede Box die gewinnbringende sein könnte, gibt es keinen natürlichen Punkt zum Aufhören, selbst wenn lange nichts Wertvolles kommt. Genau dieses Prinzip nutzen Glücksspielautomaten. Problematisch ist das vor allem bei Kindern und Jugendlichen und wenn echtes Geld im Spiel ist. Hier wird Lernpsychologie gezielt eingesetzt, um Verhalten im Interesse des Anbieters zu steuern.',
+   check:['Ich nenne hohe Reaktionsrate und Löschungsresistenz.','Ich erkläre die Unvorhersehbarkeit.','Ich formuliere eine begründete Stellungnahme.']},
+  {title:'Der stille Schüler', text:'Jonas meldet sich im Unterricht nie. Seine Lehrerin nimmt sich vor, ihn zu loben, sobald er einen ausführlichen, fehlerfreien Beitrag leistet. Nach drei Wochen hat sie ihn noch kein einziges Mal gelobt.',
+   q:'Welches lernpsychologische Prinzip hat die Lehrerin nicht beachtet?', opts:[{t:'Shaping (sukzessive Annäherung)',ok:true},{t:'Löschung durch Nichtbeachtung',fb:'Sie will ein Verhalten aufbauen, nicht abbauen.'},{t:'Bestrafung durch Entzug',fb:'Es geht hier nicht um Bestrafung.'},{t:'Generalisierung auf andere Fächer',fb:'Das Problem liegt darin, dass das Zielverhalten nie auftritt.'}],
+   ex:'Wie bei der Ratte in Station 1: Wer nur das fertige Zielverhalten verstärkt, wartet unter Umständen ewig.',
+   task:'<span class="op">Entwickle</span> einen Shaping-Plan in drei Schritten, mit dem die Lehrerin Jonas zur Mitarbeit führen kann.',
+   starters:['Schritt 1: Zunächst lobt sie Jonas, wenn …','Schritt 2: Danach …','Schritt 3: Schließlich …'],
+   sol:'<b>Schritt 1:</b> Zunächst verstärkt sie schon kleine Annäherungen, z. B. wenn Jonas in Partnerarbeit etwas sagt oder auf eine Ja-/Nein-Frage antwortet (Lob, Blickkontakt, Nicken). <b>Schritt 2:</b> Danach verstärkt sie kurze freiwillige Beiträge, auch wenn sie unvollständig sind. <b>Schritt 3:</b> Schließlich hebt sie das Kriterium an und verstärkt ausführlichere Beiträge. Wichtig: Die Verstärkung muss unmittelbar folgen und für Jonas wirklich angenehm sein. Lob vor der ganzen Klasse ist das für manche Schüler nicht.',
+   check:['Meine Schritte bauen aufeinander auf (Kriterium wird angehoben).','Ich nenne konkrete Verstärker.','Ich beachte Timing oder die individuelle Wirkung des Verstärkers.']}
+];
+$('#cases').innerHTML=CASES.map((c,i)=>`
+  <div class="card">
+    <span class="tag">Fall ${i+1}</span>
+    <h3>${c.title}</h3>
+    <p><i>${c.text}</i></p>
+    <div class="q"><div class="p"><span class="op">Bestimme</span>: ${c.q}</div><div id="cmc${i}"></div></div>
+    <div class="q"><div class="p">${c.task}</div>
+      <div class="chips" data-for="t4_${i}">${c.starters.map(s=>`<button class="chip">${s}</button>`).join('')}</div>
+      <textarea id="t4_${i}" placeholder="Deine Antwort …"></textarea>
+      <button class="btn ghost" data-sol="cs${i}">Musterlösung und Checkliste</button>
+      <div class="solution" id="cs${i}"><b>Musterlösung:</b> ${c.sol}<hr style="border:none;border-top:1px solid var(--line)"><b>Hast du …</b>${c.check.map(k=>`<label class="check"><input type="checkbox"> ${k}</label>`).join('')}</div>
+    </div>
+  </div>`).join('');
+let casesSolved=0;
+CASES.forEach((c,i)=>mc('#cmc'+i,{options:c.opts,explain:c.ex,onSolve:()=>{ casesSolved++; if(casesSolved>=CASES.length) markDone(4); }}));
+mc('#rc4',{prompt:'Ein unangenehmer Reiz wird entfernt, und das Verhalten wird häufiger. Wie heißt das?', options:[
+  {t:'negative Verstärkung',ok:true},{t:'Bestrafung Typ II',fb:'Bei Typ II wird etwas Angenehmes entfernt und das Verhalten wird seltener.'},{t:'Bestrafung Typ I',fb:'Bei Typ I wird etwas Unangenehmes hinzugefügt.'},{t:'positive Verstärkung',fb:'Bei positiver Verstärkung wird etwas Angenehmes hinzugefügt.'}],
+  explain:'Negative Verstärkung: − unangenehm → Verhalten ▲.'});
+
+/* ================= Station 5 ================= */
+const TERMS=[
+  {l:'Verstärkung / Verstärker', k:['verstärk']},{l:'positive Verstärkung',k:['positive verst','positiver verst']},{l:'negative Verstärkung',k:['negative verst','negativer verst']},
+  {l:'Bestrafung',k:['bestraf','strafe']},{l:'Typ I / Typ II',k:['typ i','typ 1','typ ii','typ 2','1. art','2. art']},
+  {l:'primärer Verstärker',k:['primär']},{l:'sekundärer Verstärker',k:['sekundär']},
+  {l:'Löschung (Extinktion)',k:['lösch','extinkt']},{l:'Löschungsresistenz',k:['resistenz']},{l:'Löschungstrotz',k:['trotz','burst']},
+  {l:'Shaping',k:['shaping','verhaltensformung']},{l:'sukzessive Annäherung',k:['sukzessiv','annäherung','approximation']},
+  {l:'kontinuierliche Verstärkung',k:['kontinuierlich']},{l:'intermittierende Verstärkung',k:['intermittier','partiell']},
+  {l:'Quotenplan',k:['quote']},{l:'Intervallplan',k:['intervall']},{l:'kumulative Kurve',k:['kumul']},
+  {l:'Kontiguität (zeitliche Nähe)',k:['kontigu','zeitliche nähe','unmittelbar']},
+  {l:'Skinner-Box',k:['skinner']},{l:'Effektgesetz (Thorndike)',k:['effekt','thorndike']}
+];
+$('#dumpbtn').onclick=()=>{
+  const v=$('#dump').value.toLowerCase();
+  const hits=TERMS.filter(t=>t.k.some(k=>v.includes(k)));
+  $('#dumpres').innerHTML=`<p style="margin:0 0 6px"><b>${hits.length} von ${TERMS.length}</b> Begriffen gefunden. Die grauen Begriffe schlägst du am besten im Glossar nach.</p>`+TERMS.map(t=>`<span class="${hits.includes(t)?'hit':'miss'}">${hits.includes(t)?'✓ ':''}${t.l}</span>`).join('');
+};
+const QUIZ=[
+  {p:'Was bedeutet „negativ“ bei der negativen Verstärkung?', o:[{t:'Ein unangenehmer Reiz wird entfernt.',ok:true},{t:'Ein unangenehmer Reiz wird hinzugefügt.'},{t:'Ein angenehmer Reiz wird entfernt.'},{t:'Das Verhalten tritt seltener auf.'}], e:'„Negativ“ heißt wegnehmen. Weggenommen wird etwas Unangenehmes, das Verhalten wird häufiger.'},
+  {p:'Welcher Verstärkerplan führt zur höchsten Löschungsresistenz?', o:[{t:'variable Quote',ok:true},{t:'feste Quote'},{t:'kontinuierliche Verstärkung'},{t:'festes Intervall'}], e:'Variable Pläne sind am löschungsresistentesten, weil die nächste Belohnung nie vorhersehbar ist.'},
+  {p:'Wie heißt das schrittweise Verstärken von Annäherungen an ein Zielverhalten?', o:[{t:'Shaping',ok:true},{t:'Generalisierung'},{t:'Diskrimination'},{t:'Spontanerholung'}], e:'Shaping = sukzessive Annäherung.'},
+  {p:'Eine Schülerin lernt immer erst am Abend vor der angekündigten Monatsprüfung. Welches Muster liegt vor?', o:[{t:'festes Intervall',ok:true},{t:'variable Quote'},{t:'variables Intervall'},{t:'feste Quote'}], e:'Fester zeitlicher Abstand führt zum Bogenmuster: erst wenig, kurz vorher viel Aktivität.'},
+  {p:'Warum wird das Klicken des Futterspenders für die Ratte zum Verstärker?', o:[{t:'Es wurde wiederholt mit Futter gekoppelt.',ok:true},{t:'Es ist ein angeborener, primärer Reiz.'},{t:'Es kündigt eine Bestrafung für sie an.'},{t:'Es tritt unabhängig vom Futter auf.'}], e:'Sekundärer Verstärker durch Kopplung mit dem primären Verstärker Futter.'},
+  {p:'Ein Kind bekommt Fernsehverbot, weil es gelogen hat, und lügt danach seltener. Welche Form liegt vor?', o:[{t:'Bestrafung Typ II',ok:true},{t:'Bestrafung Typ I'},{t:'negative Verstärkung'},{t:'positive Verstärkung'}], e:'Ein angenehmer Reiz (Fernsehen) wird entzogen, das Verhalten wird seltener.'},
+  {p:'Was zeigt die Steigung einer kumulativen Kurve?', o:[{t:'die Reaktionsrate (Drücke pro Zeit)',ok:true},{t:'die Anzahl aller Verstärker insgesamt'},{t:'die Dauer der gesamten Löschphase'},{t:'die Kraft des einzelnen Hebeldrucks'}], e:'Steil = schnelles Reagieren, waagrecht = keine Reaktion.'},
+  {p:'Was passiert häufig kurz nach Beginn der Löschung?', o:[{t:'Das Verhalten tritt kurzzeitig verstärkt auf.',ok:true},{t:'Das Verhalten hört sofort vollständig auf.'},{t:'Das Verhalten wird zu einem Reflex.'},{t:'Das Verhalten wird auf andere Reize übertragen.'}], e:'Das ist der Löschungstrotz (extinction burst): Bevor das Verhalten verschwindet, wird es oft kurz intensiver.'},
+  {p:'Worin unterscheidet sich die operante von der klassischen Konditionierung?', o:[{t:'Gelernt wird aus den Folgen eines Verhaltens.',ok:true},{t:'Gelernt wird durch die Kopplung zweier Reize.'},{t:'Gelernt wird nur durch das Beobachten anderer.'},{t:'Gelernt werden ausschließlich angeborene Reflexe.'}], e:'Operant: Verhalten → Konsequenz. Klassisch: Reiz → Reiz.'}
+];
+function buildQuiz(){
+  const el=$('#quiz'); el.innerHTML=''; let score=0, answered=0;
+  const qs=shuffle(QUIZ).slice(0,7);
+  qs.forEach((q,i)=>{
+    const d=document.createElement('div'); d.className='q'; el.appendChild(d);
+    const qq={prompt:`${i+1}. ${q.p}`, options:q.o.map(o=>({...o, fb: o.ok?'':'Noch nicht richtig.'})), explain:q.e};
+    qq.onSolve=(first)=>{ answered++; if(first) score++; $('#qscore').textContent=`${answered}/${qs.length} gelöst · beim ersten Versuch richtig: ${score}`; if(answered===qs.length){ store.set('lastquiz',{d:new Date().toLocaleDateString('de-DE'),s:score,n:qs.length}); showLast(); markDone(5);} };
+    mc(d,qq);
+  });
+  $('#qscore').textContent='';
+}
+function showLast(){ const l=store.get('lastquiz',null); $('#lastquiz').textContent = l?`Letzter vollständiger Durchgang: ${l.d} – ${l.s} von ${l.n} beim ersten Versuch richtig.`:''; }
+$('#requiz').onclick=buildQuiz;
+const CAN=['den Unterschied zwischen klassischer und operanter Konditionierung erklären.','Shaping beschreiben und an einem Beispiel anwenden.','die fünf Verstärkerpläne unterscheiden und ihre Wirkung erklären.','eine kumulative Kurve lesen.','positive/negative Verstärkung und Bestrafung Typ I/II sicher bestimmen.','Alltagssituationen mit Fachbegriffen analysieren.','die Grenzen der operanten Konditionierung beurteilen.'];
+$('#selfcheck').innerHTML=CAN.map((c,i)=>`<label class="check"><input type="checkbox" data-can="${i}" ${state['can'+i]?'checked':''}> … ${c}</label>`).join('');
+$('#selfcheck').addEventListener('change',e=>{ const i=e.target.dataset.can; state['can'+i]=e.target.checked; save(); });
+
+/* ================= Glossar ================= */
+const GLOSS=[
+  ['Operante Konditionierung','Lernen am Erfolg: Die Häufigkeit eines Verhaltens ändert sich durch seine Konsequenzen (Skinner).'],
+  ['Effektgesetz','Thorndike: Verhalten mit befriedigender Konsequenz wird häufiger gezeigt.'],
+  ['Verstärker','Konsequenz, die die Auftretenshäufigkeit eines Verhaltens erhöht.'],
+  ['Primärer Verstärker','Angeborener Verstärker, der ein Grundbedürfnis befriedigt (z. B. Nahrung, Wasser).'],
+  ['Sekundärer Verstärker','Gelernter Verstärker, der durch Kopplung mit primären Verstärkern wirkt (z. B. Geld, Lob, Noten, der Klick des Futterspenders).'],
+  ['Positive Verstärkung','Ein angenehmer Reiz wird hinzugefügt → Verhalten wird häufiger.'],
+  ['Negative Verstärkung','Ein unangenehmer Reiz wird entfernt → Verhalten wird häufiger.'],
+  ['Bestrafung Typ I','Ein unangenehmer Reiz wird hinzugefügt → Verhalten wird seltener (auch: positive Bestrafung).'],
+  ['Bestrafung Typ II','Ein angenehmer Reiz wird entzogen → Verhalten wird seltener (auch: negative Bestrafung, z. B. Auszeit).'],
+  ['Shaping','Verhaltensformung durch Verstärkung schrittweiser Annäherungen an ein Zielverhalten (sukzessive Approximation).'],
+  ['Kontiguität','Zeitliche Nähe: Die Konsequenz muss unmittelbar auf das Verhalten folgen.'],
+  ['Kontinuierliche Verstärkung','Jede Reaktion wird verstärkt: schneller Erwerb, aber schnelle Löschung.'],
+  ['Intermittierende Verstärkung','Nur manche Reaktionen werden verstärkt: langsamerer Erwerb, höhere Löschungsresistenz.'],
+  ['Quotenplan (fest / variabel)','Verstärkung nach einer festen bzw. durchschnittlichen Anzahl von Reaktionen.'],
+  ['Intervallplan (fest / variabel)','Verstärkung der ersten Reaktion nach einer festen bzw. durchschnittlichen Zeitspanne.'],
+  ['Löschung (Extinktion)','Ein Verhalten wird seltener und verschwindet, wenn die Verstärkung dauerhaft ausbleibt.'],
+  ['Löschungsresistenz','Wie lange ein Verhalten ohne Verstärkung weiter gezeigt wird.'],
+  ['Löschungstrotz','Kurzzeitiger Anstieg eines Verhaltens zu Beginn der Löschung (engl. extinction burst).'],
+  ['Kumulative Kurve','Aufzeichnung der aufsummierten Reaktionen über die Zeit. Die Steigung zeigt die Reaktionsrate.'],
+  ['Latentes Lernen','Lernen ohne sichtbare Verstärkung, das erst später im Verhalten gezeigt wird (Tolman).'],
+  ['Korrumpierungseffekt','Äußere Belohnung kann die intrinsische Motivation für eine Tätigkeit verringern.']
+];
+$('#glosslist').innerHTML=GLOSS.map(([t,d])=>`<dt>${t}</dt><dd>${d}</dd>`).join('');
+$('#openGloss').onclick=()=>$('#gloss').classList.add('on');
+$('#closeGloss').onclick=()=>$('#gloss').classList.remove('on');
+
+/* ================= Init ================= */
+buildNav(); bindTextareas(); reset1(); buildQuiz(); showLast(); renderTable2();
+window.addEventListener('resize',()=>{ if(cur===1) resize1(); if(cur===2){ resize2(); draw2(); } });
+go(0);
+requestAnimationFrame(t=>{ last=t; loop(t); });
+</script>
+</body>
+</html>
