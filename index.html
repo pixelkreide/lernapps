@@ -3,168 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lern-Apps</title>
+<title>Pixelkreide · Lern-Apps</title>
+<link rel="icon" href="assets/favicon.png">
 <style>
+  @font-face { font-family: "Space Grotesk"; font-weight: 500; src: url(assets/fonts/space-grotesk-500.woff2) format("woff2"); font-display: swap; }
+  @font-face { font-family: "Space Grotesk"; font-weight: 700; src: url(assets/fonts/space-grotesk-700.woff2) format("woff2"); font-display: swap; }
+  @font-face { font-family: "Silkscreen"; font-weight: 400; src: url(assets/fonts/silkscreen-400.woff2) format("woff2"); font-display: swap; }
+  @font-face { font-family: "Caveat"; font-weight: 700; src: url(assets/fonts/caveat-700.woff2) format("woff2"); font-display: swap; }
+
   :root {
-    --bg: #f6f7f9;
-    --card: #ffffff;
-    --text: #1d2330;
-    --muted: #6b7280;
-    --line: #e3e6eb;
-    --accent: #2f6fdf;
-    --radius: 14px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #14171c;
-      --card: #1d2128;
-      --text: #e8eaee;
-      --muted: #9aa1ad;
-      --line: #2c313a;
-      --accent: #6ea0ff;
-    }
+    --navy: #070b1f;
+    --navy2: #0d1433;
+    --cyan: #16d9e8;
+    --violet: #b07bff;
+    --yellow: #f6d66b;
+    --pink: #ff6fae;
+    --green: #5ef0a0;
+    --text: #eef2ff;
+    --muted: #a3acd1;
+    --glass: rgba(18, 26, 64, .55);
+    --line: rgba(255, 255, 255, .10);
   }
   * { box-sizing: border-box; }
+  html { background: var(--navy); }
   body {
     margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
+    min-height: 100vh;
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    font-weight: 500;
     color: var(--text);
     line-height: 1.5;
+    background:
+      linear-gradient(180deg, var(--navy) 0%, var(--navy) 40%, rgba(7,11,31,.35) 80%, rgba(7,11,31,.6) 100%) fixed,
+      url(assets/footer.jpg) center bottom / cover no-repeat fixed,
+      var(--navy);
   }
-  header {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 48px 24px 16px;
-  }
-  h1 { margin: 0 0 6px; font-size: 2rem; letter-spacing: -0.02em; }
-  header p { margin: 0; color: var(--muted); }
-  .controls {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 16px 24px;
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 380px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
     align-items: center;
+    background: url(assets/hero.jpg) center / cover no-repeat;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(7,11,31,.85) 0%, rgba(7,11,31,.35) 55%, rgba(7,11,31,.15) 100%),
+                linear-gradient(180deg, rgba(7,11,31,0) 60%, var(--navy) 100%);
+  }
+  .hero-inner {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 1140px;
+    margin: 0 auto;
+    padding: 48px 24px;
+    display: flex; align-items: center; gap: 32px;
+  }
+  .hero img.logo {
+    width: 150px; height: 150px; flex: none;
+    filter: drop-shadow(0 0 28px rgba(22,217,232,.45));
+  }
+  .chip {
+    display: inline-block;
+    font-family: "Silkscreen", monospace;
+    font-size: .8rem;
+    letter-spacing: .06em;
+    padding: 4px 10px;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    border-radius: 6px;
+    background: rgba(22,217,232,.08);
+  }
+  .hero h1 {
+    margin: 12px 0 4px;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -.02em;
+  }
+  .hero h1 span {
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero .hand {
+    font-family: "Caveat", cursive;
+    font-size: 1.7rem;
+    color: var(--yellow);
+    margin: 0;
+  }
+
+  /* ---------- Steuerung ---------- */
+  .controls {
+    max-width: 1140px;
+    margin: -28px auto 0;
+    padding: 0 24px 20px;
+    position: relative; z-index: 2;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
   }
   input[type="search"] {
-    flex: 1 1 240px;
-    padding: 10px 14px;
+    flex: 1 1 260px;
+    padding: 13px 18px;
+    font: inherit;
+    color: var(--text);
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input[type="search"]::placeholder { color: var(--muted); }
+  input[type="search"]:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,217,232,.2); }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; }
+  .filter {
+    font-family: "Silkscreen", monospace;
+    font-size: .8rem;
+    padding: 9px 14px;
+    color: var(--text);
+    background: var(--glass);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--line);
     border-radius: 10px;
-    background: var(--card);
-    color: var(--text);
-    font-size: 1rem;
-  }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip {
-    padding: 7px 14px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--card);
-    color: var(--text);
     cursor: pointer;
-    font-size: 0.9rem;
+    transition: all .2s;
   }
-  .chip[aria-pressed="true"] {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
+  .filter:hover { border-color: var(--violet); }
+  .filter[aria-pressed="true"] {
+    border-color: var(--cyan);
+    color: var(--navy);
+    background: var(--cyan);
+    box-shadow: 0 0 16px rgba(22,217,232,.5);
   }
+
+  /* ---------- Karten ---------- */
   main {
-    max-width: 1100px;
+    max-width: 1140px;
     margin: 0 auto;
-    padding: 8px 24px 64px;
+    padding: 8px 24px 80px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 18px;
   }
   .card {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 20px;
-    background: var(--card);
+    position: relative;
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 22px;
+    color: inherit; text-decoration: none;
+    background: var(--glass);
+    backdrop-filter: blur(12px);
     border: 1px solid var(--line);
-    border-radius: var(--radius);
-    text-decoration: none;
-    color: inherit;
-    transition: transform .15s, box-shadow .15s, border-color .15s;
+    border-radius: 16px;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+  }
+  .card::before {
+    content: "";
+    position: absolute; left: 22px; right: 22px; top: 0; height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    border-radius: 2px;
+    opacity: .7;
   }
   .card:hover, .card:focus-visible {
-    transform: translateY(-2px);
-    border-color: var(--accent);
-    box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    transform: translateY(-4px);
+    border-color: rgba(22,217,232,.6);
+    box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 24px rgba(176,123,255,.25);
     outline: none;
   }
-  .card h2 { margin: 0; font-size: 1.1rem; }
-  .card p { margin: 0; color: var(--muted); font-size: 0.93rem; flex: 1; }
-  .meta { display: flex; gap: 6px; flex-wrap: wrap; }
+  .card h2 { margin: 0; font-size: 1.2rem; font-weight: 700; }
+  .card p { margin: 0; color: var(--muted); font-size: .95rem; flex: 1; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .tag {
-    font-size: 0.75rem;
-    padding: 2px 9px;
-    border-radius: 999px;
-    background: var(--bg);
-    border: 1px solid var(--line);
-    color: var(--muted);
+    font-family: "Silkscreen", monospace;
+    font-size: .7rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid currentColor;
+  }
+  .go {
+    margin-left: auto;
+    font-family: "Silkscreen", monospace;
+    font-size: .75rem;
+    color: var(--cyan);
   }
   .empty {
     grid-column: 1 / -1;
     text-align: center;
-    color: var(--muted);
-    padding: 48px 0;
+    padding: 56px 0;
   }
+  .empty .hand { font-family: "Caveat", cursive; font-size: 2rem; color: var(--yellow); }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-family: "Silkscreen", monospace;
+    font-size: .75rem;
+    color: var(--text);
+    text-shadow: 0 1px 6px rgba(0,0,0,.9);
+  }
+
+  @media (max-width: 640px) {
+    .hero-inner { flex-direction: column; text-align: center; gap: 16px; }
+    .hero img.logo { width: 110px; height: 110px; }
+    .hero::after { background: linear-gradient(180deg, rgba(7,11,31,.55) 0%, var(--navy) 100%); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Lern-Apps</h1>
-  <p>Alle Apps laufen direkt im Browser. Einfach anklicken und loslegen.</p>
+<header class="hero">
+  <div class="hero-inner">
+    <img class="logo" src="assets/logo.png" alt="Pixelkreide">
+    <div>
+      <span class="chip">LERN-APPS</span>
+      <h1>Lernen mit <span>Pixelkreide</span></h1>
+      <p class="hand">Anklicken, ausprobieren, loslegen.</p>
+    </div>
+  </div>
 </header>
 
 <div class="controls">
   <input type="search" id="q" placeholder="App suchen …" aria-label="App suchen">
-  <div class="chips" id="chips"></div>
+  <div class="filters" id="filters"></div>
 </div>
 
 <main id="list"></main>
 
+<footer>Alle Apps laufen direkt im Browser · Keine Anmeldung nötig</footer>
+
 <script>
 /* ============================================================
-   Neue App eintragen: einfach ein Objekt in diese Liste setzen.
+   Neue App eintragen: ein Objekt in diese Liste setzen.
    datei  = Pfad zur HTML-Datei im Repo (z. B. "apps/epochen-detektiv.html")
    fach   = Fach (daraus entstehen die Filter-Buttons automatisch)
    stufe  = Jahrgangsstufe (optional)
    ============================================================ */
 const APPS = [
-  // { titel: "Epochen-Detektiv", beschreibung: "Lyrik den Literaturepochen zuordnen.", fach: "Deutsch", stufe: "13", datei: "apps/epochen-detektiv.html" },
+  // { titel: "Epochen-Detektiv", beschreibung: "Gedichte den Literaturepochen zuordnen.", fach: "Deutsch", stufe: "13", datei: "apps/epochen-detektiv.html" },
 ];
 
+const FARBEN = ['--cyan', '--violet', '--yellow', '--pink', '--green'];
 const list = document.getElementById('list');
 const q = document.getElementById('q');
-const chipsEl = document.getElementById('chips');
+const filtersEl = document.getElementById('filters');
 let fach = 'Alle';
 
-const faecher = ['Alle', ...[...new Set(APPS.map(a => a.fach).filter(Boolean))].sort()];
-faecher.forEach(f => {
+const faecher = [...new Set(APPS.map(a => a.fach).filter(Boolean))].sort();
+const farbe = f => `var(${FARBEN[faecher.indexOf(f) % FARBEN.length]})`;
+
+['Alle', ...faecher].forEach(f => {
   const b = document.createElement('button');
-  b.className = 'chip';
+  b.className = 'filter';
   b.textContent = f;
   b.setAttribute('aria-pressed', f === fach);
   b.onclick = () => {
     fach = f;
-    chipsEl.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c.textContent === fach));
+    filtersEl.querySelectorAll('.filter').forEach(c => c.setAttribute('aria-pressed', c.textContent === fach));
     render();
   };
-  chipsEl.appendChild(b);
+  filtersEl.appendChild(b);
 });
-if (faecher.length < 3) chipsEl.style.display = 'none';
+if (faecher.length < 2) filtersEl.style.display = 'none';
 
-function esc(s) {
-  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 function render() {
   const term = q.value.trim().toLowerCase();
@@ -173,7 +275,7 @@ function render() {
     (!term || [a.titel, a.beschreibung, a.fach].join(' ').toLowerCase().includes(term))
   );
   if (!items.length) {
-    list.innerHTML = `<div class="empty">${APPS.length ? 'Keine passende App gefunden.' : 'Hier erscheinen bald die ersten Apps.'}</div>`;
+    list.innerHTML = `<div class="empty"><p class="hand">${APPS.length ? 'Keine passende App gefunden.' : 'Hier erscheinen bald die ersten Apps.'}</p></div>`;
     return;
   }
   list.innerHTML = items.map(a => `
@@ -181,8 +283,9 @@ function render() {
       <h2>${esc(a.titel)}</h2>
       <p>${esc(a.beschreibung)}</p>
       <div class="meta">
-        ${a.fach ? `<span class="tag">${esc(a.fach)}</span>` : ''}
-        ${a.stufe ? `<span class="tag">Jgst. ${esc(a.stufe)}</span>` : ''}
+        ${a.fach ? `<span class="tag" style="color:${farbe(a.fach)}">${esc(a.fach)}</span>` : ''}
+        ${a.stufe ? `<span class="tag" style="color:var(--muted)">Jgst. ${esc(a.stufe)}</span>` : ''}
+        <span class="go">Starten ▸</span>
       </div>
     </a>`).join('');
 }
