@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reiz & Reaktion – Eine Zeitreise durch die Lernpsychologie</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#040408;overflow:hidden;color:#efe6d4;
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;-webkit-user-select:none;user-select:none}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#wrap{position:relative;overflow:hidden;box-shadow:0 0 120px #000}
+#cv{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer}
+.serif{font-family:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif}
+/* overlays */
+#fade{position:absolute;inset:0;background:#000;opacity:1;pointer-events:none;transition:opacity .9s}
+#cap{position:absolute;left:0;right:0;top:30%;text-align:center;pointer-events:none;opacity:0;transition:opacity 1.4s}
+#cap .k{letter-spacing:.5em;font-size:.8em;opacity:.7;text-transform:uppercase}
+#cap .t{font-size:2.6em;margin:.15em 0;text-shadow:0 0 .6em rgba(0,0,0,.8)}
+#cap .p{letter-spacing:.3em;font-size:.95em;opacity:.85}
+#hud{position:absolute;left:1.2em;top:1em;right:1.2em;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;transition:opacity .6s}
+#obj{background:rgba(6,6,12,.55);border-left:2px solid var(--ac,#c9b27a);padding:.45em .8em;font-size:.82em;max-width:52%;backdrop-filter:blur(2px)}
+#obj b{display:block;font-size:.75em;letter-spacing:.25em;opacity:.65;text-transform:uppercase;margin-bottom:.15em;font-weight:600}
+#btns{display:flex;gap:.4em;pointer-events:auto}
+.hb{background:rgba(6,6,12,.6);border:1px solid rgba(255,255,255,.18);color:#efe6d4;font:inherit;font-size:.78em;padding:.35em .7em;cursor:pointer;border-radius:2px}
+.hb:hover{border-color:var(--ac,#c9b27a);color:#fff}
+#prompt{position:absolute;transform:translate(-50%,-100%);pointer-events:none;font-size:.78em;background:rgba(5,5,10,.78);border:1px solid var(--ac,#c9b27a);padding:.2em .55em;white-space:nowrap;opacity:0;transition:opacity .2s}
+#prompt kbd{font-family:inherit;background:var(--ac,#c9b27a);color:#111;padding:0 .35em;margin-right:.4em;font-weight:700;border-radius:2px}
+#dlg{position:absolute;left:8%;right:8%;top:11%;background:linear-gradient(180deg,rgba(8,8,14,.88),rgba(4,4,8,.94));border:1px solid rgba(255,255,255,.12);border-top:2px solid var(--ac,#c9b27a);
+  padding:.9em 1.3em 1.1em;min-height:5.2em;opacity:0;transform:translateY(.6em);transition:opacity .3s,transform .3s;pointer-events:none;cursor:pointer}
+#dlg.on{opacity:1;transform:none;pointer-events:auto}
+#dlg .who{font-size:.72em;letter-spacing:.3em;text-transform:uppercase;color:var(--ac,#c9b27a);margin-bottom:.35em;font-weight:700}
+#dlg .txt{font-size:1.02em;line-height:1.45}
+#dlg.nar .txt{font-family:"Palatino Linotype",Palatino,Georgia,serif;font-style:italic;font-size:1.08em}
+#dlg .nx{position:absolute;right:1em;bottom:.5em;font-size:.7em;opacity:.55;animation:bl 1.2s infinite}
+@keyframes bl{50%{opacity:.15}}
+#toast{position:absolute;right:1.2em;bottom:1.2em;background:rgba(8,8,14,.85);border:1px solid var(--ac,#c9b27a);padding:.45em .8em;font-size:.78em;opacity:0;transform:translateX(1em);transition:all .4s;pointer-events:none;max-width:40%}
+#toast.on{opacity:1;transform:none}
+/* panel */
+#panel,#book{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .35s;backdrop-filter:blur(3px)}
+#panel.on,#book.on{opacity:1;pointer-events:auto}
+.pc{width:78%;max-height:90%;overflow:auto;background:linear-gradient(180deg,#11121b,#090a10);border:1px solid rgba(255,255,255,.1);border-top:3px solid var(--ac,#c9b27a);padding:1.1em 1.4em 1.2em;box-shadow:0 1em 4em rgba(0,0,0,.7)}
+.pc h2{margin:0 0 .15em;font-family:"Palatino Linotype",Palatino,Georgia,serif;font-weight:normal;font-size:1.45em;color:#fff}
+.pc .sub{font-size:.75em;letter-spacing:.25em;text-transform:uppercase;color:var(--ac,#c9b27a);margin-bottom:.6em}
+.pc p{margin:.4em 0;line-height:1.45;font-size:.9em}
+.op{font-weight:700;color:var(--ac,#c9b27a)}
+.row{display:flex;gap:.6em;flex-wrap:wrap;margin:.6em 0}
+.btn{background:transparent;border:1px solid var(--ac,#c9b27a);color:#fff;font:inherit;font-size:.86em;padding:.45em .9em;cursor:pointer;border-radius:2px;transition:background .2s}
+.btn:hover{background:rgba(255,255,255,.08)}
+.btn.pri{background:var(--ac,#c9b27a);color:#111;font-weight:700}
+.btn.pri:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.35;cursor:default}
+.pool{display:flex;flex-wrap:wrap;gap:.45em;min-height:2.4em;padding:.5em;border:1px dashed rgba(255,255,255,.15);margin:.5em 0}
+.card{background:#1d1f2c;border:1px solid rgba(255,255,255,.2);padding:.4em .65em;font-size:.84em;cursor:pointer;border-radius:2px;line-height:1.3;max-width:100%}
+.card:hover{border-color:var(--ac,#c9b27a)}
+.card.sel{outline:2px solid var(--ac,#c9b27a);background:#2a2c3c}
+.card.ok{border-color:#7fd17a;background:#17301a}
+.card.bad{border-color:#e0605a;background:#3a1717;animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.slots{display:grid;gap:.5em;margin:.5em 0}
+.slot{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);padding:.45em .6em;min-height:3em;cursor:pointer}
+.slot:hover{border-color:var(--ac,#c9b27a)}
+.slot .lb{font-size:.74em;letter-spacing:.06em;opacity:.8;margin-bottom:.35em;font-weight:600}
+.slot .hn{font-size:.7em;opacity:.6;font-style:italic;display:none;margin-top:-.2em;margin-bottom:.3em}
+.hints .slot .hn{display:block}
+.slot .in{display:flex;flex-wrap:wrap;gap:.35em}
+.opts{display:grid;gap:.45em;margin:.6em 0}
+.opt{text-align:left;background:#161824;border:1px solid rgba(255,255,255,.16);color:#efe6d4;font:inherit;font-size:.86em;padding:.55em .8em;cursor:pointer;border-radius:2px;line-height:1.35}
+.opt:hover{border-color:var(--ac,#c9b27a)}
+.opt.ok{border-color:#7fd17a;background:#17301a}
+.opt.bad{border-color:#e0605a;background:#3a1717}
+.opt.on{outline:2px solid var(--ac,#c9b27a)}
+.fb{margin:.5em 0;padding:.55em .8em;font-size:.84em;line-height:1.45;border-left:3px solid #7fd17a;background:rgba(127,209,122,.08);display:none}
+.fb.bad{border-color:#e0605a;background:rgba(224,96,90,.08)}
+.fb.on{display:block}
+.simc{width:100%;image-rendering:pixelated;display:block;border:1px solid rgba(255,255,255,.1);background:#000}
+.goals{list-style:none;padding:0;margin:.5em 0;font-size:.84em}
+.goals li{padding:.2em 0;opacity:.75}
+.goals li::before{content:"☐ ";}
+.goals li.done{opacity:1;color:#9be096}
+.goals li.done::before{content:"☑ ";}
+.goals li.cur{opacity:1}
+.log{font-size:.8em;min-height:2.6em;padding:.45em .7em;background:rgba(255,255,255,.04);border-left:2px solid var(--ac,#c9b27a);line-height:1.4}
+.two{display:grid;grid-template-columns:1.25fr 1fr;gap:1em;align-items:start}
+.tag{display:inline-block;font-size:.68em;letter-spacing:.15em;text-transform:uppercase;border:1px solid rgba(255,255,255,.25);padding:.05em .45em;margin-right:.4em;opacity:.8}
+textarea{width:100%;min-height:6em;background:#0c0d14;border:1px solid rgba(255,255,255,.2);color:#efe6d4;font:inherit;font-size:.88em;padding:.6em;resize:vertical}
+.mus{display:none;border:1px solid rgba(255,255,255,.15);padding:.6em .8em;font-size:.86em;line-height:1.5;margin-top:.5em;background:rgba(255,255,255,.03)}
+.mus.on{display:block}
+.chk{font-size:.84em;line-height:1.6}
+.chk label{display:block;cursor:pointer}
+/* book */
+.bk{width:70%;max-height:86%;overflow:auto;background:#e9dfc8;color:#2a2118;padding:1.3em 1.6em;border-radius:2px;box-shadow:0 1em 4em #000, inset 0 0 4em rgba(120,90,40,.25);font-family:"Palatino Linotype",Palatino,Georgia,serif}
+.bk h2{margin:0;font-weight:normal;font-size:1.6em}
+.bk .en{border-top:1px solid rgba(80,60,30,.25);padding:.5em 0}
+.bk .en b{display:block;font-size:.95em}
+.bk .en span{font-size:.85em;line-height:1.45}
+.bk .ch{font-size:.7em;letter-spacing:.2em;text-transform:uppercase;color:#8a6a3a;margin-top:.8em}
+.bk .empty{opacity:.6;font-style:italic;font-size:.9em}
+/* title */
+#title{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:opacity 1.2s;background:radial-gradient(ellipse at center,rgba(0,0,0,.1),rgba(0,0,0,.75))}
+#title .k{letter-spacing:.6em;font-size:.8em;opacity:.7;text-transform:uppercase}
+#title h1{font-family:"Palatino Linotype",Palatino,Georgia,serif;font-weight:normal;font-size:4.2em;margin:.1em 0 .05em;letter-spacing:.06em;color:#f6ecd6;text-shadow:0 0 .5em rgba(226,166,75,.45),0 .1em .4em #000}
+#title h1 span{color:#e2a64b}
+#title .s{font-family:"Palatino Linotype",Palatino,Georgia,serif;font-style:italic;font-size:1.15em;opacity:.85;margin-bottom:1.6em}
+#title .ctl{font-size:.72em;opacity:.55;margin-top:1.4em;line-height:1.7}
+#title .btn{font-size:1em;padding:.6em 1.6em;letter-spacing:.15em;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div id="stage"><div id="wrap">
+  <canvas id="cv"></canvas>
+  <div id="hud" style="opacity:0"><div id="obj"><b>Ziel</b><span id="objt"></span></div>
+    <div id="btns"><button class="hb" id="bBook">📖 Notizbuch <span style="opacity:.5">N</span></button><button class="hb" id="bSnd">♪ Ton an</button><button class="hb" id="bHub">⌂ Archiv</button></div></div>
+  <div id="prompt"></div>
+  <div id="cap"><div class="k" id="capk"></div><div class="t serif" id="capt"></div><div class="p" id="capp"></div></div>
+  <div id="dlg"><div class="who" id="dwho"></div><div class="txt" id="dtxt"></div><div class="nx">▶ weiter</div></div>
+  <div id="toast"></div>
+  <div id="panel"><div class="pc" id="pc"></div></div>
+  <div id="book"><div class="bk" id="bk"></div></div>
+  <div id="title">
+    <div class="k">Ein Lernspiel zur Lernpsychologie</div>
+    <h1>Reiz <span>&amp;</span> Reaktion</h1>
+    <div class="s">Eine Zeitreise zu den Experimenten, die das Lernen erklärt haben</div>
+    <button class="btn pri" id="bStart">Zeitreise beginnen</button>
+    <div class="ctl">← → oder A / D gehen &nbsp;·&nbsp; E / Leertaste untersuchen &nbsp;·&nbsp; Klicken geht auch<br>N Notizbuch &nbsp;·&nbsp; Esc zurück ins Archiv</div>
+  </div>
+  <div id="fade"></div>
+</div></div>
+<script>
+"use strict";
+/* ================= Grundlagen ================= */
+const W=480,H=270;
+const cv=document.getElementById('cv'); cv.width=W; cv.height=H;
+const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+const $=id=>document.getElementById(id);
+const wrap=$('wrap');
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);wrap.style.width=(W*s)+'px';wrap.style.height=(H*s)+'px';wrap.style.fontSize=(s*5.3)+'px';}
+addEventListener('resize',fit);fit();
+
+function R(c,x,y,w,h,col){c.fillStyle=col;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
+function hx(h){const n=parseInt(h.slice(1),16);return[n>>16,n>>8&255,n&255];}
+function toHex(r,g,b){return'#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');}
+function shade(h,a=.25){const[r,g,b]=hx(h);return toHex(r*(1-a),g*(1-a),b*(1-a));}
+function tint(h,a=.25){const[r,g,b]=hx(h);return toHex(r+(255-r)*a,g+(255-g)*a,b+(255-b)*a);}
+function mixc(a,b,t){const A=hx(a),B=hx(b);return toHex(A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t,A[2]+(B[2]-A[2])*t);}
+function rgba(h,a){const[r,g,b]=hx(h);return`rgba(${r},${g},${b},${a})`;}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+function vgrad(c,x,y,w,h,st){
+  for(let j=0;j<h;j++){
+    const t=h>1?j/(h-1)*(st.length-1):0;const i=Math.min(st.length-2,Math.floor(t));const f=t-i;const row=BAYER[(y+j)&3];
+    let rs=0,rc=null;
+    for(let k=0;k<=w;k++){let col=null;if(k<w){const th=(row[(x+k)&3]+.5)/16;col=f>th?st[i+1]:st[i];}
+      if(col!==rc){if(rc){c.fillStyle=rc;c.fillRect(x+rs,y+j,k-rs,1);}rc=col;rs=k;}}
+  }
+}
+function hgrad(c,x,y,w,h,st){
+  for(let k=0;k<w;k++){const t=w>1?k/(w-1)*(st.length-1):0;const i=Math.min(st.length-2,Math.floor(t));const f=t-i;
+    for(let j=0;j<h;j++){const th=(BAYER[(y+j)&3][(x+k)&3]+.5)/16;c.fillStyle=f>th?st[i+1]:st[i];c.fillRect(x+k,y+j,1,1);}}
+}
+function speck(c,x,y,w,h,col,n,r){for(let i=0;i<n;i++)R(c,x+r()*w,y+r()*h,1,1,col);}
+function glow(c,x,y,r,col,a){if(r<=0||a<=0)return;c.save();c.globalCompositeOperation='lighter';const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,rgba(col,a));g.addColorStop(1,rgba(col,0));c.fillStyle=g;c.fillRect(x-r,y-r,r*2,r*2);c.restore();}
+function shadowBlob(c,x,y,rx,ry,a){c.save();c.fillStyle=`rgba(0,0,0,${a})`;c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fill();c.restore();}
+function beam(c,pts,col,a,y0,y1){c.save();c.globalCompositeOperation='lighter';const g=c.createLinearGradient(0,y0,0,y1);g.addColorStop(0,rgba(col,a));g.addColorStop(1,rgba(col,0));c.fillStyle=g;c.beginPath();c.moveTo(pts[0][0],pts[0][1]);for(const p of pts.slice(1))c.lineTo(p[0],p[1]);c.closePath();c.fill();c.restore();}
+function line(c,x0,y0,x1,y1,col){x0=Math.round(x0);y0=Math.round(y0);x1=Math.round(x1);y1=Math.round(y1);const dx=Math.abs(x1-x0),dy=-Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1;let e=dx+dy;c.fillStyle=col;for(let i=0;i<2000;i++){c.fillRect(x0,y0,1,1);if(x0===x1&&y0===y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx;}if(e2<=dx){e+=dx;y0+=sy;}}}
+function arch(c,cx,top,w,h,col){const r=w/2;for(let j=0;j<h;j++){let hw=r;if(j<r){const d=r-j-.5;hw=Math.sqrt(Math.max(0,r*r-d*d));}hw=Math.round(hw);c.fillStyle=col;c.fillRect(Math.round(cx-hw),top+j,hw*2,1);}}
+function ellipseFill(c,cx,cy,rx,ry,col){c.fillStyle=col;for(let j=-ry;j<=ry;j++){const hw=Math.round(rx*Math.sqrt(Math.max(0,1-(j*j)/(ry*ry))));c.fillRect(Math.round(cx-hw),Math.round(cy+j),hw*2,1);}}
+const DIG={0:['111','101','101','101','111'],1:['010','110','010','010','111'],2:['111','001','111','100','111'],3:['111','001','111','001','111'],4:['101','101','111','001','001'],5:['111','100','111','001','111'],6:['111','100','111','101','111'],7:['111','001','010','010','010'],8:['111','101','111','101','111'],9:['111','101','111','001','111'],'-':['000','000','111','000','000'],'?':['111','001','011','000','010']};
+function digits(c,s,x,y,col){for(const ch of String(s)){const g=DIG[ch];if(g)for(let j=0;j<5;j++)for(let i=0;i<3;i++)if(g[j][i]==='1')R(c,x+i,y+j,1,1,col);x+=4;}}
+function scribble(c,x,y,w,rows,col,r){for(let j=0;j<rows;j++){let px=x;const len=w*(.5+r()*.5);while(px<x+len){const sw=2+Math.floor(r()*5);for(let i=0;i<sw;i++)if(r()>.25)R(c,px+i,y+j*5+(r()>.7?1:0),1,1,col);px+=sw+2;}}}
+
+/* ================= Figuren ================= */
+function human(c,x,y,o,t){
+  t=t||0;const f=o.face||1,kid=!!o.kid;
+  const legH=kid?6:10,torH=kid?8:11,hdH=kid?7:8,tw=kid?8:10,hw=kid?7:8;
+  const s=o.walk?Math.sin(o.walk):0;x=Math.round(x);y=Math.round(y);
+  const breath=o.walk?0:Math.round((Math.sin(t*1.7+(o.ph||0))+1)*.5*.6);
+  shadowBlob(c,x,y,8,2,.35);
+  const yL=y-legH-2,l1=Math.round(s*2),l2=-l1;
+  const pD=shade(o.pants,.3);
+  if(o.skirt){R(c,x-3,yL+3,2,legH-3,o.skin);R(c,x+1,yL+3,2,legH-3,shade(o.skin,.15));}
+  else{R(c,x-4+l1,yL,3,legH,f>0?pD:o.pants);R(c,x+1+l2,yL,3,legH,f>0?o.pants:pD);}
+  const sh=o.shoes||'#1a1410';R(c,x-4+l1+(f>0?0:-1),y-2,4,2,sh);R(c,x+1+l2+(f>0?0:-1),y-2,4,2,sh);
+  const ty=yL-torH+breath;
+  // hinterer Arm
+  const a=Math.round(s*2);const back=f>0?x-tw/2-2:x+tw/2;const front=f>0?x+tw/2:x-tw/2-2;
+  const sl=o.sleeve||o.top;
+  if(!o.armUp)R(c,back,ty+1+(-a>0?0:0),2,kid?7:9,shade(sl,.35));
+  R(c,x-tw/2,ty,tw,torH+1-breath,o.top);
+  if(o.skirt)R(c,x-tw/2-1,ty+torH-1,tw+2,5,o.skirt);
+  if(o.coat){R(c,x-tw/2,ty+torH,tw,o.coat,o.top);R(c,f>0?x-tw/2:x+tw/2-2,ty+torH,2,o.coat,shade(o.top,.3));}
+  R(c,f>0?x-tw/2:x+tw/2-2,ty,2,torH+1,shade(o.top,.3));
+  if(o.rim)R(c,f>0?x+tw/2-1:x-tw/2,ty+1,1,torH-1,o.rim);
+  if(o.shirt)R(c,x-1,ty,3,3,o.shirt);
+  if(o.tie)R(c,x,ty+1,1,6,o.tie);
+  if(o.scarf){R(c,x-tw/2,ty,tw,2,o.scarf);const tl=Math.round(Math.sin(t*3)*1);R(c,f>0?x-tw/2-2:x+tw/2,ty+1+tl,3,5,o.scarf);R(c,f>0?x-tw/2-3:x+tw/2+1,ty+5+tl,2,3,shade(o.scarf,.25));}
+  // vorderer Arm
+  if(o.armUp){R(c,front,ty-6,2,8,sl);R(c,front,ty-8,2,2,o.skin);if(o.hold)o.hold(c,front,ty-8);}
+  else{R(c,front,ty+1+a,2,kid?6:8,sl);R(c,front,ty+(kid?7:9)+a,2,2,o.skin);if(o.hold)o.hold(c,front,ty+(kid?7:9)+a);}
+  // Kopf
+  const hy=ty-hdH,hX=x-hw/2;
+  R(c,x-1,hy+hdH-1,3,2,shade(o.skin,.2));
+  R(c,hX,hy,hw,hdH,o.skin);R(c,f>0?hX:hX+hw-1,hy+1,1,hdH-2,shade(o.skin,.18));
+  const hr=o.hair;
+  if(o.hs==='bald'){R(c,f>0?hX:hX+hw-2,hy+2,2,3,hr);R(c,hX,hy+1,hw,1,shade(o.skin,.08));}
+  else if(o.hs==='long'){R(c,hX-1,hy-1,hw+2,3,hr);R(c,f>0?hX-1:hX+hw-2,hy,3,hdH+3,hr);}
+  else if(o.hs==='bun'){R(c,hX-1,hy-1,hw+2,3,hr);R(c,f>0?hX-1:hX+hw-1,hy,2,5,hr);R(c,f>0?hX-3:hX+hw+1,hy-1,3,3,hr);}
+  else if(o.hs==='baby'){R(c,hX,hy,hw,2,hr);}
+  else {R(c,hX-1,hy-1,hw+2,3,hr);R(c,f>0?hX-1:hX+hw-1,hy,2,4,hr);if(o.hs==='recede')R(c,f>0?hX+hw-3:hX+1,hy,2,1,o.skin);}
+  const ex=f>0?hX+hw-3:hX+2;R(c,ex,hy+3,1,1,'#120c0a');
+  if(o.glasses){R(c,ex-1,hy+3,3,1,'#cfd6d8');R(c,f>0?ex-3:ex+2,hy+3,2,1,'#888');}
+  if(o.beard){R(c,hX+1,hy+5,hw-1,4,o.beard);R(c,f>0?hX+hw-2:hX,hy+5,2,2,o.beard);}
+  if(o.mouth)R(c,f>0?hX+hw-3:hX+1,hy+6,2,1,'#5a2a22');
+}
+const PLAYER={top:'#24474c',sleeve:'#1e3c40',pants:'#2a2630',skin:'#e7b998',hair:'#3a2418',hs:'short',scarf:'#d7912f',coat:5,rim:'#6fb0b0',shoes:'#16110d'};
+function dog(c,x,y,t,o){ // x = Kopfmitte links, y = Pfoten
+  o=o||{};const B='#8a5a32',Bd='#6a4224',Cr='#e8d2a8',Dk='#2a1a10';
+  const br=Math.round((Math.sin(t*2.2)+1)*.5);
+  // Beine
+  for(const lx of [10,15,30,35])R(c,x+lx,y-10,3,10,lx<20?B:Bd);
+  for(const lx of [10,15,30,35])R(c,x+lx,y-2,3,2,Cr);
+  // Körper
+  R(c,x+8,y-21-br,32,12+br,B);R(c,x+8,y-12,32,3,Bd);R(c,x+12,y-21-br,24,2,tint(B,.15));
+  R(c,x+12,y-14,14,3,Cr);
+  // Schwanz
+  const wag=Math.round(Math.sin(t*(o.wag?14:3))*2);R(c,x+40,y-21+wag,2,2,B);R(c,x+42,y-24+wag,2,3,B);R(c,x+43,y-27+wag*1.5,2,3,B);
+  // Hals/Kopf
+  const ear=o.alert?-2:0;
+  R(c,x+4,y-24-br,8,8,B);
+  R(c,x-4,y-28,12,9,B);R(c,x-9,y-24,6,5,Cr);R(c,x-10,y-24,2,2,Dk);
+  R(c,x-1,y-26,1,1,Dk);
+  R(c,x+3,y-30+ear,4,7+ear*-1,Bd);
+  if(o.salivate>0){const dl=Math.floor((t*6)%5);R(c,x-6,y-19+dl,1,1+Math.round(o.salivate*2),'#cde8f2');}
+}
+function bobo(c,x,y,ang,sc){
+  sc=sc||1;const Hh=Math.round(30*sc);
+  for(let r=0;r<Hh;r++){const u=r/Hh;let w,col;
+    if(u>.72){w=Math.round((7+Math.sin((u-.72)/.28*Math.PI)*2.5)*sc);col='#c8342e';}
+    else if(u>.3){w=Math.round((4.5+u*3.5)*sc);col=(Math.floor(r/3)%2)?'#e9e3d6':'#d6402f';}
+    else{w=Math.round(4*sc+Math.sin(u/.3*Math.PI)*.5*sc);col=u<.06?'#d6402f':'#f1e6d6';}
+    const off=Math.round(Math.sin(ang)*(Hh-r)*.9);c.fillStyle=col;c.fillRect(x-w+off,y-Hh+r,w*2,1);
+    if(u>.3&&u<.72){c.fillStyle='rgba(0,0,0,.18)';c.fillRect(x+w-2+off,y-Hh+r,2,1);}
+  }
+  const off=Math.round(Math.sin(ang)*Hh*.8);const hy=y-Hh;
+  R(c,x-1+off,hy+5*sc,2*sc,2*sc,'#d22');R(c,x-3*sc+off,hy+3*sc,1,1,'#111');R(c,x+2*sc+off,hy+3*sc,1,1,'#111');R(c,x-2*sc+off,hy+8*sc,4*sc,1,'#a11');
+  R(c,x-2*sc+off,hy-1,4*sc,2,'#2a5fbf');
+}
+function rat(c,x,y,f,o){o=o||{};const cw='#efeae2',cs='#c9c0b4';
+  if(o.rear){R(c,x-2,y-8,4,7,cw);R(c,x-2,y-10,4,3,cw);R(c,x+(f>0?1:-2),y-10,1,1,'#c33');R(c,x+(f>0?2:-3),y-9,1,1,'#f2a6b0');R(c,x-(f>0?5:-2),y-2,4,1,'#e4a0a8');return;}
+  R(c,x-4,y-4,8,3,cw);R(c,x-4,y-2,8,1,cs);R(c,x+(f>0?4:-6),y-4,2,2,cw);R(c,x+(f>0?5:-6),y-4,1,1,'#c33');R(c,x+(f>0?6:-7),y-3,1,1,'#f2a6b0');R(c,x+(f>0?3:-4),y-5,1,1,'#f2a6b0');
+  R(c,x-(f>0?9:-4),y-2,5,1,'#e4a0a8');
+}
+function rift(c,x,y,t){ // Zeitriss
+  for(let j=0;j<44;j++){const u=j/44;const w=Math.round(Math.sin(u*Math.PI)*5+Math.sin(t*4+j*.5)*1.2);
+    R(c,x-w,y-44+j,w*2,1,'#3b1d6e');R(c,x-Math.max(1,w-2),y-44+j,Math.max(2,(w-2)*2),1,'#7a4fd6');R(c,x-1+Math.round(Math.sin(t*6+j*.3)),y-44+j,2,1,'#d9c8ff');}
+  glow(c,x,y-22,34,'#8f6bff',.22+Math.sin(t*2)*.05);
+  for(let i=0;i<6;i++){const a=t*1.3+i;const px=x+Math.sin(a*1.7)*8;const py=y-((t*14+i*9)%46);R(c,px,py,1,1,'#e6dcff');}
+}
+function hotMark(c,x,y,t,col){const a=(Math.sin(t*3+x)+1)/2;c.save();c.globalAlpha=.35+a*.5;R(c,x,y-2,1,5,col);R(c,x-2,y,5,1,col);c.restore();}
+
+/* ================= Audio ================= */
+const AU={c:null,m:null,amb:[],on:true,
+  init(){if(this.c)return;try{this.c=new(window.AudioContext||window.webkitAudioContext)();this.m=this.c.createGain();this.m.gain.value=.6;this.m.connect(this.c.destination);}catch(e){this.c=null;}},
+  env(o,g,a,d,v){const t=this.c.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+d);o.start(t);o.stop(t+a+d+.05);},
+  tone(f,d,type,v,a){if(!this.c||!this.on)return;const o=this.c.createOscillator(),g=this.c.createGain();o.type=type||'sine';o.frequency.value=f;o.connect(g);g.connect(this.m);this.env(o,g,a||.005,d,v||.2);},
+  bell(){[1,2.76,5.4,8.9].forEach((m,i)=>this.tone(880*m,1.8/(i+1),'sine',.16/(i+1)));},
+  chime(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.tone(f,.6,'triangle',.12),i*90));},
+  wrong(){this.tone(180,.25,'square',.06);setTimeout(()=>this.tone(140,.3,'square',.05),110);},
+  click(){this.tone(1400,.05,'square',.04);},
+  plop(){if(!this.c||!this.on)return;const o=this.c.createOscillator(),g=this.c.createGain();o.frequency.setValueAtTime(600,this.c.currentTime);o.frequency.exponentialRampToValueAtTime(150,this.c.currentTime+.12);o.connect(g);g.connect(this.m);this.env(o,g,.003,.15,.18);},
+  clack(){this.tone(320,.06,'square',.08);setTimeout(()=>this.tone(240,.08,'square',.06),50);},
+  thud(){this.tone(70,.4,'sine',.3);},
+  blip(){this.tone(1320,.12,'sine',.1);setTimeout(()=>this.tone(1760,.18,'sine',.08),90);},
+  stopAmb(){const t=this.c?this.c.currentTime:0;this.amb.forEach(n=>{try{n.g.gain.linearRampToValueAtTime(0,t+1.2);n.o.stop(t+1.3);}catch(e){}});this.amb=[];},
+  ambient(kind){if(!this.c)return;this.stopAmb();if(!this.on)return;
+    const P={hub:[[55,.05,'sine'],[82.4,.035,'sine'],[110.3,.02,'triangle']],pavlov:[[65.4,.05,'sine'],[98,.03,'triangle'],[130.8,.015,'sine']],
+      watson:[[73.4,.035,'sine'],[110,.025,'sine'],[146.8,.012,'triangle']],skinner:[[49,.05,'sawtooth'],[73.4,.02,'sine'],[98,.015,'sine']],
+      bandura:[[87.3,.03,'triangle'],[130.8,.025,'sine'],[174.6,.012,'sine']],now:[[41.2,.06,'sawtooth'],[61.7,.03,'sine'],[123.5,.012,'triangle']]}[kind]||[];
+    const t=this.c.currentTime;
+    P.forEach(([f,v,ty],i)=>{const o=this.c.createOscillator(),g=this.c.createGain(),fl=this.c.createBiquadFilter();fl.type='lowpass';fl.frequency.value=ty==='sawtooth'?260:900;o.type=ty;o.frequency.value=f;o.detune.value=(i-1)*6;
+      const l=this.c.createOscillator(),lg=this.c.createGain();l.frequency.value=.07+i*.05;lg.gain.value=v*.5;l.connect(lg);lg.connect(g.gain);l.start();
+      o.connect(fl);fl.connect(g);g.connect(this.m);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+2.5);o.start();this.amb.push({o,g});this.amb.push({o:l,g:lg});});
+    if(kind==='now'||kind==='pavlov'){const len=this.c.sampleRate*2,buf=this.c.createBuffer(1,len,this.c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+      const n=this.c.createBufferSource();n.buffer=buf;n.loop=true;const fl=this.c.createBiquadFilter();fl.type=kind==='now'?'bandpass':'lowpass';fl.frequency.value=kind==='now'?1800:400;const g=this.c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(kind==='now'?.05:.03,t+3);n.connect(fl);fl.connect(g);g.connect(this.m);n.start();this.amb.push({o:n,g});}
+  }};
+
+/* ================= Zustand & Notizbuch ================= */
+const S={scene:null,mode:'title',done:{},seen:{},notes:[],score:{ok:0,all:0},bars:0,barsT:0,lock:false,t:0};
+const NOTES={
+ ns:['Neutraler Reiz (NS)','Ein Reiz, der zunächst keine bestimmte Reaktion auslöst – höchstens eine Orientierungsreaktion (z. B. Ohrenspitzen beim Glockenton).','I'],
+ ucs:['Unbedingter Reiz (UCS)','Löst ohne vorheriges Lernen eine Reaktion aus – angeboren (z. B. Futter im Maul).','I'],
+ ucr:['Unbedingte Reaktion (UCR)','Die angeborene, reflexhafte Reaktion auf den UCS (z. B. Speichelfluss auf Futter).','I'],
+ cs:['Bedingter Reiz (CS)','Ein ehemals neutraler Reiz, der durch wiederholte Kopplung mit dem UCS gelernt hat, eine Reaktion auszulösen.','I'],
+ cr:['Bedingte Reaktion (CR)','Die gelernte Reaktion auf den CS – oft ähnlich, aber meist schwächer als die UCR.','I'],
+ kont:['Kontiguität','Der neutrale Reiz muss kurz VOR dem unbedingten Reiz auftreten und ihn ankündigen – sonst entsteht kaum eine Verknüpfung.','I'],
+ loesch:['Löschung (Extinktion)','Folgt auf den CS wiederholt kein UCS mehr, wird die bedingte Reaktion schwächer und verschwindet schließlich.','I'],
+ spont:['Spontanerholung','Nach einer Pause tritt eine gelöschte Reaktion teilweise wieder auf: Gelöscht heißt nicht vergessen.','I'],
+ gen:['Reizgeneralisierung','Auch Reize, die dem CS ähneln, lösen die bedingte Reaktion aus (Albert fürchtete auch Kaninchen und Pelz).','II'],
+ disk:['Reizdiskrimination','Unähnliche Reize lösen die Reaktion nicht aus – der Organismus unterscheidet (Albert spielte weiter mit Bauklötzen).','II'],
+ ethik:['Forschungsethik','Der Fall „kleiner Albert“ zeigt, warum heute Einwilligung, Schutz vor Schaden und Nachsorge Pflicht sind.','II'],
+ gegen:['Gegenkonditionierung','Mary Cover Jones (1924) baute bei dem Jungen Peter Angst ab, indem sie den Angstreiz mit Angenehmem koppelte – Grundlage der systematischen Desensibilisierung.','II'],
+ effekt:['Gesetz des Effekts (Thorndike)','Verhalten mit angenehmen Folgen wird beibehalten, Verhalten mit unangenehmen Folgen seltener – Lernen durch Versuch und Irrtum.','III'],
+ operant:['Operante Konditionierung','Lernen durch die Konsequenzen des eigenen Verhaltens: Was danach kommt, bestimmt, ob Verhalten häufiger oder seltener wird.','III'],
+ shaping:['Shaping (Verhaltensformung)','Komplexes Verhalten wird schrittweise aufgebaut, indem jede Annäherung an das Zielverhalten verstärkt wird.','III'],
+ posv:['Positive Verstärkung','Ein angenehmer Reiz folgt auf das Verhalten → Verhalten wird häufiger.','III'],
+ negv:['Negative Verstärkung','Ein unangenehmer Reiz fällt weg → Verhalten wird häufiger. (Keine Strafe!)','III'],
+ str1:['Bestrafung Typ I (Darbietung)','Ein unangenehmer Reiz folgt auf das Verhalten → Verhalten wird seltener.','III'],
+ str2:['Bestrafung Typ II (Entzug)','Ein angenehmer Reiz wird entzogen → Verhalten wird seltener.','III'],
+ interm:['Intermittierende Verstärkung','Wird nur manchmal und unvorhersehbar verstärkt, ist das Verhalten besonders hartnäckig und löschungsresistent (Spielautomat, Handy).','III'],
+ modell:['Modelllernen (Bandura)','Lernen durch Beobachtung eines Modells – ohne selbst verstärkt zu werden.','IV'],
+ stellv:['Stellvertretende Verstärkung','Wird das Modell belohnt (oder bestraft), beeinflusst das, ob der Beobachter das Verhalten selbst zeigt.','IV'],
+ akq:['Akquisition vs. Performanz','Aneignung (Lernen) und Ausführung (Zeigen) sind zu trennen: Wer etwas nicht zeigt, kann es trotzdem gelernt haben.','IV'],
+ phasen:['Vier Teilprozesse','Aneignung: Aufmerksamkeits- und Gedächtnisprozesse. Ausführung: motorische Reproduktions- sowie Verstärkungs- und Motivationsprozesse.','IV']
+};
+function note(k){if(!NOTES[k]||S.notes.includes(k))return;S.notes.push(k);toast('📖 Neu im Notizbuch: '+NOTES[k][0]);}
+let toastT=0;function toast(s){const e=$('toast');e.textContent=s;e.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('on'),2800);}
+function openBook(){const ch={I:'Kapitel I · Klassische Konditionierung',II:'Kapitel II · Emotionen lernen',III:'Kapitel III · Operante Konditionierung',IV:'Kapitel IV · Modelllernen'};
+  let h='<h2>Notizbuch</h2><div style="font-size:.8em;opacity:.7;margin-bottom:.4em">Alles, was du auf der Reise entdeckt hast. Tipp: Decke die Erklärungen ab und erkläre die Begriffe laut.</div>';
+  if(!S.notes.length)h+='<div class="empty">Noch leer. Untersuche Dinge in den Experimenten, dann füllt sich das Notizbuch.</div>';
+  for(const c of ['I','II','III','IV']){const ks=S.notes.filter(k=>NOTES[k][2]===c);if(!ks.length)continue;h+=`<div class="ch">${ch[c]}</div>`;for(const k of ks)h+=`<div class="en"><b>${NOTES[k][0]}</b><span>${NOTES[k][1]}</span></div>`;}
+  h+='<div class="row" style="margin-top:1em"><button class="btn" style="color:#2a2118;border-color:#8a6a3a" onclick="closeBook()">Schließen</button></div>';
+  $('bk').innerHTML=h;$('book').classList.add('on');}
+function closeBook(){$('book').classList.remove('on');}
+
+/* ================= Dialog ================= */
+const D={q:[],cb:null,cur:null,shown:0,on:false};
+function say(lines,cb){D.q=lines.slice();D.cb=cb;D.on=true;nextLine();}
+function nextLine(){
+  while(D.q.length&&typeof D.q[0]==='function'){D.q.shift()();}
+  if(!D.q.length){D.on=false;$('dlg').classList.remove('on');const cb=D.cb;D.cb=null;if(cb)cb();return;}
+  let l=D.q.shift();if(typeof l==='string')l={t:l};D.cur=l;D.shown=0;
+  $('dwho').textContent=l.w||'';$('dlg').classList.toggle('nar',!l.w);$('dlg').classList.add('on');
+  if(l.n)(Array.isArray(l.n)?l.n:[l.n]).forEach(note);if(l.sfx)AU[l.sfx]();
+}
+function advance(){if(!D.on)return;if(D.shown<D.cur.t.length)D.shown=D.cur.t.length;else{AU.click();nextLine();}}
+$('dlg').addEventListener('click',advance);
+
+/* ================= Panel & Rätsel ================= */
+const pc=$('pc');
+function openPanel(html){pc.innerHTML=html;$('panel').classList.add('on');pc.scrollTop=0;}
+function closePanel(){$('panel').classList.remove('on');stopSim();}
+function head(t,sub){return`<div class="sub">${sub||''}</div><h2>${t}</h2>`;}
+function seq(list,cb){let i=0;const go=()=>{if(i>=list.length){closePanel();cb&&cb();return;}list[i++](go);};go();}
+function scoreIt(first){S.score.all++;if(first)S.score.ok++;}
+
+// Zuordnung: cards -> slots
+function pAssign(o){return done=>{
+  let first=true,sel=null;const place={};
+  const cardHtml=c=>`<div class="card" draggable="true" data-c="${c.id}">${c.t}</div>`;
+  openPanel(head(o.title,o.sub)+`<p>${o.intro}</p>`+(o.hints?`<div class="row"><button class="btn" id="hbt">💡 Hilfe einblenden</button></div>`:'')+
+   `<div class="pool" id="pool">${shuffle(o.cards).map(cardHtml).join('')}</div><div class="slots" id="slots" style="grid-template-columns:repeat(${o.cols||1},1fr)">`+
+   o.slots.map(s=>`<div class="slot" data-s="${s.id}"><div class="lb">${s.t}</div>${s.h?`<div class="hn">${s.h}</div>`:''}<div class="in"></div></div>`).join('')+
+   `</div><div class="fb" id="fb"></div><div class="row"><button class="btn pri" id="chk">Prüfen</button><button class="btn" id="nx" style="display:none">Weiter ▶</button></div>`);
+  const pool=$('pool'),slots=$('slots');
+  if(o.hints)$('hbt').onclick=()=>{slots.classList.toggle('hints');$('hbt').textContent=slots.classList.contains('hints')?'💡 Hilfe ausblenden':'💡 Hilfe einblenden';};
+  const cap=sid=>(o.slots.find(s=>s.id===sid).cap)||99;
+  const moveTo=(cid,sid)=>{const el=pc.querySelector(`[data-c="${cid}"]`);el.classList.remove('ok','bad','sel');
+    if(!sid){pool.appendChild(el);delete place[cid];return;}
+    const box=slots.querySelector(`[data-s="${sid}"] .in`);
+    if(cap(sid)===1){const ex=Object.keys(place).find(k=>place[k]===sid&&k!==cid);if(ex)moveTo(ex,null);}
+    box.appendChild(el);place[cid]=sid;AU.click();};
+  pc.querySelectorAll('.card').forEach(el=>{
+    el.onclick=e=>{e.stopPropagation();const id=el.dataset.c;if(place[id]){moveTo(id,null);sel=null;return;}
+      pc.querySelectorAll('.card.sel').forEach(x=>x.classList.remove('sel'));sel=sel===id?null:id;if(sel)el.classList.add('sel');};
+    el.ondragstart=e=>{e.dataTransfer.setData('text',el.dataset.c);};});
+  slots.querySelectorAll('.slot').forEach(sl=>{sl.onclick=()=>{if(sel){moveTo(sel,sl.dataset.s);sel=null;}};
+    sl.ondragover=e=>e.preventDefault();sl.ondrop=e=>{e.preventDefault();moveTo(e.dataTransfer.getData('text'),sl.dataset.s);};});
+  pool.ondragover=e=>e.preventDefault();pool.ondrop=e=>{e.preventDefault();moveTo(e.dataTransfer.getData('text'),null);};
+  $('chk').onclick=()=>{const fb=$('fb');
+    if(Object.keys(place).length<o.cards.length){fb.className='fb bad on';fb.innerHTML='Ordne zuerst alle Karten zu.';return;}
+    let wrong=[];o.cards.forEach(c=>{const el=pc.querySelector(`[data-c="${c.id}"]`);const ok=place[c.id]===c.a;el.classList.remove('ok','bad');void el.offsetWidth;el.classList.add(ok?'ok':'bad');if(!ok)wrong.push(c);});
+    if(wrong.length){first=false;AU.wrong();fb.className='fb bad on';fb.innerHTML=`<b>${wrong.length} ${wrong.length===1?'Karte ist':'Karten sind'} noch falsch.</b> `+(wrong[0].w?wrong[0].w:'Prüfe die rot markierten Karten noch einmal.')+' Klicke falsche Karten an, um sie zurückzulegen.';}
+    else{AU.chime();scoreIt(first);fb.className='fb on';fb.innerHTML=(first?'<b>Alles richtig – beim ersten Versuch!</b> ':'<b>Jetzt stimmt alles.</b> ')+(o.why||'');$('chk').style.display='none';$('nx').style.display='';(o.notes||[]).forEach(note);}};
+  $('nx').onclick=()=>done();
+};}
+// Einfachauswahl
+function pChoice(o){return done=>{
+  let first=true;const ops=o.shuffle===false?o.opts:shuffle(o.opts);
+  openPanel(head(o.title,o.sub)+(o.scene?`<p style="opacity:.85">${o.scene}</p>`:'')+`<p><b>${o.q}</b></p><div class="opts">`+ops.map((x,i)=>`<button class="opt" data-i="${i}">${x.t}</button>`).join('')+`</div><div class="fb" id="fb"></div><div class="row"><button class="btn pri" id="nx" style="display:none">Weiter ▶</button></div>`);
+  pc.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const x=ops[+b.dataset.i];const fb=$('fb');if($('nx').style.display==='')return;
+    if(x.ok){b.classList.add('ok');AU.chime();scoreIt(first);fb.className='fb on';fb.innerHTML=(first?'<b>Richtig!</b> ':'<b>Genau.</b> ')+o.why;$('nx').style.display='';(o.notes||[]).forEach(note);}
+    else{first=false;b.classList.add('bad');AU.wrong();fb.className='fb bad on';fb.innerHTML='<b>Noch nicht.</b> '+(x.f||'Versuch es noch einmal.');}});
+  $('nx').onclick=()=>done();
+};}
+// Mehrfachauswahl
+function pMulti(o){return done=>{
+  let first=true;const ops=shuffle(o.opts);
+  openPanel(head(o.title,o.sub)+(o.scene?`<p style="opacity:.85">${o.scene}</p>`:'')+`<p><b>${o.q}</b> <span style="opacity:.6;font-size:.85em">(mehrere Antworten möglich)</span></p><div class="opts">`+ops.map((x,i)=>`<button class="opt" data-i="${i}">${x.t}</button>`).join('')+`</div><div class="fb" id="fb"></div><div class="row"><button class="btn pri" id="chk">Prüfen</button><button class="btn" id="nx" style="display:none">Weiter ▶</button></div>`);
+  const on=new Set();pc.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if($('nx').style.display==='')return;const i=+b.dataset.i;b.classList.remove('ok','bad');if(on.has(i)){on.delete(i);b.classList.remove('on');}else{on.add(i);b.classList.add('on');}AU.click();});
+  $('chk').onclick=()=>{const fb=$('fb');let bad=0;ops.forEach((x,i)=>{if(!!x.ok!==on.has(i))bad++;});
+    if(bad){first=false;AU.wrong();fb.className='fb bad on';fb.innerHTML=`<b>Noch nicht ganz</b> – ${bad} ${bad===1?'Antwort ist':'Antworten sind'} falsch gewählt oder fehlen. ${o.hint||''}`;}
+    else{AU.chime();scoreIt(first);pc.querySelectorAll('.opt').forEach(b=>{const x=ops[+b.dataset.i];b.classList.remove('on');b.classList.add(x.ok?'ok':'bad');if(!x.ok)b.style.opacity=.5;});fb.className='fb on';fb.innerHTML=(first?'<b>Perfekt!</b> ':'<b>Jetzt stimmt es.</b> ')+o.why;$('chk').style.display='none';$('nx').style.display='';(o.notes||[]).forEach(note);}};
+  $('nx').onclick=()=>done();
+};}
+function pInfo(o){return done=>{openPanel(head(o.title,o.sub)+o.html+`<div class="row"><button class="btn pri" id="nx">${o.btn||'Weiter ▶'}</button></div>`);(o.notes||[]).forEach(note);$('nx').onclick=()=>done();};}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ================= Simulationen ================= */
+let SIM=null;function stopSim(){if(SIM){SIM.stop=true;SIM=null;}}
+function simLoop(sim){SIM=sim;let last=performance.now();const f=now=>{if(sim.stop)return;const dt=Math.min(.05,(now-last)/1000);last=now;sim.t+=dt;sim.update&&sim.update(dt);sim.draw();requestAnimationFrame(f);};requestAnimationFrame(f);}
+
+/* ---- Pawlow ---- */
+function simPavlov(done){
+  openPanel(head('Der Versuch','Kapitel I · Laborprotokoll')+`<div class="two"><div><canvas class="simc" id="sc" width="240" height="140"></canvas>
+   <div class="row"><button class="btn" id="b1">🔔 Glocke allein</button><button class="btn" id="b2">🥩 Futter allein</button><button class="btn" id="b3">🔔→🥩 Glocke, dann Futter</button><button class="btn" id="b4" style="display:none">🌙 Eine Nacht vergeht</button></div></div>
+   <div><p>Du führst den Versuch durch. Jede Balkensäule unten im Bild ist ein Durchgang: Sie zeigt, wie viel Speichel der Hund absondert.</p>
+   <ul class="goals"><li id="g1" class="cur">Konditioniere den Hund: Die <b>Glocke allein</b> soll mindestens 70 % Speichelfluss auslösen.</li><li id="g2">Lösche die Reaktion wieder: Läute die Glocke allein, bis weniger als 20 % übrig sind.</li><li id="g3">Lass eine Nacht vergehen und teste die Glocke erneut.</li></ul>
+   <div class="log" id="log">Tipp: Teste die Glocke zuerst einmal allein. Was macht der Hund?</div><div class="row"><button class="btn pri" id="fin" style="display:none">Zur Auswertung ▶</button></div></div></div>`);
+  const sc=$('sc'),c=sc.getContext('2d');c.imageSmoothingEnabled=false;
+  const st={V:0,peak:0,trials:[],anim:null,g:0,pairs:0,night:false,t:0};
+  const log=h=>$('log').innerHTML=h;
+  const btns=['b1','b2','b3','b4'].map($);const dis=v=>btns.forEach(b=>b.disabled=v);
+  function trial(kind){if(st.anim)return;dis(true);st.anim={kind,t:0,resp:0,logged:false};
+    if(kind!=='food')AU.bell();}
+  $('b1').onclick=()=>trial('bell');$('b2').onclick=()=>trial('food');$('b3').onclick=()=>trial('pair');
+  $('b4').onclick=()=>{$('b4').style.display='none';st.night=true;st.V=Math.min(1,st.V+.55*(st.peak*.8-st.V));log('🌙 Die Nacht vergeht. Der Hund ruht sich aus … Läute morgen früh die Glocke allein.');AU.tone(220,1.2,'sine',.06);};
+  $('fin').onclick=()=>done();
+  const sim={t:0,update(dt){const a=st.anim;if(!a)return;a.t+=dt;
+      if(a.kind==='bell'&&a.t>.5&&!a.logged){a.resp=Math.max(.03,Math.min(1,st.V*(.93+Math.random()*.12)));a.logged=true;}
+      if(a.kind==='food'&&a.t>.6&&!a.logged){a.resp=1;a.logged=true;AU.plop();}
+      if(a.kind==='pair'){if(a.t>.5&&a.resp<st.V){a.resp=Math.max(.03,st.V);}if(a.t>.9&&!a.logged){a.resp=1;a.logged=true;AU.plop();}}
+      if(a.t>2.1){finish(a);st.anim=null;dis(false);}
+    },draw(){drawP();}};
+  function finish(a){const r=a.resp;st.trials.push({k:a.kind,r});if(st.trials.length>18)st.trials.shift();const n=st.trials.length;const pct=Math.round(r*100);
+    if(a.kind==='pair'){st.V+=.28*(1-st.V);st.peak=Math.max(st.peak,st.V);st.pairs++;
+      log(`Kopplung Nr. ${st.pairs}: Die Glocke kündigt das Futter an. Speichel ${pct} % – ausgelöst vom Futter (<span class="op">UCS → UCR</span>).`+(st.pairs>=4&&st.g===0?' <br><b>Teste jetzt die Glocke allein!</b>':''));note('kont');}
+    else if(a.kind==='food'){log(`Futter allein: Speichel 100 %. Angeboren – <span class="op">unbedingter Reiz → unbedingte Reaktion</span>. Über die Glocke lernt der Hund dabei aber nichts.`);note('ucs');note('ucr');}
+    else{ // bell
+      if(st.g===0){if(r>=.7){st.g=1;mark('g1','g2');log(`<b>Glocke allein: ${pct} % Speichel!</b> Der Hund reagiert auf den Ton. Die Glocke ist zum <span class="op">bedingten Reiz (CS)</span> geworden, der Speichelfluss ist jetzt eine <span class="op">bedingte Reaktion (CR)</span>.`);note('cs');note('cr');AU.chime();}
+        else if(st.pairs===0){log(`Glocke allein: ${pct} %. Der Hund spitzt nur die Ohren – eine Orientierungsreaktion. Die Glocke ist ein <span class="op">neutraler Reiz (NS)</span>.`);note('ns');}
+        else log(`Glocke allein: ${pct} %. Da ist schon etwas! Aber noch zu wenig – koppelt Glocke und Futter noch öfter.`);}
+      else if(st.g===1){st.V*=.62;if(r<.2){st.g=2;mark('g2','g3');$('b4').style.display='';log(`Glocke allein: nur noch ${pct} %. Die Glocke kündigt kein Futter mehr an – die Reaktion ist <span class="op">gelöscht (Extinktion)</span>. Aber ist sie wirklich weg?`);note('loesch');AU.chime();}
+        else log(`Glocke allein: ${pct} %. Kein Futter mehr nach dem Ton … Die Reaktion wird schwächer. Weiter so.`);}
+      else if(st.g===2){if(st.night){st.g=3;mark('g3');log(`<b>Überraschung: ${pct} %!</b> Nach der Pause ist die gelöschte Reaktion teilweise zurück – <span class="op">Spontanerholung</span>. Gelöscht heißt nicht vergessen.`);note('spont');AU.chime();$('fin').style.display='';btns.slice(0,3).forEach(b=>b.disabled=true);}
+        else{st.V*=.8;log(`Glocke allein: ${pct} %. Klicke auf „Eine Nacht vergeht“.`);}}
+    }}
+  function mark(a,b){$(a).classList.remove('cur');$(a).classList.add('done');if(b)$(b).classList.add('cur');}
+  function drawP(){const t=sim.t,a=st.anim;
+    vgrad(c,0,0,240,96,['#1d140e','#2a1d14','#3a2819']);R(c,0,96,240,44,'#120d09');
+    glow(c,120,10,110,'#ffb860',.18);
+    // Tisch
+    R(c,30,86,180,6,'#5a3b22');R(c,30,86,180,1,'#7a5434');R(c,40,92,4,4,'#3a2616');R(c,196,92,4,4,'#3a2616');
+    // Gestell
+    R(c,72,20,3,66,'#4b311c');R(c,150,20,3,66,'#4b311c');R(c,72,20,81,3,'#5d3d23');R(c,95,23,1,22,'#2b1d12');R(c,128,23,1,22,'#2b1d12');
+    // Hund groß
+    c.save();c.translate(0,0);const sal=a?(a.resp*Math.min(1,Math.max(0,(a.t-.4)*2))):0;
+    c.scale(1.5,1.5);dog(c,58,57,t,{salivate:sal,alert:a&&a.kind!=='food'&&a.t<1.5,wag:a&&a.kind!=='bell'&&a.t>.8});c.restore();
+    // Glocke
+    const sw=a&&a.kind!=='food'?Math.sin(a.t*25)*Math.max(0,1-a.t)*3:0;R(c,34,20,14,2,'#3a2616');line(c,42,22,42+sw,28,'#888');
+    ellipseFill(c,42+sw,34,5,5,'#c9a24a');R(c,37+sw,34,11,5,'#c9a24a');R(c,36+sw,38,13,2,'#a8832f');R(c,41+sw,40,2,2,'#6a5020');R(c,39+sw,30,2,4,'#f0d78a');
+    if(a&&a.kind!=='food'&&a.t<1.2){c.save();c.globalAlpha=1-a.t/1.2;for(let k=1;k<4;k++){const rr=6+k*5+a.t*12;R(c,42+rr,34,1,1,'#ffe7a0');R(c,42-rr,34,1,1,'#ffe7a0');R(c,42,34-rr*.6,1,1,'#ffe7a0');}c.restore();}
+    // Futter
+    if(a&&a.kind!=='bell'&&a.t>(a.kind==='pair'?.7:.4)){R(c,50,80,14,5,'#7c7c86');R(c,52,78,10,2,'#9b4a3a');}
+    // Röhrchen & Messglas
+    line(c,86,60,90,74,'#bcd');line(c,90,74,186,74,'#bcd');line(c,186,74,192,56,'#bcd');
+    R(c,188,30,12,56,'#9fb4bf');R(c,189,31,10,54,'#2a3338');const lvl=a?Math.round(sal*44):0;R(c,189,85-lvl,10,lvl,'#cfeaf3');for(let k=0;k<5;k++)R(c,199,40+k*9,2,1,'#dfe');
+    // Balken-Historie
+    R(c,6,100,228,36,'#0b0807');R(c,6,100,228,1,'#3a2a1a');digits(c,'100',8,101,'#6a5540');
+    st.trials.forEach((tr,i)=>{const bh=Math.round(tr.r*28);const col=tr.k==='bell'?'#e2a64b':tr.k==='food'?'#8a8a96':'#5fb4ac';R(c,24+i*11,134-bh,8,bh,col);R(c,24+i*11,134-bh,8,1,tint(col,.4));});
+    R(c,22,134,212,1,'#3a2a1a');
+    c.fillStyle='rgba(0,0,0,.25)';for(let k=0;k<8;k++)c.fillRect(Math.random()*240,Math.random()*96,1,1);
+  }
+  simLoop(sim);
+}
+
+/* ---- Skinner ---- */
+function simSkinner(done){
+  openPanel(head('Shaping in der Skinner-Box','Kapitel III · Verhaltensformung')+`<div class="two"><div><canvas class="simc" id="sc" width="300" height="130"></canvas>
+   <div class="row"><button class="btn pri" id="rf">🟤 Futterpille geben <span style="opacity:.6">(Leertaste)</span></button></div></div>
+   <div><p>Die Ratte kennt den Hebel nicht. Verstärke sie mit einer Futterpille, <b>sobald</b> sie das gewünschte Verhalten zeigt – Schritt für Schritt näher am Ziel.</p>
+   <ul class="goals"><li id="s1" class="cur">Stufe 1: Verstärke, wenn die Ratte in der <b>rechten Hälfte</b> ist (rechts der gestrichelten Linie).</li><li id="s2">Stufe 2: Verstärke nur noch <b>direkt am Hebel</b>.</li><li id="s3">Stufe 3: Die Apparatur verstärkt jetzt selbst jeden Hebeldruck. Ziel: <b>8 eigene Hebeldrücke</b>.</li></ul>
+   <div class="log" id="log">Beobachte die Ratte. Klicke, wenn sie im markierten Bereich ist.</div><div class="row"><button class="btn pri" id="fin" style="display:none">Weiter ▶</button></div></div></div>`);
+  const c=$('sc').getContext('2d');c.imageSmoothingEnabled=false;const log=h=>$('log').innerHTML=h;
+  const L=24,Rr=176,FY=104;
+  const st={x:.25,tx:.3,f:1,timer:0,b:.08,stage:1,rear:0,eat:0,press:0,cum:[],flash:0,lastRf:0,wrongN:0,pellet:0,lever:0};
+  const px=()=>L+st.x*(Rr-L);
+  function zone(){return st.stage===1?.5:.82;}
+  function reinforce(){if(st.stage>=3){log('Die Apparatur verstärkt jetzt selbst. Beobachte die Kurve rechts: Je steiler, desto häufiger drückt die Ratte.');return;}
+    st.pellet=1;AU.plop();
+    if(st.x>=zone()){st.b+=.11*(1-st.b);st.flash=.5;st.tx=.93;st.timer=1.2;st.lastRf=sim.t;
+      log(`✓ Verstärkt! Die Ratte läuft zum Futternapf – und kommt dabei am Hebel vorbei. Lernstand: ${Math.round(st.b*100)} %`);
+      if(st.stage===1&&st.b>=.32){st.stage=2;mk('s1','s2');log('<b>Stufe 2!</b> Die Ratte hält sich öfter rechts auf. Jetzt nur noch verstärken, wenn sie <b>direkt am Hebel</b> ist – die Anforderung wird erhöht.');AU.chime();note('shaping');}
+      else if(st.stage===2&&st.b>=.56){st.stage=3;mk('s2','s3');log('<b>Stufe 3!</b> Die Ratte richtet sich am Hebel auf … Ab jetzt liefert die Apparatur bei jedem Druck automatisch Futter.');AU.chime();}}
+    else{st.b=Math.max(.04,st.b-.05);st.wrongN++;log(`✗ Falscher Moment: Du hast Verhalten <b>weit weg vom Hebel</b> verstärkt. Die Ratte lernt das Falsche (Skinner nannte so etwas „abergläubisches Verhalten“). Lernstand: ${Math.round(st.b*100)} %`);AU.wrong();}}
+  $('rf').onclick=reinforce;const key=e=>{if(e.code==='Space'&&SIM===sim){e.preventDefault();e.stopPropagation();reinforce();}};addEventListener('keydown',key,true);
+  $('fin').onclick=()=>{removeEventListener('keydown',key,true);done();};
+  function mk(a,b){$(a).classList.remove('cur');$(a).classList.add('done');if(b)$(b).classList.add('cur');}
+  const sim={t:0,update(dt){
+    st.flash=Math.max(0,st.flash-dt);st.pellet=Math.max(0,st.pellet-dt*.8);st.lever=Math.max(0,st.lever-dt*3);
+    if(sim.t-st.lastRf>6&&st.stage<3)st.b=Math.max(.04,st.b-dt*.006);
+    if(st.rear>0){st.rear-=dt;return;}
+    if(st.eat>0){st.eat-=dt;return;}
+    st.timer-=dt;if(st.timer<=0){st.tx=Math.random()<st.b?.86+Math.random()*.1:Math.random()*.95;st.timer=.6+Math.random()*1.1;}
+    const d=st.tx-st.x;if(Math.abs(d)>.01){st.f=d>0?1:-1;st.x+=Math.sign(d)*Math.min(Math.abs(d),dt*.42);}
+    if(st.x>.86&&Math.random()<dt*(.15+st.b*1.1)){st.rear=.7;st.f=1;st.lever=1;AU.clack();
+      if(st.stage>=3){st.press++;st.b+=.04*(1-st.b);st.pellet=1;setTimeout(()=>AU.plop(),250);st.cum.push(sim.t);
+        log(`Hebeldruck ${st.press}/8 – die Ratte tut es von selbst, denn es folgt Futter: <span class="op">positive Verstärkung</span>.`);
+        if(st.press>=8){mk('s3');log('<b>Geschafft!</b> Aus zufälligem Herumlaufen ist zielgerichtetes Hebeldrücken geworden – allein durch die Konsequenzen. Das ist <span class="op">operante Konditionierung</span>.');note('operant');note('posv');AU.chime();$('fin').style.display='';}}}
+  },draw(){const t=sim.t;
+    // Box
+    vgrad(c,0,0,200,130,['#1b211f','#232c29','#2b3532']);R(c,0,0,200,8,'#121614');R(c,0,FY+2,200,28,'#141816');
+    for(let i=0;i<200;i+=6)R(c,i,FY,2,3,'#59615e');R(c,0,FY+2,200,1,'#3a423f');
+    glow(c,168,20,60,'#f1ffd0',.18);R(c,164,12,8,4,'#e9f5c8');
+    // Zonen
+    if(st.stage<3){const zx=Math.round(L+zone()*(Rr-L));for(let y=10;y<FY;y+=4)R(c,zx,y,1,2,'rgba(255,240,180,.35)');c.fillStyle='rgba(255,230,150,.05)';c.fillRect(zx,8,200-zx,FY-8);}
+    // Hebel & Napf
+    R(c,186,70,14,22,'#3a4442');R(c,180,78+Math.round(st.lever*3),10,3,'#b9c4c0');R(c,188,96,10,6,'#6e7a76');if(st.pellet>0)R(c,191,97,3,2,'#7b4a26');
+    c.save();c.translate(Math.round(px()),FY);c.scale(2,2);rat(c,0,0,st.f,{rear:st.rear>0});c.restore();
+    if(st.flash>0){c.save();c.globalAlpha=Math.min(1,st.flash*2);R(c,px()-1,FY-26,3,3,'#ffe27a');c.restore();}
+    // Lernanzeige
+    R(c,6,116,80,5,'#0b0d0c');R(c,6,116,Math.round(80*st.b),5,'#8fd18a');digits(c,st.stage,90,116,'#8fd18a');
+    // Kumulativschreiber
+    R(c,204,0,96,130,'#e9e2cf');for(let y=6;y<130;y+=8)R(c,204,y,96,1,'#d6cdb4');for(let x=208;x<300;x+=10)R(c,x,0,1,130,'#ddd3ba');
+    const span=40,now=t;let n=0,prev=[206,124];
+    const pts=st.cum.filter(v=>v>now-span);n=st.cum.length-pts.length;
+    for(let k=0;k<=span;k+=.5){const tt=now-span+k;const cnt=st.cum.filter(v=>v<=tt).length;const yy=124-cnt*13;const xx=206+k*2.2;line(c,prev[0],prev[1],xx,yy,'#2a2a6a');prev=[xx,yy];}
+    R(c,prev[0]-1,prev[1]-1,3,3,'#a02020');
+  }};
+  simLoop(sim);
+}
+
+/* ---- Bandura Projektor ---- */
+function simBandura(done){
+  openPanel(head('Drei Filmrollen','Kapitel IV · Bandura 1965')+`<div class="two"><div><canvas class="simc" id="sc" width="220" height="120"></canvas>
+   <div class="row"><button class="btn" id="fA">🎞 Film A</button><button class="btn" id="fB">🎞 Film B</button><button class="btn" id="fC">🎞 Film C</button></div></div>
+   <div><p>1965 variierte Bandura den Versuch: Drei Gruppen von Kindern sahen denselben Film – nur das <b>Ende</b> war verschieden. Sieh dir alle drei Fassungen an.</p>
+   <div class="log" id="log">Wähle eine Filmrolle.</div><div class="row"><button class="btn pri" id="fin" disabled>Vorhersage treffen ▶</button></div></div></div>`);
+  const c=$('sc').getContext('2d');c.imageSmoothingEnabled=false;const seen=new Set();let film=null,ft=0;
+  const cap={A:'Ende A: Ein zweiter Erwachsener lobt das Modell und schenkt ihm Süßigkeiten und Limonade.',B:'Ende B: Ein zweiter Erwachsener schimpft das Modell aus: „Lass das!“',C:'Ende C: Das Modell hört auf – es passiert nichts weiter.'};
+  ['A','B','C'].forEach(k=>$('f'+k).onclick=()=>{film=k;ft=0;$('log').innerHTML='Film läuft …';AU.click();});
+  $('fin').onclick=()=>done();
+  const sim={t:0,update(dt){if(film){ft+=dt;if(ft>6.5&&!seen.has(film+'!')){seen.add(film+'!');seen.add(film);$('log').innerHTML=cap[film];$('f'+film).classList.add('pri');if(['A','B','C'].every(k=>seen.has(k)))$('fin').disabled=false;}}},
+   draw(){const fl=.85+Math.random()*.15;vgrad(c,0,0,220,120,['#2b2620','#3c352c','#4a4136']);R(c,0,92,220,28,'#2a241e');
+    if(!film){c.fillStyle='#000';c.fillRect(0,0,220,120);digits(c,'3',104,54,'#ccc');return;}
+    const t=ft;const hit=t<3.2?Math.max(0,Math.sin(t*5)):0;
+    bobo(c,120,94,hit>.5?.35:Math.sin(t*3)*.08*(t<3.5?1:.3),1);
+    human(c,96,94,{top:'#6b5a48',pants:'#3a332c',skin:'#d9b8a0',hair:'#2a221c',hs:'bun',skirt:'#4a3f35',face:1,armUp:hit>.5,hold:(cc,x,y)=>{R(cc,x-1,y-3,4,3,'#8a6a40');R(cc,x,y,2,5,'#6a5030');}},t);
+    if(t>3.6){const k=film;const ex=Math.min(1,(t-3.6)/1);const x2=220-ex*60;
+      if(k!=='C')human(c,x2,94,{top:k==='A'?'#7a6a50':'#4a4a4a',pants:'#2a2a2a',skin:'#d9b8a0',hair:'#1d1814',hs:'short',face:-1,tie:'#222',armUp:k==='B'&&t>4.8&&Math.sin(t*10)>0},t);
+      if(t>4.8){if(k==='A'){R(c,104,62,24,10,'#efe6d0');R(c,108,65,2,2,'#c33');R(c,112,65,2,2,'#3a3');R(c,116,65,2,2,'#33c');R(c,120,64,2,4,'#c80');}
+        if(k==='B'){R(c,138,58,26,10,'#efe6d0');R(c,142,61,18,1,'#555');R(c,142,64,12,1,'#555');}}
+    }
+    // Filmlook
+    c.fillStyle=`rgba(255,230,190,${.05*(1-fl)})`;c.fillRect(0,0,220,120);for(let k=0;k<3;k++)if(Math.random()<.3)R(c,Math.random()*220,0,1,120,'rgba(255,255,255,.12)');
+    c.fillStyle='rgba(0,0,0,.35)';c.fillRect(0,0,220,4);c.fillRect(0,116,220,4);
+   }};
+  simLoop(sim);
+}
+
+/* ================= Szenen ================= */
+const SC={};
+function bgCanvas(fn){const b=document.createElement('canvas');b.width=W;b.height=H;const c=b.getContext('2d');c.imageSmoothingEnabled=false;fn(c);return b;}
+function floorPlanks(c,y,h,base,seed){const r=rng(seed);vgrad(c,0,y,W,h,[tint(base,.08),base,shade(base,.4)]);
+  for(let j=0;j<h;j+=Math.max(3,Math.round(3+j*.22))){R(c,0,y+j,W,1,shade(base,.35));let x=Math.floor(r()*30);while(x<W){R(c,x,y+j,1,Math.max(3,Math.round(3+j*.22)),shade(base,.3));x+=40+Math.floor(r()*40);}}
+  speck(c,0,y,W,h,shade(base,.2),300,r);}
+function windowPanes(c,x,y,w,h,frame){const d=shade(frame,.3);R(c,x-3,y-3,w+6,3,d);R(c,x-3,y+h,w+6,3,d);R(c,x-3,y,3,h,d);R(c,x+w,y,3,h,d);R(c,x-2,y-2,w+4,2,frame);R(c,x-2,y+h,w+4,2,frame);R(c,x-2,y,2,h,frame);R(c,x+w,y,2,h,frame);R(c,x+Math.floor(w/2)-1,y,2,h,frame);R(c,x,y+Math.floor(h/2)-1,w,2,frame);R(c,x-5,y+h+2,w+10,3,tint(frame,.1));}
+function shelfBooks(c,x,y,w,rows,rowH,r,pal){R(c,x-2,y-2,w+4,rows*rowH+4,'#1c130d');
+  for(let j=0;j<rows;j++){const by=y+j*rowH;R(c,x,by,w,rowH,'#0c0806');let px=x+1;while(px<x+w-2){const bw=2+Math.floor(r()*3),bh=rowH-3-Math.floor(r()*4);if(r()<.08){px+=3;continue;}const col=pal[Math.floor(r()*pal.length)];
+    if(px+bw>x+w-1)break;R(c,px,by+rowH-1-bh,bw,bh,col);R(c,px,by+rowH-1-bh,1,bh,tint(col,.15));if(r()<.4)R(c,px,by+rowH-bh+2,bw,1,'#c9a24a');px+=bw;}
+    R(c,x-2,by+rowH-1,w+4,2,'#3a2616');}}
+
+/* ---------- Archiv (Hub) ---------- */
+const DOORS=[{x:72,sc:'pavlov',yr:'1904',col:'#ffb04a'},{x:156,sc:'watson',yr:'1920',col:'#cfe6ff'},{x:240,sc:'skinner',yr:'1938',col:'#a8ff8a'},{x:324,sc:'bandura',yr:'1961',col:'#ffd76a'},{x:408,sc:'now',yr:'2026',col:'#ff5fa2'}];
+SC.hub={name:'Das Archiv',ac:'#c9b27a',floor:216,minX:20,maxX:460,start:240,amb:'hub',
+ build(c){vgrad(c,0,0,W,204,['#05060c','#0b0c18','#141327','#1b1830']);const r=rng(7);
+  // Gewölbe & Rosette
+  for(let i=0;i<8;i++)R(c,0,8+i*3,W,1,'#ffffff05');
+  ellipseFill(c,240,26,20,20,'#1c1a33');ellipseFill(c,240,26,17,17,'#3c3a66');ellipseFill(c,240,26,15,15,'#6f75a8');
+  for(let a=0;a<12;a++){const an=a/12*Math.PI*2;line(c,240,26,240+Math.cos(an)*15,26+Math.sin(an)*15,'#2a2848');}ellipseFill(c,240,26,4,4,'#2a2848');
+  const pal=['#4a2a22','#2d3a4a','#3d4a2c','#5a4a2a','#3a2a44','#6a3a2a','#2a4a46','#55452f'];
+  [[6,40],[96,40],[180,40],[264,40],[348,40],[432,42]].forEach(([x,w])=>shelfBooks(c,x,58,w,8,17,r,pal));
+  // Säulen
+  for(const d of DOORS){R(c,d.x-24,48,48,4,'#2a1c12');
+    arch(c,d.x,136,40,68,'#3d2c18');arch(c,d.x,138,36,66,'#6b5230');arch(c,d.x,140,32,64,'#22160e');
+    R(c,d.x-1,150,2,54,'#170e08');for(let k=0;k<3;k++){R(c,d.x-13,166+k*12,10,9,'#2a1b11');R(c,d.x+3,166+k*12,10,9,'#2a1b11');}
+    arch(c,d.x,145,18,14,'#0c0a08');R(c,d.x+9,180,2,3,'#c9a24a');
+    R(c,d.x-10,124,20,9,'#2a1c10');R(c,d.x-9,125,18,7,'#8a6a3a');digits(c,d.yr,d.x-8,126,'#2a1c10');}
+  // Boden
+  vgrad(c,0,204,W,66,['#1c1828','#14111d','#0a090f']);
+  for(const y of [207,211,217,225,236,251])R(c,0,y,W,1,'#ffffff0b');
+  for(let i=-14;i<=14;i++)line(c,240+i*17,204,240+i*52,270,'#ffffff08');
+ },
+ draw(c,t){
+  beam(c,[[226,40],[254,40],[300,216],[180,216]],'#9aa8ff',.09+Math.sin(t*.7)*.015,40,216);
+  for(const d of DOORS){const p=.75+Math.sin(t*1.6+d.x)*.12;const dn=S.done[d.sc];
+    arch(c,d.x,145,18,14,mixc('#0c0a08',d.col,.55*p));glow(c,d.x,152,22,d.col,.14*p);
+    R(c,d.x-15,203,30,1,rgba(d.col,.6*p));glow(c,d.x,206,30,d.col,.12*p);
+    c.save();c.globalAlpha=.08*p;R(c,d.x-12,206,24,30,d.col);c.globalAlpha=.04*p;R(c,d.x-8,236,16,20,d.col);c.restore();
+    if(dn){const yy=116+Math.sin(t*2+d.x)*1;R(c,d.x-1,yy-2,2,5,'#ffe27a');R(c,d.x-2,yy-1,4,3,'#ffe27a');glow(c,d.x,yy,10,'#ffe27a',.25);}
+    else if(nextDoor()===d.sc){glow(c,d.x,170,40,d.col,.08+Math.sin(t*3)*.04);}
+  }
+  const r=rng(3);for(let i=0;i<40;i++){const bx=180+r()*120,sp=4+r()*6;const yy=(r()*180+t*sp)%180+40;const xx=bx+(yy-40)*(r()-.5)*.5+Math.sin(t+i)*3;if(xx>180+(yy-40)*-.3&&xx<300)R(c,xx,yy,1,1,`rgba(220,225,255,${.25+r()*.4})`);}
+ },
+ hot:DOORS.map((d,i)=>({id:d.sc,x:d.x,y:132,w:30,label:()=>['Kapitel I · 1904','Kapitel II · 1920','Kapitel III · 1938','Kapitel IV · 1961','Finale · Heute'][i]+(S.done[d.sc]?' ✓':''),act(){go(d.sc);}})),
+ obj(){const n=Object.keys(S.done).length;if(n>=5)return'Alle Türen gemeistert! Du kannst jede Zeit noch einmal besuchen.';const nd=nextDoor();const i=DOORS.findIndex(d=>d.sc===nd);return`Öffne eine Tür. Empfohlen: ${['Kapitel I (1904)','Kapitel II (1920)','Kapitel III (1938)','Kapitel IV (1961)','das Finale (heute)'][i]} · ${n}/5 geschafft`;},
+ enter(first){if(first)say([{t:'Das Archiv der Lernpsychologie. Ein Ort zwischen den Zeiten.'},{t:'Hinter jeder Tür wartet ein Experiment, das verändert hat, wie wir über Lernen denken.'},{t:'Warum läuft dir das Wasser im Mund zusammen, wenn du nur an Pizza denkst? Warum checkst du dein Handy, obwohl keiner geschrieben hat?'},{t:'Geh zu einer Tür und öffne sie mit E oder einem Klick. Beginne am besten links – im Jahr 1904.'}]);}
+};
+function nextDoor(){const d=DOORS.find(d=>!S.done[d.sc]);return d?d.sc:null;}
+
+/* ---------- Kapitel I: Pawlow ---------- */
+SC.pavlov={chapter:'Kapitel I',name:'Der Hund und die Glocke',place:'St. Petersburg · 1904',ac:'#e2a64b',floor:230,minX:12,maxX:468,start:40,amb:'pavlov',st:{phase:0,ring:0},
+ build(c){const r=rng(11);
+  vgrad(c,0,0,W,210,['#140e0a','#22170f','#2f2116','#3a2819']);
+  for(let x=0;x<W;x+=24){R(c,x,0,1,150,'#00000030');}
+  R(c,0,148,W,62,'#2a1b11');R(c,0,148,W,2,'#4a3220');for(let x=6;x<W;x+=40){R(c,x,156,34,46,'#24170e');R(c,x,156,34,1,'#3e2a1a');R(c,x,201,34,1,'#150d07');}
+  // Fenster
+  const wx=336,wy=26,ww=86,wh=112;vgrad(c,wx,wy,ww,wh,['#0d1630','#1a2950','#3a4670','#6a5f7c','#9d7a73']);
+  const sk=(x,h)=>R(c,wx+x,wy+wh-h,1,h,'#0b0f1d');
+  for(let i=0;i<ww;i++){let h=14+Math.round(Math.sin(i*.7)*2+r()*3);sk(i,h);}
+  ellipseFill(c,wx+22,wy+wh-26,6,5,'#0b0f1d');R(c,wx+21,wy+wh-38,2,8,'#0b0f1d');R(c,wx+16,wy+wh-24,13,10,'#0b0f1d');
+  R(c,wx+60,wy+wh-62,1,46,'#0b0f1d');R(c,wx+59,wy+wh-36,3,20,'#0b0f1d');R(c,wx+58,wy+wh-20,5,6,'#0b0f1d');
+  for(let i=0;i<14;i++)R(c,wx+4+r()*78,wy+wh-12+r()*8,1,1,'#ffcf7a');
+  windowPanes(c,wx,wy,ww,wh,'#4a3018');R(c,wx,wy+wh-2,ww,2,'#e8eef8');
+  // Tafel
+  R(c,40,46,92,62,'#3a2616');R(c,43,49,86,56,'#1d2a22');scribble(c,48,54,76,8,'#a9b9a8',r);line(c,80,96,120,70,'#c8d4c4');
+  // Regal
+  R(c,150,60,50,2,'#4b311c');R(c,150,90,50,2,'#4b311c');for(let i=0;i<6;i++){const jx=153+i*8;R(c,jx,52,5,8,['#5a7a6a','#7a5a3a','#6a6a7a'][i%3]);R(c,jx,82,5,8,['#8a7a4a','#4a6a7a','#7a4a4a'][i%3]);}
+  floorPlanks(c,210,60,'#3b2717',12);
+  // Tisch & Gestell
+  R(c,178,184,140,6,'#5a3b22');R(c,178,184,140,1,'#7a5434');R(c,184,190,4,40,'#3a2616');R(c,306,190,4,40,'#3a2616');
+  R(c,212,120,3,64,'#4b311c');R(c,286,120,3,64,'#4b311c');R(c,212,118,77,3,'#5d3d23');
+  // Messglas
+  R(c,300,148,10,36,'#9fb4bf');R(c,301,149,8,34,'#26323a');for(let k=0;k<5;k++)R(c,309,152+k*6,2,1,'#dfe');
+  // Glockenhalter
+  R(c,196,116,18,2,'#3a2616');
+  // Lampe
+  R(c,250,0,1,58,'#111');R(c,242,58,18,6,'#2c3a2a');R(c,244,64,14,1,'#ffd890');
+  // Stuhl rechts
+  R(c,440,180,22,3,'#4b311c');R(c,440,160,3,50,'#3a2616');R(c,459,183,3,27,'#3a2616');R(c,443,183,3,27,'#3a2616');
+ },
+ draw(c,t){const st=this.st;
+  // Schnee im Fenster
+  const r=rng(5);for(let i=0;i<50;i++){const sx=336+((r()*86+Math.sin(t*.8+i)*4)%86+86)%86;const sy=26+((r()*112+t*(6+r()*8))%108);R(c,sx,sy,1,1,`rgba(235,240,255,${.5+r()*.5})`);}
+  beam(c,[[336,30],[422,30],[400,230],[280,230]],'#8fa6ff',.05,30,230);
+  const fl=.9+Math.sin(t*9)*.03+Math.sin(t*2.3)*.04;
+  beam(c,[[244,64],[258,64],[330,186],[172,186]],'#ffcf80',.16*fl,64,186);glow(c,251,64,90,'#ffb860',.22*fl);glow(c,250,190,70,'#ff9a40',.08*fl);
+  // Glocke
+  const sw=st.ring>0?Math.sin(t*25)*st.ring*3:0;st.ring=Math.max(0,st.ring-.016);
+  line(c,210,118,210+sw,124,'#777');ellipseFill(c,210+sw,128,4,4,'#c9a24a');R(c,206+sw,128,9,4,'#c9a24a');R(c,205+sw,131,11,2,'#a8832f');R(c,208+sw,125,1,3,'#f0d78a');
+  // Hund im Gestell
+  dog(c,226,184,t,{alert:st.ring>0});R(c,234,150,2,8,'#2a1a10');R(c,262,150,2,8,'#2a1a10');line(c,234,150,228,121,'#3a2616');line(c,264,150,270,121,'#3a2616');
+  line(c,220,166,300,170,'#bcd');
+  // Futterschale
+  R(c,184,178,14,6,'#7c7c86');R(c,186,177,10,2,'#9b4a3a');
+  // Pawlow
+  human(c,372,230,{top:'#e8e2d4',sleeve:'#d9d2c2',pants:'#2a2420',skin:'#e2b89a',hair:'#e8e8e8',hs:'bald',beard:'#eeeeee',face:-1,coat:6,rim:'#ffd8a0'},t);
+  // Assistent
+  human(c,154,230,{top:'#dcd6c6',pants:'#2c2a2a',skin:'#dab08e',hair:'#3a2818',hs:'short',face:1,coat:5,ph:2},t);
+  const fr=rng((t*12|0));for(let i=0;i<30;i++){const x=180+fr()*140,y=64+fr()*120;R(c,x,y,1,1,'rgba(255,220,160,.25)');}
+ },
+ hot:[
+  {id:'tafel',x:86,y:46,w:40,label:'Tafel',act(){say([{t:'Pawlows Notizen: Verdauungsdrüsen, Magensaft, Speichelmengen. Für diese Forschung erhält er 1904 den Nobelpreis für Medizin.'},{t:'Ein Ergebnis passt nicht ins Bild: Die Hunde speicheln schon, wenn sie nur den Assistenten mit der Futterschüssel kommen hören.'},{w:'Gedanke',t:'Wie kann ein Geräusch eine körperliche Reaktion auslösen, die eigentlich nur das Futter auslösen sollte?'}]);}},
+  {id:'assist',x:154,y:196,w:20,label:'Assistent',act(){say([{w:'Assistent',t:'Psst. Seit Wochen speichelt der Hund, sobald er meine Schritte auf dem Flur hört. Das Futter sieht er da noch gar nicht.'},{w:'Assistent',t:'Pawlow nennt das zuerst „psychische Sekretion“. Er will es jetzt genau messen.'}]);}},
+  {id:'futter',x:187,y:174,w:16,label:'Futterschale',act(){say([{t:'Fleischpulver. Gelangt es ins Maul, fließt sofort Speichel – ganz ohne Lernen, ein angeborener Reflex.',n:['ucs','ucr']},{w:'Notiz',t:'Futter = unbedingter Reiz (UCS). Speichelfluss auf Futter = unbedingte Reaktion (UCR).'}]);}},
+  {id:'glocke',x:212,y:118,w:14,label:'Glocke',act(){SC.pavlov.st.ring=1;AU.bell();say([{t:'Ein heller Ton. Der Hund spitzt die Ohren und dreht den Kopf – mehr passiert nicht. Eine Orientierungsreaktion.',n:'ns'},{w:'Notiz',t:'Für den Hund ist der Ton (noch) bedeutungslos: ein neutraler Reiz (NS).'},{t:'Übrigens: Historisch arbeitete Pawlow vor allem mit Metronomen und Summern. Die Glocke ist zur Legende geworden.'}]);}},
+  {id:'hund',x:248,y:140,w:30,label:'Hund',act(){say([{t:'Der Hund steht ruhig in einem Gestell. Über ein feines Röhrchen an der Wange wird sein Speichel aufgefangen.'},{t:'Er wedelt, als du näher kommst. Er ist an die Leute im Labor gewöhnt.'}]);}},
+  {id:'glas',x:305,y:146,w:14,label:'Messglas',act(){say([{t:'Jeder Tropfen wird gezählt. Das ist das Revolutionäre: Pawlow macht Lernen messbar.'},{t:'Psychologie wird damit zur experimentellen Wissenschaft – das Fundament für den späteren Behaviorismus.'}]);}},
+  {id:'pawlow',x:372,y:196,w:22,label:'Iwan Pawlow',act(){const sc=SC.pavlov;
+    if(S.done.pavlov)return say([{w:'Pawlow',t:'Vergessen Sie nicht: Was gelernt wurde, kann gelöscht werden – aber es schlummert weiter. Gute Reise!'}]);
+    const need=['futter','glocke','hund'].filter(k=>!S.seen['pavlov.'+k]);
+    if(need.length)return say([{w:'Pawlow',t:'Ah, ein Gast! Sehen Sie sich zuerst den Versuchsaufbau an: den Hund, die Futterschale und die Glocke. Dann helfen Sie mir.'}]);
+    say([{w:'Pawlow',t:'Sie kommen gerade recht. Wenn ein Geräusch das Futter ankündigt – lernt der Hund dann, schon auf das Geräusch zu reagieren?'},{w:'Pawlow',t:'Führen Sie den Versuch selbst durch. Läuten Sie, füttern Sie – und beobachten Sie das Messglas.'}],()=>runPavlov());}}
+ ],
+ obj(){if(S.done.pavlov)return'Kapitel geschafft! Kehre durch den Zeitriss (links) ins Archiv zurück.';const n=['futter','glocke','hund'].filter(k=>S.seen['pavlov.'+k]).length;return n<3?`Untersuche den Versuchsaufbau: Hund, Futterschale, Glocke (${n}/3)`:'Sprich mit Iwan Pawlow (rechts am Fenster).';},
+ enter(){say([{t:'St. Petersburg, 1904. Ein Winterabend im Institut für Experimentelle Medizin.'},{t:'Iwan Pawlow erforscht eigentlich die Verdauung. Doch seine Hunde tun etwas Seltsames …'}]);}
+};
+function runPavlov(){seq([simPavlov,
+  pAssign({title:'Was ist was?',sub:'Kapitel I · Auswertung',intro:'Ordne jedem Element des Versuchs den passenden Fachbegriff zu. Klicke eine Karte an und dann das passende Feld (oder ziehe sie hinein).',
+   cards:[{id:'a',t:'UCS – unbedingter Reiz',a:'1',w:'Tipp: „Unbedingt“ heißt: Das funktioniert angeboren, ohne Lernen.'},{id:'b',t:'UCR – unbedingte Reaktion',a:'2'},{id:'c',t:'NS – neutraler Reiz',a:'3'},{id:'d',t:'CS – bedingter Reiz',a:'4',w:'Tipp: Derselbe Reiz kann vor und nach dem Lernen einen anderen Namen haben.'},{id:'e',t:'CR – bedingte Reaktion',a:'5'}],
+   slots:[{id:'1',t:'Das Futter',cap:1},{id:'2',t:'Der Speichelfluss, wenn Futter ins Maul kommt',cap:1},{id:'3',t:'Die Glocke VOR dem Versuch',cap:1},{id:'4',t:'Die Glocke NACH mehreren Kopplungen',cap:1},{id:'5',t:'Der Speichelfluss auf die Glocke allein',cap:1}],cols:1,
+   why:'Vor der Konditionierung: NS → keine Reaktion; UCS → UCR. Während: NS + UCS (mehrfach, NS kurz vorher). Danach: CS → CR.'}),
+  pChoice({title:'Dieselbe Reaktion – zwei Namen?',sub:'Kapitel I · Warum-Frage',q:'Der Speichelfluss heißt einmal „unbedingte Reaktion“ und einmal „bedingte Reaktion“. Woran liegt das?',
+   opts:[{t:'Es kommt darauf an, wodurch er ausgelöst wird: angeboren durch Futter oder gelernt durch den Ton.',ok:true},{t:'Es kommt darauf an, wie stark er ist: viel Speichel ist unbedingt, wenig Speichel ist bedingt.',f:'Die Stärke ist nicht das Kriterium. Die bedingte Reaktion ist zwar oft schwächer – entscheidend ist aber der Auslöser.'},{t:'Es kommt darauf an, wann er gemessen wird: vor dem Futter bedingt, nach dem Futter unbedingt.',f:'Der Zeitpunkt der Messung entscheidet nicht. Frage dich: Was löst den Speichel aus – und ist das angeboren?'},{t:'Es kommt darauf an, ob der Hund Hunger hat: hungrig unbedingt, satt bedingt.',f:'Hunger beeinflusst die Stärke, aber nicht die Einteilung. Entscheidend ist, ob der Auslöser gelernt wurde.'}],
+   why:'Die Reaktion ist dieselbe, ihr Auslöser nicht: Auf Futter reagiert der Hund angeboren (UCR), auf den Ton erst nach dem Lernen (CR).'}),
+  pChoice({title:'Die falsche Reihenfolge',sub:'Kapitel I · Fehlvorstellung',scene:'Ein Kollege macht es anders: Er gibt zuerst das Futter und läutet erst danach die Glocke – 20-mal.',q:'Was wird er am Ende beobachten, wenn er die Glocke allein läutet?',
+   opts:[{t:'Kaum Speichelfluss – die Glocke kündigt das Futter nicht an, also wird sie kaum zum bedingten Reiz.',ok:true},{t:'Genauso viel Speichelfluss – Hauptsache, Glocke und Futter kommen oft genug zusammen vor.',f:'Häufigkeit allein reicht nicht. Der Reiz muss das Futter vorhersagen – sonst hat er keine Signalwirkung.'},{t:'Sogar mehr Speichelfluss – weil der Hund nach dem Futter besonders aufmerksam ist.',f:'Aufmerksamkeit nach dem Futter hilft hier nicht. Der Ton kommt zu spät, um etwas anzukündigen.'},{t:'Angst statt Speichelfluss – weil die Glocke den Hund beim Fressen erschreckt.',f:'Dafür gibt es im Versuch keinen Hinweis. Denk an die Signalfunktion: Kündigt der Ton das Futter an?'}],
+   why:'Der neutrale Reiz muss kurz VOR dem unbedingten Reiz kommen (Kontiguität) und ihn verlässlich ankündigen. Bei „Rückwärtskonditionierung“ entsteht kaum eine bedingte Reaktion.',notes:['kont']}),
+ ],()=>finishChapter('pavlov',[{w:'Pawlow',t:'Ausgezeichnet. Ein Ton, der nichts bedeutete, löst nun eine körperliche Reaktion aus. Das nennen wir einen bedingten Reflex.'},{w:'Pawlow',t:'Ein Amerikaner namens Watson ist ganz besessen davon. Er glaubt, so ließen sich sogar Gefühle erzeugen …'}]));}
+
+/* ---------- Kapitel II: Watson ---------- */
+SC.watson={chapter:'Kapitel II',name:'Der kleine Albert',place:'Baltimore · 1920',ac:'#9cc7d8',floor:230,minX:12,maxX:468,start:40,amb:'watson',st:{},
+ build(c){const r=rng(21);
+  vgrad(c,0,0,W,140,['#5d6a70','#76858b','#8c9a9d']);
+  for(let y=140;y<210;y+=6)for(let x=(y/6%2)*6;x<W;x+=12){R(c,x,y,11,5,'#a8b4ae');R(c,x,y,11,1,'#bcc6c0');}R(c,0,138,W,3,'#4e5a5c');
+  for(let y=140;y<210;y+=6)R(c,0,y+5,W,1,'#869290');
+  // Fenster mit Backstein
+  const wx=52,wy=30,ww=78,wh=92;vgrad(c,wx,wy,ww,wh,['#c9d8e0','#dfe6e4','#efe9da']);
+  for(let i=0;i<5;i++){const bx=wx+4+i*16,bh=40+r()*40;R(c,bx,wy+wh-bh,14,bh,['#8a5a48','#7a4e40','#94664f'][i%3]);for(let k=0;k<bh;k+=6)for(let q=0;q<3;q++)R(c,bx+2+q*4,wy+wh-bh+3+k,2,3,'#3a3036');}
+  windowPanes(c,wx,wy,ww,wh,'#e8ece8');
+  // Vorhang
+  R(c,322,20,2,4,'#333');R(c,318,22,44,2,'#4a4a4a');for(let x=320;x<360;x+=4){R(c,x,24,4,172,(x/4)%2?'#8e9a96':'#7d8985');R(c,x,24,1,172,'#6d7975');}
+  R(c,360,150,18,3,'#8a9aa2');R(c,362,160,3,40,'#5a5048');R(c,358,148,10,5,'#4a4038');
+  // Schreibtisch
+  R(c,412,178,58,4,'#4a3a2c');R(c,414,182,3,48,'#3a2c20');R(c,465,182,3,48,'#3a2c20');R(c,424,172,20,6,'#e8e2d0');R(c,428,174,12,1,'#888');R(c,446,166,6,12,'#2a2a2a');
+  // Uhr
+  ellipseFill(c,250,40,9,9,'#3a3a3a');ellipseFill(c,250,40,7,7,'#efe9da');line(c,250,40,250,35,'#222');line(c,250,40,254,42,'#222');
+  floorPlanks(c,210,60,'#5d5248',22);
+  // Tisch mit Matratze
+  R(c,198,190,104,5,'#6a5a4a');R(c,202,195,4,35,'#4a3e32');R(c,294,195,4,35,'#4a3e32');R(c,196,182,108,8,'#d8d2c2');R(c,196,182,108,1,'#efeadc');for(let x=200;x<304;x+=12)R(c,x,184,1,5,'#c2bba8');
+  // Kamera Stativ
+  line(c,392,230,400,180,'#2a2a2a');line(c,408,230,400,180,'#2a2a2a');line(c,400,230,400,180,'#2a2a2a');R(c,390,168,20,14,'#1c1c1c');R(c,384,172,8,6,'#2a2a2a');ellipseFill(c,394,165,5,5,'#2a2a2a');ellipseFill(c,406,165,5,5,'#2a2a2a');
+ },
+ draw(c,t){
+  beam(c,[[52,32],[130,32],[250,230],[120,230]],'#fff4dc',.13,32,230);glow(c,90,70,80,'#ffffff',.08);
+  const r=rng(9);for(let i=0;i<30;i++){const x=70+r()*160,y=(r()*190+t*(2+r()*3))%190+30;R(c,x,y,1,1,'rgba(255,255,240,.3)');}
+  // Albert sitzt
+  const ax=246,ay=182,b=Math.round(Math.sin(t*2)*.5);
+  R(c,ax-6,ay-4,12,4,'#f2ede2');R(c,ax-8,ay-2,5,2,'#e2b89a');R(c,ax+3,ay-2,5,2,'#e2b89a');
+  R(c,ax-4,ay-12+b,8,9,'#f6f2ea');R(c,ax-5,ay-9+b,2,5,'#ebe5d8');R(c,ax+3,ay-9+b,2,5,'#ebe5d8');
+  R(c,ax-4,ay-19+b,8,7,'#ecc3a2');R(c,ax-4,ay-19+b,8,2,'#d8c69a');R(c,ax+1,ay-16+b,1,1,'#221');R(c,ax-2,ay-16+b,1,1,'#221');
+  rat(c,270,182,-1,{});
+  // Watson hinter dem Vorhang
+  human(c,346,230,{top:'#3a3e48',pants:'#2a2c34',skin:'#e0b898',hair:'#4a3624',hs:'short',face:-1,tie:'#7a2a2a',shirt:'#e8e8e8'},t);
+  // Rayner
+  human(c,176,230,{top:'#5a6a7a',pants:'#2a2c34',skin:'#e8c0a0',hair:'#5a3a22',hs:'bun',skirt:'#3a4450',face:1,ph:1.5,hold:(cc,x,y)=>{R(cc,x,y-2,4,5,'#e8e2d0');}},t);
+  R(c,394,164,4,2,'#fff');if(Math.sin(t*5)>.6)R(c,384,170,2,2,'#c33');
+ },
+ hot:[
+  {id:'fenster',x:91,y:30,w:40,label:'Fenster',act(){say([{t:'Draußen Baltimore, Johns-Hopkins-Universität. Ein heller Wintermorgen.'},{t:'John B. Watson ist hier einer der bekanntesten Psychologen Amerikas – und der Begründer des Behaviorismus.'},{t:'Seine Überzeugung: Psychologie soll nur beobachtbares Verhalten untersuchen. Gedanken und Gefühle im Inneren seien nicht messbar.'}]);}},
+  {id:'rayner',x:176,y:196,w:20,label:'Rosalie Rayner',act(){say([{w:'Rosalie Rayner',t:'Ich bin Watsons Assistentin. Wir haben Albert vorher getestet: Ratte, Kaninchen, Hund, Watte, Masken – er hatte vor nichts davon Angst.'},{w:'Rosalie Rayner',t:'Nur ein lautes Geräusch hinter seinem Kopf hat ihn sofort erschreckt und zum Weinen gebracht.'}]);}},
+  {id:'albert',x:246,y:160,w:18,label:'Albert',act(){say([{t:'Albert ist bei den ersten Tests etwa neun Monate alt – ein ruhiges, gesundes Kind, das kaum weint.'},{t:'Er greift neugierig nach allem, was man ihm hinhält.'}]);}},
+  {id:'ratte',x:270,y:176,w:14,label:'Weiße Ratte',act(){say([{t:'Eine zahme weiße Ratte. Albert streckt die Hand nach ihr aus. Für ihn ist sie ein neutraler Reiz.'}]);}},
+  {id:'stange',x:366,y:146,w:20,label:'Stahlstange & Hammer',act(){say([{t:'Hinter dem Vorhang: eine Stahlstange und ein Hammer. Ein Schlag darauf erzeugt einen ohrenbetäubenden Knall.'},{t:'Säuglinge reagieren darauf angeboren mit einem heftigen Schreckreflex.'},{w:'Gedanke',t:'Der Lärm ist also … der unbedingte Reiz?'}]);}},
+  {id:'watson',x:346,y:196,w:20,label:'John B. Watson',act(){
+    if(S.done.watson)return say([{w:'Watson',t:'Angst ist gelernt. Und was gelernt ist, kann man auch verlernen. Das zeigte bald eine andere Forscherin.'}]);
+    const need=['albert','ratte','stange'].filter(k=>!S.seen['watson.'+k]);
+    if(need.length)return say([{w:'Watson',t:'Sehen Sie sich erst alles an: Albert, die Ratte – und was hinter dem Vorhang liegt.'}]);
+    say([{w:'Watson',t:'Pawlow hat Speichel konditioniert. Ich will zeigen: Auch Gefühle wie Angst entstehen so.'},{w:'Watson',t:'Er behauptete später sogar, er könne aus jedem gesunden Kind jeden beliebigen Menschen formen – Arzt, Künstler oder Dieb.'},{t:'Der Versuch wird hier nicht gezeigt. Du rekonstruierst ihn aus dem Laborprotokoll.'}],()=>runWatson());}},
+  {id:'kamera',x:398,y:162,w:18,label:'Filmkamera',act(){say([{t:'Watson ließ die Versuche filmen. Die Aufnahmen gibt es bis heute – sie gehören zu den bekanntesten Filmen der Psychologiegeschichte.'}]);}}
+ ],
+ obj(){if(S.done.watson)return'Kapitel geschafft! Kehre durch den Zeitriss (links) ins Archiv zurück.';const n=['albert','ratte','stange'].filter(k=>S.seen['watson.'+k]).length;return n<3?`Verschaffe dir einen Überblick: Albert, Ratte, hinter dem Vorhang (${n}/3)`:'Sprich mit John B. Watson (am Vorhang).';},
+ enter(){say([{t:'Baltimore, 1920. Ein Untersuchungsraum der Johns-Hopkins-Universität.'},{t:'Was hier geschieht, gilt heute als eines der umstrittensten Experimente der Psychologie.'}]);}
+};
+function runWatson(){seq([
+  pInfo({title:'Laborprotokoll, Auszug',sub:'Kapitel II · Rekonstruktion',html:`<p><span class="tag">Tag 1</span>Albert, nun etwa 11 Monate alt, sieht die Ratte und greift danach. In dem Moment, in dem er sie berührt, wird hinter seinem Kopf auf die Stahlstange geschlagen. Albert zuckt heftig zusammen.</p>
+   <p><span class="tag">Tag 1–8</span>Ratte und Knall werden insgesamt siebenmal gemeinsam dargeboten.</p>
+   <p><span class="tag">Danach</span>Man zeigt Albert die Ratte <b>ohne</b> Knall. Er beginnt sofort zu weinen, dreht sich weg und krabbelt so schnell davon, dass man ihn kaum festhalten kann.</p>
+   <p style="opacity:.75">Paraphrasiert nach Watson & Rayner (1920), „Conditioned Emotional Reactions“.</p>`}),
+  pAssign({title:'Pawlow im Kinderzimmer',sub:'Kapitel II · Transfer',intro:'Das Prinzip ist dasselbe wie bei Pawlows Hund. Ordne zu.',
+   cards:[{id:'a',t:'NS',a:'1'},{id:'b',t:'UCS',a:'2',w:'Tipp: Was löst auch ohne Lernen Angst aus?'},{id:'c',t:'UCR',a:'3'},{id:'d',t:'CS',a:'4'},{id:'e',t:'CR',a:'5'}],
+   slots:[{id:'1',t:'Die Ratte am Anfang',cap:1},{id:'2',t:'Der laute Knall',cap:1},{id:'3',t:'Das Erschrecken beim Knall',cap:1},{id:'4',t:'Die Ratte nach sieben Kopplungen',cap:1},{id:'5',t:'Die Angst, sobald Albert die Ratte sieht',cap:1}],
+   why:'Gelernt wird hier keine Speichelreaktion, sondern ein Gefühl: eine konditionierte emotionale Reaktion.'}),
+  pMulti({title:'Wovor fürchtet sich Albert noch?',sub:'Kapitel II · Generalisierung',scene:'Einige Tage später zeigt man Albert verschiedene Dinge – ohne Knall.',q:'Wovor zeigte Albert nun ebenfalls Angst?',
+   opts:[{t:'ein weißes Kaninchen',ok:true},{t:'ein Pelzmantel',ok:true},{t:'eine Weihnachtsmann-Maske mit weißem Bart',ok:true},{t:'Holzbauklötze',ok:false}],hint:'Denk daran: Welche Dinge ähneln der Ratte?',
+   why:'Reize, die der Ratte ähneln (weiß, pelzig, flauschig), lösen ebenfalls Angst aus: <span class="op">Reizgeneralisierung</span>. Mit den Bauklötzen spielte Albert weiter – er unterschied also: <span class="op">Reizdiskrimination</span>.',notes:['gen','disk']}),
+  pMulti({title:'Darf man so forschen?',sub:'Kapitel II · Beurteilung',q:'Was ist aus heutiger Sicht an dem Experiment ethisch problematisch?',
+   opts:[{t:'Einem Kleinkind wurde gezielt Angst gemacht.',ok:true},{t:'Die Angst wurde vor Versuchsende nicht wieder abgebaut.',ok:true},{t:'Eine Einwilligung nach heutigen Standards fehlte.',ok:true},{t:'Die Versuche wurden mit einer Kamera gefilmt.',ok:false}],hint:'Frag dich bei jeder Aussage: Schadet das dem Kind?',
+   why:'Albert verließ das Krankenhaus, bevor die Angst „wegkonditioniert“ wurde. Heute wären Aufklärung, Einwilligung, Schutz vor Schaden und Nachsorge Pflicht – ein solcher Versuch würde nicht genehmigt.',notes:['ethik']}),
+  pInfo({title:'Und wie wird man Angst wieder los?',sub:'Kapitel II · Ausblick',html:`<p>1924 arbeitete <b>Mary Cover Jones</b> mit einem Jungen namens Peter, der große Angst vor Kaninchen hatte. Während Peter etwas Leckeres aß, brachte man das Kaninchen jeden Tag ein Stück näher.</p><p>Die angenehme Situation wurde mit dem Angstreiz gekoppelt – bis Peter das Kaninchen streicheln konnte. Dieses Prinzip heißt <span class="op">Gegenkonditionierung</span>. Es ist bis heute die Grundlage der <b>systematischen Desensibilisierung</b> in der Verhaltenstherapie.</p>`,notes:['gegen']})
+ ],()=>finishChapter('watson',[{w:'Watson',t:'Sehen Sie? Kein Instinkt, keine Seele – nur Reize und Reaktionen.'},{t:'Doch die Psychologie fragt bald weiter: Was ist mit Verhalten, das wir selbst zeigen – und was passiert danach?'}]));}
+
+/* ---------- Kapitel III: Skinner ---------- */
+SC.skinner={chapter:'Kapitel III',name:'Die Box',place:'Harvard · 1930er',ac:'#8fd18a',floor:230,minX:12,maxX:468,start:40,amb:'skinner',st:{},
+ build(c){const r=rng(31);
+  vgrad(c,0,0,W,210,['#070b09','#0d1411','#131d19','#18241f']);
+  for(let y=4;y<200;y+=7)for(let x=((y/7)%2)*9;x<W;x+=18){R(c,x,y,17,6,'#141d19');R(c,x,y,17,1,'#1b2722');}
+  // Regale links
+  R(c,30,70,100,2,'#3a2616');R(c,30,110,100,2,'#3a2616');R(c,30,150,100,2,'#3a2616');
+  // Thorndike-Käfig
+  R(c,40,128,34,22,'#6a4a2a');for(let x=42;x<74;x+=4)R(c,x,128,1,22,'#2a1a0e');R(c,40,128,34,2,'#8a6a40');R(c,56,124,2,4,'#888');
+  // Gläser
+  for(let i=0;i<7;i++)R(c,36+i*13,58+(i%2),8,12,['#3a5a4a','#5a4a3a','#4a4a5a'][i%3]);for(let i=0;i<5;i++)R(c,84+i*9,98,6,12,['#6a7a5a','#4a5a6a'][i%2]);
+  // Taubenkäfig
+  R(c,140,120,40,2,'#555');for(let x=140;x<181;x+=4)R(c,x,122,1,30,'#777');R(c,140,152,40,3,'#444');R(c,158,156,3,74,'#333');
+  // Tisch
+  R(c,196,184,150,6,'#3a2a1c');R(c,196,184,150,1,'#5a4630');R(c,202,190,4,40,'#251a10');R(c,336,190,4,40,'#251a10');
+  // Skinner-Box
+  R(c,228,140,64,44,'#5d6764');R(c,228,140,64,2,'#8a9592');R(c,230,144,40,26,'#1e2624');R(c,286,150,4,8,'#999');R(c,274,146,10,6,'#2a3230');for(let x=232;x<268;x+=3)R(c,x,168,2,2,'#59615e');
+  // Schreiber
+  R(c,300,158,34,26,'#4a4a44');ellipseFill(c,317,164,12,5,'#d8d0b8');R(c,305,164,24,14,'#e9e2cf');
+  // Tafel
+  R(c,402,46,64,48,'#1d2a22');R(c,400,44,68,2,'#3a2616');scribble(c,406,52,54,7,'#a9b9a8',r);
+  floorPlanks(c,210,60,'#2a2620',33);
+  // Lampe
+  R(c,208,172,10,12,'#2a3a2a');R(c,212,156,2,16,'#2a2a2a');R(c,204,150,16,7,'#1f5a32');R(c,205,157,14,1,'#f2ffc8');
+ },
+ draw(c,t){const r=rng(41);
+  glow(c,212,160,90,'#c8ff9a',.2);beam(c,[[205,157],[219,157],[300,186],[180,186]],'#e6ffb0',.16,157,186);
+  glow(c,250,156,20,'#f1ffd0',.12);
+  // Ratte in Box
+  const rx=240+Math.round((Math.sin(t*.9)+1)*12);rat(c,rx,168,Math.cos(t*.9)>0?1:-1,{});
+  // Schreiber-Linie
+  for(let x=0;x<22;x++){const y=176-Math.floor(Math.max(0,(x+t*2)%22)*.4);R(c,306+x,y,1,1,'#2a2a6a');}
+  // Taube
+  const tb=Math.sin(t*4)>.7?1:0;R(c,152,140-tb,10,7,'#8a8e96');R(c,160,137-tb,5,5,'#9a9ea6');R(c,164,139-tb,2,1,'#c9a24a');R(c,153,142,6,2,'#6a8a8a');R(c,155,147,1,3,'#c66');R(c,158,147,1,3,'#c66');
+  // Skinner
+  human(c,384,230,{top:'#4a4a44',pants:'#2c2c28',skin:'#e0b898',hair:'#7a6a5a',hs:'recede',face:-1,glasses:true,tie:'#2a3a5a',shirt:'#ddd'},t);
+  for(let i=0;i<25;i++){const x=190+r()*140,y=(r()*120+t*(1+r()*2))%110+90;R(c,x,y,1,1,'rgba(220,255,200,.2)');}
+ },
+ hot:[
+  {id:'thorndike',x:57,y:124,w:30,label:'Problemkäfig',act(){say([{t:'Ein alter Holzkäfig mit Riegel – ein „Problemkäfig“ von Edward Thorndike aus dem Jahr 1898.'},{t:'Hungrige Katzen darin probierten herum, bis sie zufällig den Mechanismus auslösten. Draußen wartete Futter.'},{t:'Mit jedem Durchgang ging es schneller. Thorndikes Gesetz des Effekts: Was angenehme Folgen hat, wird beibehalten.',n:'effekt'}]);}},
+  {id:'taube',x:160,y:130,w:24,label:'Taubenkäfig',act(){say([{t:'Eine Taube pickt gegen das Gitter. Skinner trainierte Tauben, Kreise zu drehen – und sogar, sich einen Ball zuzuspielen.'},{t:'Im Zweiten Weltkrieg wollte er Tauben einsetzen, um Bomben ins Ziel zu lenken. Das „Projekt Pigeon“ wurde nie eingesetzt.'}]);}},
+  {id:'box',x:258,y:138,w:30,label:'Skinner-Box',act(){
+    if(S.done.skinner)return say([{t:'Die Ratte drückt fleißig den Hebel. Sie hat gelernt, was sich lohnt.'}]);
+    if(!S.seen['skinner.skinner'])return say([{t:'Ein Kasten aus Metall mit Hebel, Lampe und Futterspender. Drinnen schnuppert eine Ratte. Frag am besten Skinner, was es damit auf sich hat.'}]);
+    say([{t:'Du beugst dich über die Box. Die Ratte schnuppert herum – den Hebel beachtet sie nicht.'}],()=>runSkinner());}},
+  {id:'schreiber',x:317,y:156,w:22,label:'Kumulativschreiber',act(){say([{t:'Ein Stift zeichnet auf einem laufenden Papierband jeden Hebeldruck auf. Je steiler die Linie, desto häufiger das Verhalten.'},{t:'Skinner sah daran etwas Erstaunliches: Ratten, die nur manchmal und unvorhersehbar Futter bekommen, drücken besonders ausdauernd.',n:'interm'},{w:'Notiz',t:'Intermittierende Verstärkung macht Verhalten hartnäckig – wie beim Spielautomaten.'}]);}},
+  {id:'skinner',x:384,y:196,w:20,label:'B. F. Skinner',act(){
+    if(S.done.skinner)return say([{w:'Skinner',t:'Verhalten wird von seinen Konsequenzen geformt. Das gilt für Ratten, Tauben – und für Menschen.'}]);
+    say([{w:'Skinner',t:'Pawlow untersuchte, was VOR einem Verhalten passiert. Mich interessiert, was DANACH kommt.'},{w:'Skinner',t:'Ein Lebewesen handelt – und die Folgen entscheiden, ob es das wieder tut. Ich nenne das operantes Verhalten.',n:'operant'},{w:'Skinner',t:'Versuchen Sie es: Bringen Sie der Ratte in der Box bei, den Hebel zu drücken. Aber Vorsicht: Der richtige Moment ist alles.'}]);}},
+  {id:'tafel',x:434,y:44,w:30,label:'Tafel',act(){say([{t:'An der Tafel: „Verhalten → Konsequenz“. Darunter vier Kästchen – mit einem Pluszeichen und einem Minuszeichen.'},{w:'Gedanke',t:'Plus heißt: Etwas kommt hinzu. Minus heißt: Etwas fällt weg. Das hat nichts mit „gut“ oder „schlecht“ zu tun.'}]);}}
+ ],
+ obj(){if(S.done.skinner)return'Kapitel geschafft! Kehre durch den Zeitriss (links) ins Archiv zurück.';return S.seen['skinner.skinner']?'Untersuche die Skinner-Box auf dem Tisch.':'Sprich mit B. F. Skinner (rechts). Schau dich gern weiter um.';},
+ enter(){say([{t:'Harvard, Cambridge (Massachusetts), 1930er-Jahre. Ein Kellerlabor.'},{t:'Ein junger Forscher hat einen Kasten gebaut, der die Psychologie verändern wird.'}]);}
+};
+function runSkinner(){seq([simSkinner,
+  pAssign({title:'Plus, Minus, Verstärkung, Strafe',sub:'Kapitel III · Vier-Felder-Tafel',intro:'Ordne die Alltagssituationen den vier Konsequenzen zu. Stell dir jeweils zwei Fragen: <b>Kommt etwas hinzu oder fällt etwas weg?</b> Und: <b>Wird das Verhalten häufiger oder seltener?</b>',hints:true,cols:2,
+   cards:[{id:'a',t:'Lena räumt ihr Zimmer auf und wird dafür gelobt.',a:'pv'},{id:'b',t:'Tim schnallt sich an – das nervige Piepen im Auto hört auf.',a:'nv',w:'Tipp: Fällt etwas Unangenehmes weg, wird das Verhalten wahrscheinlicher – das ist eine Verstärkung.'},{id:'c',t:'Weil Jonas frech war, muss er eine Strafarbeit schreiben.',a:'s1'},{id:'d',t:'Mia kommt zu spät heim und bekommt eine Woche Handyverbot.',a:'s2',w:'Tipp: Wird etwas Angenehmes weggenommen, ist das eine Bestrafung durch Entzug.'},{id:'e',t:'Ein Hund setzt sich auf Kommando und bekommt ein Leckerli.',a:'pv'},{id:'f',t:'Paul nimmt eine Tablette, die Kopfschmerzen verschwinden. Künftig greift er schneller zur Tablette.',a:'nv'},{id:'g',t:'Sara plaudert ein Geheimnis aus und wird von ihrer Freundin angeschrien.',a:'s1'},{id:'h',t:'Ben spielt beim Essen am Handy, die Eltern streichen ihm den Nachtisch.',a:'s2'}],
+   slots:[{id:'pv',t:'Positive Verstärkung',h:'+ Angenehmes kommt hinzu → Verhalten ↑'},{id:'nv',t:'Negative Verstärkung',h:'– Unangenehmes fällt weg → Verhalten ↑'},{id:'s1',t:'Bestrafung Typ I (Darbietung)',h:'+ Unangenehmes kommt hinzu → Verhalten ↓'},{id:'s2',t:'Bestrafung Typ II (Entzug)',h:'– Angenehmes fällt weg → Verhalten ↓'}],
+   why:'Verstärkung macht Verhalten immer häufiger, Bestrafung immer seltener. „Positiv“ und „negativ“ sagen nur, ob etwas hinzukommt oder wegfällt.',notes:['posv','negv','str1','str2']}),
+  pChoice({title:'Die häufigste Verwechslung',sub:'Kapitel III · Fehlvorstellung',q:'Was bedeutet „negative Verstärkung“?',
+   opts:[{t:'Ein unangenehmer Reiz wird entfernt – das Verhalten wird dadurch häufiger.',ok:true},{t:'Ein unangenehmer Reiz wird hinzugefügt – das Verhalten wird dadurch seltener.',f:'Das ist Bestrafung Typ I. Merke: Jede Verstärkung macht Verhalten häufiger.'},{t:'Ein angenehmer Reiz wird entfernt – das Verhalten wird dadurch seltener.',f:'Das ist Bestrafung Typ II (Entzug). Verstärkung bedeutet immer: Verhalten nimmt zu.'},{t:'Ein Verhalten wird ignoriert – es tritt dadurch allmählich seltener auf.',f:'Das beschreibt Löschung: Die Verstärkung bleibt aus. „Negativ“ heißt aber: Etwas Unangenehmes fällt weg.'}],
+   why:'Negative Verstärkung ist <b>keine</b> Strafe. Sie belohnt durch Erleichterung: Das Unangenehme hört auf, also zeigt man das Verhalten öfter (Anschnallen, Tablette, Hausaufgaben machen, damit das Nörgeln aufhört).'})
+ ],()=>finishChapter('skinner',[{w:'Skinner',t:'Sie haben verstanden: Nicht der Reiz davor, sondern die Konsequenz danach steuert dieses Lernen.'},{w:'Skinner',t:'Aber muss man jedes Verhalten erst selbst ausprobieren? In Kalifornien sieht man das bald ganz anders …'}]));}
+
+/* ---------- Kapitel IV: Bandura ---------- */
+SC.bandura={chapter:'Kapitel IV',name:'Bobo',place:'Stanford · 1961',ac:'#f2c35b',floor:230,minX:12,maxX:468,start:40,amb:'bandura',st:{cut:null,ang:0,av:0},
+ build(c){const r=rng(51);
+  vgrad(c,0,0,W,210,['#4a3a2a','#6a5238','#8a6c48','#9a7a52']);
+  for(let x=0;x<W;x+=30)R(c,x,0,1,210,'#00000014');
+  R(c,0,160,W,50,'#5a4630');R(c,0,160,W,2,'#7a6040');
+  // Fenster mit Jalousien
+  const wx=30,wy=26,ww=110,wh=104;vgrad(c,wx,wy,ww,wh,['#fff2c8','#ffe6a8','#f7d58a']);for(let y=wy;y<wy+wh;y+=5){R(c,wx,y,ww,3,'#c9a66a');R(c,wx,y,ww,1,'#e8cc90');}
+  windowPanes(c,wx,wy,ww,wh,'#e8dcc0');
+  // Einwegspiegel
+  R(c,296,48,72,70,'#2a2a2e');R(c,298,50,68,66,'#1a1c22');for(let i=0;i<10;i++)line(c,300+i*7,52,306+i*7,112,'#2a2e38');R(c,294,118,76,3,'#5a4a3a');
+  // Regal
+  R(c,388,90,70,2,'#6a4a2a');R(c,388,124,70,2,'#6a4a2a');R(c,388,158,70,2,'#6a4a2a');R(c,388,90,2,70,'#5a3a20');R(c,456,90,2,70,'#5a3a20');
+  R(c,394,112,10,12,'#c33');R(c,408,116,14,8,'#36a');R(c,426,110,8,14,'#e9c46a');R(c,438,114,14,10,'#2a8a5a');R(c,396,146,18,12,'#e8e2d0');R(c,418,150,6,8,'#c33');R(c,428,148,20,10,'#7a5a3a');
+  R(c,400,82,30,8,'#a04a2a');
+  // Kindertisch
+  R(c,110,196,46,4,'#c9a66a');R(c,112,200,3,30,'#8a6a40');R(c,151,200,3,30,'#8a6a40');R(c,120,192,6,4,'#36a');R(c,130,193,8,3,'#c33');R(c,141,192,2,4,'#3a3');
+  // Boden Linoleum
+  vgrad(c,0,210,W,60,['#8a7a62','#6e604c','#4a3e30']);for(let y=212;y<270;y+=8)for(let x=(y/8%2)*12;x<W;x+=24)R(c,x,y,12,7,'#00000018');
+  // Holzhammer
+  R(c,214,226,12,4,'#8a6a40');R(c,224,224,6,7,'#6a4a2a');
+ },
+ draw(c,t){const st=this.st;
+  for(let i=0;i<6;i++){const y0=30+i*17;beam(c,[[140,y0],[140,y0+8],[320,y0+8+130],[320,y0+110]],'#ffd890',.07+Math.sin(t*.5+i)*.01,y0,230);}
+  glow(c,80,80,90,'#ffe0a0',.18);
+  const r=rng(61);for(let i=0;i<45;i++){const x=140+r()*200,y=(r()*190+t*(2+r()*3))%180+30;R(c,x,y,1,1,'rgba(255,240,200,.35)');}
+  // Physik Bobo
+  st.av+=(-st.ang*30-st.av*3)*.016;st.ang+=st.av*.016;
+  const cu=st.cut;let mx=520,mHit=false,kx=140,kHit=false,kSit=true,cface=1;
+  if(cu){cu.t+=1/60;const T=cu.t;
+    if(T<3){mx=440-T*60;}else if(T<8){mx=262;mHit=Math.sin((T-3)*6)>.4;if(mHit&&!cu.h1){cu.h1=1;}if(!mHit)cu.h1=0;if(mHit&&cu.lastHit<T-.4){cu.lastHit=T;st.av-=3.5;AU.thud();}}
+    else if(T<10.5){mx=262+(T-8)*90;}
+    if(T>10.5&&T<12.5){kSit=false;kx=140+(T-10.5)*55;}
+    if(T>=12.5&&T<17){kSit=false;kx=250;kHit=Math.sin((T-12.5)*6)>.4;if(kHit&&cu.lastK<T-.4){cu.lastK=T;st.av-=2.5;AU.thud();}}
+    if(T>=17){kSit=false;kx=250;}
+    if(T>17.2&&!cu.end){cu.end=1;S.lock=false;setBars(0);say([{t:'Niemand hat das Kind belohnt. Trotzdem schlägt es Bobo – mit genau denselben Bewegungen. Es ruft sogar dieselben Worte.'},{w:'Bandura',t:'Das Kind hat durch bloßes Zuschauen gelernt. Kinder, die ein friedliches Modell gesehen hatten, taten das kaum.',n:'modell'},{w:'Bandura',t:'Nun die Frage: Spielt es eine Rolle, was mit dem Modell nach seinem Verhalten passiert? Schauen Sie sich die Filmrollen am Projektor an.'}],()=>{SC.bandura.st.film=true;});}
+  }
+  if(st.film&&cu&&cu.end){kSit=false;kx=250;}
+  bobo(c,280,230,st.ang,1.05);
+  if(mx<500)human(c,mx,230,{top:'#7a3a3a',pants:'#3a2a2a',skin:'#e2b898',hair:'#2a1a14',hs:'bun',skirt:'#5a2a2a',face:-1,armUp:mHit,walk:(cu&&(cu.t<3||(cu.t>8&&cu.t<10.5)))?cu.t*9:0,hold:(cc,x,y)=>{if(cu&&cu.t>3&&cu.t<8){R(cc,x-1,y-3,5,3,'#8a6a40');R(cc,x,y,2,5,'#6a4a2a');}}},t);
+  if(kSit){R(c,128,212,12,3,'#8a6a40');R(c,128,215,2,15,'#6a4a2a');R(c,138,215,2,15,'#6a4a2a');human(c,134,222,{kid:true,top:'#3a6aa0',pants:'#2a3a5a',skin:'#ecc3a2',hair:'#8a5a2a',hs:'short',face:1},t);}
+  else human(c,kx,230,{kid:true,top:'#3a6aa0',pants:'#2a3a5a',skin:'#ecc3a2',hair:'#8a5a2a',hs:'short',face:1,armUp:kHit,walk:(cu&&cu.t>10.5&&cu.t<12.5)?cu.t*11:0,hold:(cc,x,y)=>{if(cu&&cu.t>12.5){R(cc,x-1,y-2,4,2,'#8a6a40');R(cc,x,y,1,4,'#6a4a2a');}}},t);
+  human(c,420,230,{top:'#3a3a40',pants:'#2a2a30',skin:'#cfa080',hair:'#1a1410',hs:'short',face:-1,tie:'#6a2a2a',shirt:'#eee'},t);
+  // Projektor
+  R(c,340,196,22,10,'#2a2a2a');ellipseFill(c,344,190,6,6,'#3a3a3a');ellipseFill(c,358,190,6,6,'#3a3a3a');R(c,336,199,4,4,'#555');R(c,346,206,3,24,'#333');
+  if(st.film)glow(c,336,201,12,'#fff2c0',.2+Math.sin(t*6)*.05);
+ },
+ hot:[
+  {id:'fenster',x:85,y:26,w:40,label:'Fenster',act(){say([{t:'Kalifornische Sonne fällt durch die Jalousien. Draußen: der Campus der Stanford University.'},{t:'Hier untersucht Albert Bandura, wie Kinder aggressives Verhalten erwerben.'}]);}},
+  {id:'kind',x:134,y:196,w:18,label:'Kind',act(){say([{w:'Kind',t:'Ich darf hier malen und Sticker kleben! Gleich kommt noch jemand zum Spielen.'},{t:'Rund 70 Kinder im Kindergartenalter nehmen an der Studie teil.'}]);}},
+  {id:'bobo',x:280,y:188,w:24,label:'Bobo-Puppe',act(){SC.bandura.st.av-=2;AU.thud();say([{t:'Bobo – ein aufblasbarer Stehaufclown, so groß wie ein Kind. Egal, wie fest man ihn schubst: Er richtet sich immer wieder auf.'}]);}},
+  {id:'spiegel',x:332,y:48,w:34,label:'Einwegspiegel',act(){say([{t:'Auf dieser Seite ein Spiegel, auf der anderen ein Fenster. Dahinter sitzen Beobachter und protokollieren genau, was die Kinder tun.'}]);}},
+  {id:'projektor',x:350,y:186,w:18,label:'Filmprojektor',act(){
+    if(S.done.bandura)return say([{t:'Die Filmrollen liegen ordentlich gestapelt.'}]);
+    if(!SC.bandura.st.film)return say([{t:'Ein Filmprojektor. Bandura wird ihn später für eine Folgestudie brauchen.'}]);
+    runBandura();}},
+  {id:'regal',x:422,y:88,w:30,label:'Spielzeugregal',act(){say([{t:'Teeservice, Buntstifte, Autos, Tiere – und Holzhämmer. Die Kinder können frei wählen, womit sie spielen.'}]);}},
+  {id:'bandura',x:420,y:196,w:20,label:'Albert Bandura',act(){const st=SC.bandura.st;
+    if(S.done.bandura)return say([{w:'Bandura',t:'Menschen lernen nicht nur aus eigenen Erfahrungen, sondern auch aus denen anderer.'}]);
+    if(st.film)return say([{w:'Bandura',t:'Am Projektor finden Sie die drei Filmrollen.'}]);
+    if(st.cut)return;
+    say([{w:'Bandura',t:'Behavioristen sagen: Man lernt nur, wenn man selbst verstärkt wird. Ich glaube, das stimmt nicht.'},{w:'Bandura',t:'Gleich kommt eine Erwachsene herein und spielt mit Bobo. Das Kind sieht zu. Beobachten Sie genau.'}],()=>{S.lock=true;setBars(1);P.x=Math.min(P.x,388);P.face=-1;st.cut={t:0,lastHit:-1,lastK:-1};});}}
+ ],
+ obj(){const st=this.st;if(S.done.bandura)return'Kapitel geschafft! Kehre durch den Zeitriss (links) ins Archiv zurück.';if(st.film)return'Untersuche den Filmprojektor.';if(st.cut)return'Beobachte genau …';return'Sieh dich um und sprich dann mit Albert Bandura (rechts).';},
+ enter(){say([{t:'Stanford, Kalifornien, 1961. Ein freundliches Spielzimmer.'},{t:'Albert Bandura stellt eine einfache Frage: Muss man selbst belohnt werden, um etwas zu lernen?'}]);}
+};
+function runBandura(){seq([simBandura,
+  pChoice({title:'Deine Vorhersage',sub:'Kapitel IV · Hypothese',q:'Nach dem Film dürfen die Kinder allein mit Bobo spielen. Welche Gruppe ahmt das aggressive Verhalten spontan am wenigsten nach?',shuffle:false,
+   opts:[{t:'Gruppe A – das Modell wurde belohnt.',f:'Gruppe A ahmte eher mehr nach. Was bewirkt es, wenn man sieht, dass jemand bestraft wird?'},{t:'Gruppe B – das Modell wurde bestraft.',ok:true},{t:'Gruppe C – es gab keine Konsequenz.',f:'Gruppe C ahmte ähnlich viel nach wie Gruppe A. Eine Gruppe hielt sich deutlich zurück – welche?'}],
+   why:'Wer sieht, dass ein Modell bestraft wird, hält sich zurück: <span class="op">stellvertretende Bestrafung</span>. Umgekehrt spricht man von <span class="op">stellvertretender Verstärkung</span>.',notes:['stellv']}),
+  pChoice({title:'Die eigentliche Pointe',sub:'Kapitel IV · Warum-Frage',scene:'Nun sagt der Versuchsleiter zu allen Kindern: „Für alles, was du vom Film nachmachen kannst, bekommst du einen Sticker und Saft.“',q:'Was zeigt sich jetzt?',
+   opts:[{t:'Alle drei Gruppen können das Verhalten etwa gleich gut zeigen.',ok:true},{t:'Gruppe B kann das Verhalten nicht zeigen, weil sie es nie gelernt hat.',f:'Überraschenderweise doch! Die Kinder hatten alles gesehen und gespeichert.'},{t:'Nur Gruppe A kann das Verhalten zeigen, weil nur sie es gelernt hat.',f:'Gelernt haben alle – denn alle haben genau hingesehen. Unterschiedlich war nur die Bereitschaft, es zu zeigen.'},{t:'Keine Gruppe kann das Verhalten zeigen, weil der Film zu kurz war.',f:'Die Kinder konnten sehr viel genau wiedergeben – ein kurzer Film genügt zum Modelllernen.'}],
+   why:'Die Konsequenzen beim Modell beeinflussen nicht, <b>ob</b> man lernt, sondern ob man das Gelernte <b>zeigt</b>. Bandura trennt deshalb die <span class="op">Aneignung (Akquisition)</span> von der <span class="op">Ausführung (Performanz)</span>.',notes:['akq']}),
+  pAssign({title:'Vier Teilprozesse',sub:'Kapitel IV · Modell',intro:'Ordne jeder Beobachtung den passenden Teilprozess des Modelllernens zu.',
+   cards:[{id:'a',t:'Aufmerksamkeitsprozesse',a:'1'},{id:'b',t:'Gedächtnisprozesse',a:'2'},{id:'c',t:'Motorische Reproduktionsprozesse',a:'3',w:'Tipp: Kann das Kind die Bewegung körperlich überhaupt ausführen?'},{id:'d',t:'Verstärkungs- und Motivationsprozesse',a:'4'}],
+   slots:[{id:'1',t:'Das Kind schaut gebannt zu, weil die Erwachsene laut, auffällig und mächtig wirkt.',cap:1},{id:'2',t:'Es speichert die Abfolge: Hammer heben, zuschlagen, „Pow!“ rufen.',cap:1},{id:'3',t:'Es kann den Holzhammer selbst heben und kräftig schwingen.',cap:1},{id:'4',t:'Es erwartet, dass sich Nachahmen lohnt – zum Beispiel mit Stickern.',cap:1}],
+   why:'Aneignungsphase: Aufmerksamkeits- und Gedächtnisprozesse. Ausführungsphase: motorische Reproduktions- sowie Verstärkungs- und Motivationsprozesse.',notes:['phasen']})
+ ],()=>finishChapter('bandura',[{w:'Bandura',t:'Kinder sind keine leeren Blätter, die nur auf Belohnung reagieren. Sie beobachten, denken mit und entscheiden.'},{t:'Eine letzte Tür wartet: die Gegenwart. Sind diese Experimente wirklich nur Geschichte?'}]));}
+
+/* ---------- Finale: Heute ---------- */
+SC.now={chapter:'Finale',name:'Heute Nacht',place:'Dein Zimmer · 23:47 Uhr',ac:'#ff5fa2',floor:230,minX:12,maxX:470,start:40,amb:'now',st:{ping:0,solved:{}},
+ build(c){const r=rng(71);
+  vgrad(c,0,0,W,210,['#050409','#0a0814','#100d1e','#151127']);
+  // Fenster Stadt
+  const wx=246,wy=26,ww=150,wh=112;vgrad(c,wx,wy,ww,wh,['#0a0620','#1a0f3a','#3a1a50','#5a2a5a']);
+  for(let i=0;i<14;i++){const bx=wx+i*11-2,bw=9+r()*6,bh=30+r()*70;R(c,bx,wy+wh-bh,bw,bh,['#0d0b1c','#120e24','#0a0916'][i%3]);for(let y=wy+wh-bh+3;y<wy+wh-2;y+=4)for(let x=bx+2;x<bx+bw-1;x+=3)if(r()<.35)R(c,x,y,1,2,r()<.7?'#ffcf7a':'#7ad6ff');}
+  windowPanes(c,wx,wy,ww,wh,'#1e1a2a');
+  // Pinnwand
+  R(c,196,62,48,36,'#5a3e2a');R(c,198,64,44,32,'#8a6a4a');R(c,202,68,14,12,'#f2e8a0');R(c,220,70,16,10,'#a0d8f2');R(c,206,84,22,9,'#fff');R(c,208,86,16,1,'#888');R(c,208,89,12,1,'#888');R(c,229,66,2,2,'#c33');R(c,208,66,2,2,'#c33');
+  // Poster
+  R(c,58,46,44,58,'#20183a');vgrad(c,60,48,40,54,['#3a1a5a','#ff5fa2','#ffb05a']);ellipseFill(c,80,70,10,10,'#ffe7c0');R(c,60,86,40,16,'#20183a');
+  // Kalender
+  R(c,412,56,28,30,'#e8e4f0');R(c,412,56,28,7,'#c33');for(let y=66;y<84;y+=5)for(let x=414;x<438;x+=5)R(c,x,y,3,3,'#b8b4c8');R(c,429,76,3,3,'#ff5fa2');
+  // Bett
+  R(c,24,182,140,24,'#2a2440');R(c,24,180,140,4,'#3a3460');R(c,26,168,28,14,'#d8d4e8');R(c,60,176,104,8,'#5a3a7a');R(c,60,176,104,1,'#7a5aa0');R(c,22,160,4,50,'#1a1626');R(c,162,178,4,32,'#1a1626');
+  // Nachttisch
+  R(c,168,186,24,4,'#3a2a3a');R(c,170,190,20,20,'#2a1e2a');R(c,178,196,4,1,'#5a4a5a');
+  // Schreibtisch
+  R(c,404,180,72,4,'#3a3040');R(c,408,184,3,46,'#241e2a');R(c,470,184,3,46,'#241e2a');R(c,436,166,26,14,'#1a1a22');R(c,432,180,34,2,'#2a2a34');
+  vgrad(c,0,210,W,60,['#14101f','#0e0b16','#07060b']);for(let y=212;y<270;y+=6)R(c,0,y,W,1,'#ffffff06');
+  R(c,90,166,14,9,'#1a1a22');
+ },
+ draw(c,t){const st=this.st;
+  // Neon & Regen
+  const nb=.8+Math.sin(t*2)*.1+(Math.random()<.02?-.4:0);
+  R(c,300,60,34,6,rgba('#ff5fa2',nb));R(c,352,84,6,26,rgba('#5fe0ff',.9));glow(c,317,63,30,'#ff5fa2',.25*nb);glow(c,355,97,26,'#5fe0ff',.2);
+  if(Math.sin(t*.7)>.2){R(c,270,100,2,2,'#ff4040');}
+  const r=rng(81);for(let i=0;i<70;i++){const x=246+r()*150,sp=120+r()*80;const y=26+((r()*112+t*sp)%112);R(c,x,y,1,3,'rgba(170,190,255,.35)');}
+  for(let i=0;i<14;i++){const x=250+r()*142,y=30+((r()*100+t*(3+r()*4))%104);R(c,x,y,1,2,'rgba(200,220,255,.55)');}
+  beam(c,[[246,40],[396,40],[440,230],[200,230]],'#b46aff',.07,40,230);glow(c,320,230,90,'#ff5fa2',.06);
+  // Laptop
+  const lp=.8+Math.sin(t*1.3)*.08;R(c,438,168,22,10,mixc('#1a2a4a','#6ad0ff',.45*lp));glow(c,449,172,36,'#6ad0ff',.18*lp);
+  // Tablet
+  R(c,92,168,10,5,mixc('#202030','#ffb05a',.6));glow(c,97,170,16,'#ffb05a',.15);
+  // Handy
+  st.ping-=1/60;if(st.ping<=0){st.ping=5+Math.random()*4;if(!st.solved.handy){AU.on&&S.scene===SC.now&&!D.on&&!$('panel').classList.contains('on')&&AU.blip();st.flash=1;}}
+  st.flash=Math.max(0,(st.flash||0)-.02);
+  R(c,176,182,8,4,'#111');R(c,177,182,6,3,mixc('#203050','#ffffff',.3+st.flash*.7));glow(c,180,183,18+st.flash*20,'#9ad8ff',.2+st.flash*.4);
+ },
+ hot:[
+  {id:'tablet',x:97,y:162,w:18,label:'Tablet',q:'inf'},
+  {id:'handy',x:180,y:176,w:16,label:'Smartphone',q:'handy'},
+  {id:'pinn',x:220,y:60,w:34,label:'Pinnwand',q:'hw'},
+  {id:'kal',x:426,y:54,w:22,label:'Kalender',q:'zahn'},
+  {id:'laptop',x:449,y:162,w:20,label:'Laptop',q:'werb'}
+ ],
+ obj(){const n=Object.keys(this.st.solved).length;if(S.done.now)return'Geschafft! Kehre durch den Zeitriss zurück – oder lies dein Notizbuch.';return`Entdecke die Lerntheorien in deinem Zimmer (${n}/5).`;},
+ enter(){say([{t:'Heute. Dein Zimmer, 23:47 Uhr. Draußen regnet es.'},{t:'Die Experimente sind rund hundert Jahre alt. Aber sind sie wirklich Geschichte?'},{t:'Untersuche fünf Dinge in deinem Zimmer – und finde Pawlow, Skinner und Bandura in deinem Alltag.'}]);}
+};
+const NOWQ={
+ handy:{title:'Bing!',scene:'Eine Benachrichtigung. Du greifst sofort zum Handy. Manchmal ist etwas Spannendes dabei – meistens nicht. Trotzdem schaust du ständig nach.',q:'Welcher Lernmechanismus erklärt das ständige Nachschauen am besten?',
+  opts:[{t:'Operante Konditionierung mit unregelmäßiger (intermittierender) Verstärkung',ok:true},{t:'Klassische Konditionierung durch eine regelmäßige Kopplung zweier Reize',f:'Hier geht es um dein eigenes Verhalten (Nachschauen) und seine Folgen – nicht um zwei gekoppelte Reize.'},{t:'Modelllernen durch stellvertretende Verstärkung beim Beobachten anderer',f:'Du beobachtest hier niemanden. Du lernst durch die Folgen deines eigenen Verhaltens.'},{t:'Operante Konditionierung mit Bestrafung durch den Entzug eines Reizes',f:'Das Verhalten wird ja häufiger, nicht seltener. Was folgt manchmal auf das Nachschauen?'}],
+  why:'Nachschauen wird nur <b>manchmal</b> belohnt – genau wie Skinners Ratten bei unvorhersehbarem Futter. Intermittierende Verstärkung macht Verhalten besonders hartnäckig. Apps nutzen das gezielt.',notes:['interm']},
+ werb:{title:'Werbepause',scene:'Auf dem Laptop läuft Werbung für einen Energydrink: Dein Lieblingssong, lachende Menschen auf einem Festival, Sonnenuntergang.',q:'Welche Rolle spielen Song und Festivalstimmung in dieser Werbung?',
+  opts:[{t:'Sie sind der unbedingte Reiz, mit dem das Produkt gekoppelt wird.',ok:true},{t:'Sie sind der neutrale Reiz, der später zum bedingten Reiz wird.',f:'Neutral ist zunächst das Produkt – die Dose löst anfangs nichts aus. Was löst ohne Lernen gute Gefühle aus?'},{t:'Sie sind die bedingte Reaktion, die das Produkt beim Zuschauer auslöst.',f:'Eine Reaktion ist etwas, das in dir passiert (z. B. gute Laune). Song und Festival sind Reize.'},{t:'Sie sind das Modell, dessen Verhalten der Zuschauer nachahmen soll.',f:'Musik und Stimmung sind kein Modell. Hier wird ein Produkt mit einem Gefühl verknüpft.'}],
+  why:'Das Produkt (NS) wird immer wieder mit Musik und Stimmung (UCS) gekoppelt, die gute Gefühle auslösen. Irgendwann reicht die Dose im Supermarkt (CS), um ein angenehmes Gefühl (CR) zu wecken.'},
+ inf:{title:'Für die Follower',scene:'Auf dem Tablet läuft ein Clip: Ein Influencer mit drei Millionen Followern zeigt eine riskante Mutprobe. Der Clip hat Tausende Likes und begeisterte Kommentare.',q:'Warum ist die Gefahr groß, dass Jugendliche die Mutprobe nachmachen?',
+  opts:[{t:'Das Modell ist attraktiv und wird sichtbar belohnt – stellvertretende Verstärkung.',ok:true},{t:'Die Jugendlichen wurden für die Mutprobe vorher selbst direkt belohnt.',f:'Sie haben die Mutprobe noch nie gemacht. Sie haben nur jemanden dabei beobachtet.'},{t:'Die Mutprobe wurde mit einem angeborenen Reflex gekoppelt und so gelernt.',f:'Es gibt hier keinen angeborenen Reflex. Der Clip zeigt ein Vorbild und seinen Erfolg.'},{t:'Die Likes sind ein neutraler Reiz, der zum bedingten Reiz geworden ist.',f:'Das trifft das Problem nicht. Entscheidend ist, wer das Verhalten zeigt und was er dafür bekommt.'}],
+  why:'Ein bewundertes Modell (Aufmerksamkeit!) wird für sein Verhalten belohnt (Likes, Ruhm). Wie bei Bandura steigt damit die Bereitschaft, das Gesehene selbst zu zeigen.'},
+ hw:{title:'Der Zettel',scene:'An der Pinnwand hängt ein Zettel deiner Lehrerin: „Wenn du bis Freitag alle Hausaufgaben nachholst, entfällt das Nachsitzen.“ Seitdem arbeitest du jeden Abend.',q:'Welche Konsequenz steuert hier dein Verhalten?',
+  opts:[{t:'Negative Verstärkung: Ein unangenehmer Reiz entfällt.',ok:true},{t:'Positive Verstärkung: Ein angenehmer Reiz kommt hinzu.',f:'Du bekommst nichts dazu. Etwas fällt weg – was genau?'},{t:'Bestrafung Typ II: Ein angenehmer Reiz wird entzogen.',f:'Dein Verhalten (Hausaufgaben machen) wird häufiger. Bestrafung macht Verhalten seltener.'},{t:'Bestrafung Typ I: Ein unangenehmer Reiz kommt hinzu.',f:'Das Nachsitzen fällt ja weg, statt hinzuzukommen. Und dein Verhalten nimmt zu.'}],
+  why:'Das Nachsitzen (unangenehm) fällt weg, wenn du arbeitest – also arbeitest du mehr. Negative Verstärkung ist Belohnung durch Erleichterung.',notes:['negv']},
+ zahn:{title:'Morgen, 8 Uhr',scene:'Im Kalender steht: Zahnarzt. Schon beim Gedanken an den typischen Geruch der Praxis wird dir mulmig – dabei riecht der Geruch selbst ja nach nichts Schlimmem.',q:'Wie lässt sich die Angst vor dem Praxisgeruch erklären?',
+  opts:[{t:'Der Geruch wurde mit Schmerz gekoppelt und ist zum bedingten Reiz geworden.',ok:true},{t:'Der Geruch ist ein unbedingter Reiz, der angeboren Angst auslöst.',f:'Niemand hat von Geburt an Angst vor Desinfektionsmittel. Diese Angst ist gelernt.'},{t:'Du hast beobachtet, wie andere beim Zahnarzt belohnt wurden.',f:'Belohnung würde dich eher entspannen. Denk an Albert: Womit wurde der Reiz gekoppelt?'},{t:'Die Angst ist eine positive Verstärkung dafür, den Termin zu meiden.',f:'Angst ist hier eine Reaktion auf einen Reiz. Frag dich: Wie hat der Geruch diese Wirkung bekommen?'}],
+  why:'Wie bei Albert: Ein neutraler Reiz (Geruch) wurde mit einem unbedingten Reiz (Schmerz) gekoppelt. Jetzt löst er allein Angst aus – eine konditionierte emotionale Reaktion.'}
+};
+SC.now.hot.forEach(h=>h.act=function(){const q=NOWQ[h.q];const st=SC.now.st;
+  if(st.solved[h.id])return say([{t:'Das hast du schon durchschaut.'}]);
+  pChoice(Object.assign({sub:'Finale · Transfer'},q))(()=>{closePanel();st.solved[h.id]=1;
+    if(Object.keys(st.solved).length>=5)setTimeout(epilog,300);});});
+function epilog(){
+  openPanel(head('Brain-Dump','Finale · Selbstkontrolle')+`<p>Bevor die Reise endet: Schreib aus dem Kopf (ohne Notizbuch!) in zwei, drei Sätzen auf, worin sich <b>klassische</b> und <b>operante Konditionierung</b> unterscheiden. Nenne jeweils ein eigenes Beispiel.</p>
+   <textarea id="bd" placeholder="Bei der klassischen Konditionierung … Bei der operanten Konditionierung dagegen …"></textarea>
+   <div class="row"><button class="btn" id="ms">Musterlösung zeigen</button></div>
+   <div class="mus" id="mu"><b>Musterlösung:</b> Bei der klassischen Konditionierung lernt ein Lebewesen, dass ein Reiz einen anderen <b>ankündigt</b>: Ein neutraler Reiz wird mit einem unbedingten Reiz gekoppelt und löst danach selbst eine (meist unwillkürliche) Reaktion aus – z. B. Angst beim Geruch der Zahnarztpraxis. Bei der operanten Konditionierung lernt es aus den <b>Konsequenzen seines eigenen Verhaltens</b>: Verstärkung macht ein Verhalten häufiger, Bestrafung seltener – z. B. häufiges Handychecken.
+   <div class="chk" style="margin-top:.6em"><b>Checkliste – hast du …</b><label><input type="checkbox"> beide Lernformen korrekt benannt?</label><label><input type="checkbox"> bei der klassischen Konditionierung die Kopplung zweier Reize erklärt?</label><label><input type="checkbox"> bei der operanten Konditionierung die Konsequenz des Verhaltens erklärt?</label><label><input type="checkbox"> zu beiden ein passendes Beispiel genannt?</label></div></div>
+   <div class="row"><button class="btn pri" id="nx">Reise abschließen ▶</button></div>`);
+  $('ms').onclick=()=>$('mu').classList.add('on');
+  $('nx').onclick=()=>{closePanel();finishChapter('now',[{t:'Hinter dem Fenster blinkt die Stadt. Irgendwo läutet ein Handy, irgendwo läuft eine Werbung, irgendwo schaut ein Kind einem Vorbild zu.'},{t:'Reiz und Reaktion. Verhalten und Konsequenz. Beobachten und Nachahmen. Du erkennst sie jetzt überall.'}],true);};
+}
+function finale(){const p=S.score.all?Math.round(S.score.ok/S.score.all*100):0;
+  openPanel(head('Reise abgeschlossen','Reiz & Reaktion')+`<p>Du hast vier Experimente miterlebt, die das Verständnis vom Lernen geprägt haben – und sie in deinem Alltag wiedergefunden.</p>
+   <p><span class="tag">Erster Versuch</span><b>${S.score.ok} von ${S.score.all}</b> Aufgaben richtig (${p} %). <span class="tag" style="margin-left:.6em">Notizbuch</span><b>${S.notes.length}</b> von ${Object.keys(NOTES).length} Begriffen gesammelt.</p>
+   <p style="opacity:.85">${p>=85?'Stark! Du kannst die drei Lerntheorien sicher unterscheiden.':p>=60?'Gute Grundlage. Wiederhole die Kapitel, bei denen du gezögert hast – am besten in ein paar Tagen.':'Lies dein Notizbuch und spiel die Kapitel in ein paar Tagen noch einmal: Wiederholung mit Abstand wirkt am besten.'}</p>
+   <p style="font-size:.82em;opacity:.7">Tipp für später: Erkläre einer anderen Person die vier Felder der operanten Konditionierung mit eigenen Beispielen – ohne nachzuschauen.</p>
+   <div class="row"><button class="btn pri" id="nx">Zurück ins Archiv</button><button class="btn" id="nb">📖 Notizbuch öffnen</button></div>`);
+  $('nx').onclick=()=>{closePanel();go('hub');};$('nb').onclick=()=>{closePanel();openBook();};}
+
+function finishChapter(id,lines,isFinal){S.done[id]=true;AU.chime();say(lines,()=>{if(isFinal)finale();else toast('✓ Kapitel geschafft – der Zeitriss bringt dich zurück ins Archiv.');});}
+
+/* ================= Spieler, Input, Szenenwechsel ================= */
+const P={x:240,face:1,walk:0,tx:null,pend:null};
+const keys={};
+let curHot=null,firstHub=true,going=false;
+function setBars(v){S.barsT=v;}
+function go(id){if(going)return;going=true;$('fade').style.opacity=1;closePanel();
+  setTimeout(()=>{const sc=SC[id];if(!sc.bg)sc.bg=bgCanvas(c=>sc.build(c));S.scene=sc;P.x=sc.start;P.tx=null;P.pend=null;P.face=1;
+    if(id!=='hub'&&!sc.hot.find(h=>h.id==='rift'))sc.hot.unshift({id:'rift',x:14,y:182,w:16,label:'Zeitriss · zurück ins Archiv',act(){go('hub');}});
+    document.documentElement.style.setProperty('--ac',sc.ac);wrap.style.setProperty('--ac',sc.ac);
+    AU.ambient(sc.amb);$('fade').style.opacity=0;going=false;
+    if(id==='hub'){P.x=nextDoorX();const f=firstHub;firstHub=false;setBars(0);setTimeout(()=>sc.enter(f),600);}
+    else{setBars(1);S.lock=true;caption(sc);setTimeout(()=>{S.lock=false;sc.enter();setBars(0);},3400);}
+  },900);}
+function nextDoorX(){const nd=nextDoor();const d=DOORS.find(d=>d.sc===nd);return d?d.x:240;}
+function caption(sc){$('capk').textContent=sc.chapter;$('capt').textContent=sc.name;$('capp').textContent=sc.place;$('cap').style.opacity=1;setTimeout(()=>$('cap').style.opacity=0,2600);}
+function busy(){return D.on||$('panel').classList.contains('on')||$('book').classList.contains('on')||S.lock||going||S.mode!=='play';}
+function interact(h){if(!h)return;if(h.id!=='rift')S.seen[S.scene===SC.hub?'hub.'+h.id:sceneId()+'.'+h.id]=true;AU.click();h.act();}
+function sceneId(){return Object.keys(SC).find(k=>SC[k]===S.scene);}
+addEventListener('keydown',e=>{
+  if(S.mode!=='play')return;
+  if($('book').classList.contains('on')){if(e.key==='Escape'||e.key==='n'||e.key==='N')closeBook();return;}
+  if(D.on&&(e.code==='Space'||e.code==='Enter'||e.key==='e'||e.key==='E')){e.preventDefault();advance();return;}
+  if($('panel').classList.contains('on'))return;
+  if(e.key==='n'||e.key==='N'){openBook();return;}
+  if(e.key==='Escape'&&S.scene!==SC.hub&&!busy()){go('hub');return;}
+  keys[e.key.toLowerCase()]=true;
+  if((e.code==='Space'||e.key==='e'||e.key==='E'||e.code==='Enter')&&!busy()){e.preventDefault();interact(curHot);}
+});
+addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});
+cv.addEventListener('click',e=>{if(D.on){advance();return;}if(busy())return;const b=cv.getBoundingClientRect();const x=(e.clientX-b.left)/b.width*W,y=(e.clientY-b.top)/b.height*H;
+  const hs=S.scene.hot;let best=null;for(const h of hs){if(Math.abs(x-h.x)<h.w/2+4&&y>h.y-14&&y<S.scene.floor+4){if(!best||Math.abs(x-h.x)<Math.abs(x-best.x))best=h;}}
+  if(best){P.tx=Math.max(S.scene.minX,Math.min(S.scene.maxX,best.x+(best.x>P.x?-6:6)));P.pend=best;}else{P.tx=Math.max(S.scene.minX,Math.min(S.scene.maxX,x));P.pend=null;}});
+$('bBook').onclick=()=>{if(!busy()||D.on)openBook();};
+$('bSnd').onclick=()=>{AU.on=!AU.on;$('bSnd').textContent=AU.on?'♪ Ton an':'♪ Ton aus';if(AU.on)AU.ambient(S.scene.amb);else AU.stopAmb();};
+$('bHub').onclick=()=>{if(S.scene!==SC.hub&&!busy())go('hub');};
+$('bStart').onclick=()=>{AU.init();S.mode='play';$('title').style.opacity=0;setTimeout(()=>$('title').style.display='none',1200);$('hud').style.opacity=1;go('hub');};
+
+/* ================= Hauptschleife ================= */
+const vig=bgCanvas(c=>{const g=c.createRadialGradient(W/2,H/2,H*.35,W/2,H/2,W*.62);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.72)');c.fillStyle=g;c.fillRect(0,0,W,H);});
+SC.hub.bg=bgCanvas(c=>SC.hub.build(c));S.scene=SC.hub;
+let last=performance.now();
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;S.t+=dt;const t=S.t;const sc=S.scene;
+  // Bewegung
+  if(!busy()){let dir=0;if(keys['arrowleft']||keys['a'])dir=-1;if(keys['arrowright']||keys['d'])dir=1;
+    if(dir){P.tx=null;P.pend=null;}
+    else if(P.tx!=null){const d=P.tx-P.x;if(Math.abs(d)<1.5){P.tx=null;if(P.pend){const h=P.pend;P.pend=null;interact(h);}}else dir=Math.sign(d);}
+    if(dir){P.x=Math.max(sc.minX,Math.min(sc.maxX,P.x+dir*dt*62));P.face=dir;P.walk+=dt*11;}else P.walk=0;
+  }else P.walk=0;
+  // Rendern
+  ctx.drawImage(sc.bg,0,0);
+  if(sc!==SC.hub)rift(ctx,14,sc.floor,t);
+  sc.draw(ctx,t,dt);
+  // Hotspot-Marker
+  curHot=null;let bd=99;
+  for(const h of sc.hot){const d=Math.abs(P.x-h.x);if(d<h.w/2+12&&d<bd){bd=d;curHot=h;}
+    const key=(sc===SC.hub?'hub.':sceneId()+'.')+h.id;if(!S.seen[key]&&h.id!=='rift'&&sc!==SC.hub&&!(sc===SC.now&&sc.st.solved[h.id]))hotMark(ctx,h.x,h.y-6,t,sc.ac);}
+  if(S.mode==='play')human(ctx,P.x,sc.floor,Object.assign({face:P.face,walk:P.walk},PLAYER),t);
+  // Kino-Look
+  ctx.drawImage(vig,0,0);
+  for(let i=0;i<160;i++){ctx.fillStyle=Math.random()<.5?'rgba(255,255,255,.05)':'rgba(0,0,0,.08)';ctx.fillRect(Math.random()*W|0,Math.random()*H|0,1,1);}
+  S.bars+=(S.barsT-S.bars)*Math.min(1,dt*3);const bh=Math.round(S.bars*26);if(bh>0){R(ctx,0,0,W,bh,'#000');R(ctx,0,H-bh,W,bh,'#000');}
+  // UI
+  const pr=$('prompt');
+  if(curHot&&!busy()){const lb=typeof curHot.label==='function'?curHot.label():curHot.label;pr.innerHTML=`<kbd>E</kbd>${lb}`;pr.style.left=(curHot.x/W*100)+'%';pr.style.top=((curHot.y-10)/H*100)+'%';pr.style.opacity=1;}else pr.style.opacity=0;
+  if(S.mode==='play'&&sc.obj)$('objt').textContent=sc.obj();
+  if(D.on&&D.shown<D.cur.t.length){D.shown=Math.min(D.cur.t.length,D.shown+dt*55);$('dtxt').textContent=D.cur.t.slice(0,Math.floor(D.shown));}
+  else if(D.on)$('dtxt').textContent=D.cur.t;
+  requestAnimationFrame(frame);}
+$('fade').style.opacity=0;
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

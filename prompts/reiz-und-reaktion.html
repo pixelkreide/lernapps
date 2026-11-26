@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Pixel-Art-Lernspiel „Reiz &amp; Reaktion“ · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Pixel-Art-Lernspiel „Reiz &amp; Reaktion“</h1>
+  <p class="lead">Ein cineastisches Pixel-Art-Spiel für Pädagogik/Psychologie zu den Lerntheorien: Die Lernenden reisen durch ein Archiv zu den Experimenten von Pawlow, Watson, Skinner und Bandura, führen die Versuche selbst durch und finden die Theorien zum Schluss in ihrem eigenen Alltag wieder.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/reiz-und-reaktion.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat in einer leistungsfähigen KI, hänge dein eigenes Unterrichtsmaterial an (zum Beispiel Skript oder Arbeitsblätter) und füge den Prompt ein. Nimm das stärkste Modell, das du hast. Dein Ergebnis kann von der App hier abweichen.</p>
+  <p class="tip"><strong>Tipp:</strong> Hat deine KI einen Code- oder Agentenmodus, nutze ihn. Dann testet sie die App selbst und sie läuft auch offline.</p>
+  <pre id="prompt">Erstelle ein Lernspiel im Pixel-Art-Stil als eine einzige HTML-Datei, die offline läuft. Zeichne alle Grafiken im Code (Canvas), ohne externe Bilder oder Schriften.
+Zielgruppe: [Jahrgangsstufe und Schulart], Fach Pädagogik/Psychologie, Lernbereich Lerntheorien.
+Grundlage: Nutze die angehängten Materialien als fachliche Grundlage und übernimm ihre Fachbegriffe.
+
+AUFBAU
+Ein Archiv zwischen den Zeiten mit fünf Türen. Hinter jeder Tür liegt ein Kapitel. Alle Kapitel sind frei wählbar, das empfohlene leuchtet. Zu Beginn jedes Kapitels eine Titeleinblendung mit Ort und Jahr.
+
+LOOK UND ATMOSPHÄRE
+- Hochauflösende Pixelgrafik (480 × 270 Pixel), scharf hochskaliert.
+- Cinematisch: Lichtkegel, Staub, Schnee, Regen, Vignette, Filmkorn und Kinobalken bei Zwischensequenzen.
+- Jede Epoche hat ihre eigene Farbstimmung.
+- Stimmungsmusik und Geräusche mit der Web Audio API, Ton abschaltbar.
+- Neutrales Design ohne Schulnamen und Logos.
+
+KAPITEL 1: PAWLOW (1904)
+Die Lernenden führen den Versuch selbst durch: Glocke allein, Futter allein, Glocke und Futter. Ein Balkendiagramm zeigt den Speichelfluss pro Durchgang. Ziele: konditionieren, löschen und nach einer Nacht die Spontanerholung beobachten. Danach die Fachbegriffe zuordnen (NS, UCS, UCR, CS, CR).
+
+KAPITEL 2: WATSON (1920)
+Der Fall „kleiner Albert“ wird zurückhaltend über ein Laborprotokoll rekonstruiert, ohne ein verängstigtes Kind im Bild. Aufgaben zu Reizgeneralisierung, Reizdiskrimination und Forschungsethik, dazu ein Ausblick auf die Gegenkonditionierung.
+
+KAPITEL 3: SKINNER (1930ER)
+Shaping in der Skinner-Box: Die Lernenden verstärken eine Ratte im richtigen Moment, bis sie den Hebel selbst drückt. Ein Kumulativschreiber zeichnet mit. Danach Alltagsbeispiele den vier Konsequenzen zuordnen: positive und negative Verstärkung, Bestrafung durch Darbietung und durch Entzug.
+
+KAPITEL 4: BANDURA (1961)
+Eine Zwischensequenz zeigt den Bobo-Versuch. Danach drei Filmrollen der Folgestudie von 1965 mit verschiedenem Ende. Vorhersagen zu stellvertretender Verstärkung, zu Akquisition und Performanz sowie Zuordnung der vier Teilprozesse.
+
+FINALE: HEUTE
+Ein Zimmer bei Nacht. Smartphone, Werbung, ein Influencer-Video, ein Hausaufgabenzettel und ein Zahnarzttermin werden je einer Lerntheorie zugeordnet.
+
+DIDAKTIK
+Erst experimentieren, dann die Fachbegriffe. Feedback zu jeder falschen Antwort, typische Fehlvorstellungen aufgreifen (negative Verstärkung ist keine Strafe). Ein Notizbuch sammelt alle Fachbegriffe. Am Ende ein Brain-Dump mit Musterlösung und Checkliste.
+
+QUALITÄT
+Prüfe alle Fachinhalte, Jahreszahlen und Namen. Teste jedes Kapitel einmal komplett durch. Baue alles vollständig, ohne Platzhalter.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum &amp; Datenschutz</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>
