@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt: Photosynthese-Labor in 3D · Pixelkreide</title>
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/pixelkreide.css">
+</head>
+<body class="sub">
+<header class="bar">
+  <a class="brand" href="../"><img src="../assets/logo.png" alt=""> <span>Pixelkreide</span></a>
+  <a class="back" href="../">◂ Alle Apps</a>
+</header>
+<main class="prompt-page">
+  <span class="chip">PROMPT</span>
+  <h1>Photosynthese-Labor in 3D</h1>
+  <p class="lead">Ein 3D-Labor zur Photosynthese für Biologie: Die Lernenden verändern Licht, CO₂ und Temperatur am Versuch mit der Wasserpest. Dann zoomen sie vom Labortisch über Blattzelle und Chloroplast bis zu den Lichtreaktionen und zum Calvin-Zyklus.</p>
+  <div class="actions">
+    <a class="btn primary" href="../apps/photosynthese-labor.html">App starten ▸</a>
+    <button class="btn" id="copy">Prompt kopieren</button>
+  </div>
+  <p class="hand">So nutzt du ihn: Öffne einen neuen Chat in einer leistungsfähigen KI, ersetze die Angaben in eckigen Klammern und füge den Prompt ein. Nimm das stärkste Modell, das du hast. Dein Ergebnis kann von der App hier abweichen.</p>
+  <p class="tip"><strong>Tipp:</strong> Hat deine KI einen Code- oder Agentenmodus, nutze ihn. Dann testet sie die App selbst und sie läuft auch offline.</p>
+  <pre id="prompt">Erstelle ein interaktives 3D-Labor zur Photosynthese als eine einzige HTML-Datei, die offline läuft. Nutze three.js und binde die Bibliothek direkt in die Datei ein, ohne externe Bilder, Schriften oder Links.
+Zielgruppe: [Jahrgangsstufe und Schulart], Fach Biologie, Thema Photosynthese.
+
+AUFBAU
+Fünf Zoomstufen, zwischen denen man über Reiter und per Klick in die Szene wechselt:
+1. Labor: Wasserpest im Wasserbad, verschiebbare LED-Lampe, O₂-Sensor und Messzylinder für das Gasvolumen. Gut sichtbare, aufsteigende Bläschen zeigen die Photosyntheserate.
+2. Blattzelle als Schnittmodell mit Zellwand, Vakuole, Zellkern und Chloroplasten.
+3. Geöffneter Chloroplast mit Grana, Stroma und doppelter Hüllmembran.
+4. Lichtreaktionen an der Thylakoidmembran: Photosystem II, Cytochrom-b₆f, Photosystem I, NADP⁺-Reduktase, ATP-Synthase, Elektronen- und Protonenfluss, Fotolyse des Wassers.
+5. Calvin-Zyklus im Stroma mit Fixierung, Reduktion und Regeneration.
+
+STEUERUNG
+Regler für Lampenleistung, Abstand, Lichtfarbe, gelöstes CO₂ und Wassertemperatur. Ein einfaches, fachlich plausibles Modell mit begrenzenden Faktoren berechnet daraus den gelösten Sauerstoff, die Bläschenrate und die Netto-O₂-Bilanz. Dazu ein Live-Diagramm, eine Messreihe mit CSV-Export und ein Protokoll mit Fragestellung, Hypothese, Beobachtung und Erklärung.
+
+DIDAKTIK
+Basis- und Vertiefungsmodus. Auf den molekularen Ebenen gibt es einen Einzelschritt-Modus und zwei Verfolgungen: ein markiertes C-Atom vom CO₂ bis zum Zucker und ein markiertes O-Atom vom Wasser bis zum Sauerstoff. Dazu kurze Erklärungen zu jeder Ebene, Forschungsaufträge und ein Hinweis auf die Modellgrenzen.
+
+GESTALTUNG
+Dunkle, atmosphärische Szenen mit gutem Kontrast: ein Labor am Abend, in dem die Lampe sichtbar leuchtet, und die Zellebenen vor dunklem Hintergrund mit leuchtenden Teilchen. Gut lesbare Beschriftungen. Läuft auch auf Tablet und Handy. Fehlt WebGL, erscheint stattdessen eine schematische 2D-Ansicht.
+
+QUALITÄT
+Prüfe alle Fachinhalte, Formeln und Bilanzen. Teste jede Zoomstufe und jeden Regler einmal komplett durch.</pre>
+</main>
+<footer><a href="https://mein.online-impressum.de/pixelkreide" target="_blank" rel="noopener">Impressum &amp; Datenschutz</a></footer>
+<script>
+document.getElementById('copy').onclick = async e => {
+  const t = document.getElementById('prompt').innerText;
+  try { await navigator.clipboard.writeText(t); }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); }
+  e.target.textContent = 'Kopiert ✓';
+  setTimeout(() => e.target.textContent = 'Prompt kopieren', 2000);
+};
+</script>
+</body>
+</html>
